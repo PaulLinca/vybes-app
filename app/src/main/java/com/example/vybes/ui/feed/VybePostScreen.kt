@@ -135,6 +135,7 @@ fun MultilineTextField(
             Box(modifier = Modifier.padding(10.dp)) {
                 if (value.isEmpty()) {
                     Text(
+                        fontSize = textStyle.fontSize,
                         text = hintText,
                         color = Color.Gray
                     )
