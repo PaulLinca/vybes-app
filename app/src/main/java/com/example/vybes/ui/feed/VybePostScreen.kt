@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Face
@@ -26,11 +25,9 @@ import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.rounded.AddCircle
-import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -131,10 +129,16 @@ fun MultilineTextField(
         textStyle = textStyle,
         modifier = modifier,
         maxLines = maxLines,
+        cursorBrush = SolidColor(Color.White),
         decorationBox = { innerTextField ->
-            Box(modifier = Modifier.padding(10.dp)) {
+            Box(
+                modifier = Modifier.padding(15.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
                 if (value.isEmpty()) {
                     Text(
+                        style = textStyle,
+                        textAlign = TextAlign.Center,
                         text = hintText,
                         color = Color.Gray
                     )
@@ -425,6 +429,6 @@ fun Comment(commentText: String) {
 
 @Preview
 @Composable
-fun preview() {
+fun Preview() {
     VybePostScreen(vybe = vybes.get(1), {})
 }
