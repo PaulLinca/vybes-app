@@ -1,5 +1,6 @@
 package com.example.vybes.ui.feed
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,8 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.vybes.R
 import com.example.vybes.ui.feed.model.vybes
 import com.example.vybes.ui.profile.ProfileScreen
 import com.example.vybes.ui.theme.White
@@ -77,11 +81,12 @@ fun TopBar(navController: NavController) {
                 .clip(CircleShape)
                 .align(Alignment.CenterEnd)
         ) {
-            Icon(
-                imageVector = Icons.Default.Face,
-                contentDescription = "Button",
-                tint = White,
+            Image(
+                painter = painterResource(id = R.drawable.user),
+                contentDescription = "Profile Button",
+                colorFilter = ColorFilter.tint(Color.White),
                 modifier = Modifier.fillMaxSize()
+
             )
         }
     }

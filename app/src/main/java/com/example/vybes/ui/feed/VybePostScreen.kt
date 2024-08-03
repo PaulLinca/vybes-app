@@ -17,16 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.outlined.MailOutline
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.ThumbUp
-import androidx.compose.material.icons.rounded.AddCircle
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,11 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.example.vybes.R
 import com.example.vybes.ui.feed.model.Vybe
 import com.example.vybes.ui.feed.model.vybes
 import com.example.vybes.ui.theme.Black
@@ -99,17 +93,23 @@ fun VybePostScreen(vybe: Vybe, onGoBack: () -> Unit) {
                     .clip(RoundedCornerShape(25.dp))
                     .weight(1f)
                     .background(Color.Black, shape = RoundedCornerShape(25.dp))
-                    .border(1.dp, Color.LightGray, RoundedCornerShape(25.dp))
+                    .border(
+                        1.dp, Color.White, RoundedCornerShape(25.dp)
+                    )
             )
-            Icon(
-                imageVector = Icons.Rounded.AddCircle,
-                contentDescription = "Button",
-                tint = Color.Gray,
+            IconButton(
+                onClick = { },
                 modifier = Modifier
-                    .size(38.dp)
+                    .size(40.dp)
                     .clip(CircleShape)
-                    .align(Alignment.Bottom)
-            )
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.send),
+                    contentDescription = "Send Button",
+                    colorFilter = ColorFilter.tint(White),
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
     }
 }
@@ -159,14 +159,14 @@ fun TopBar(vybe: Vybe, onGoBack: () -> Unit) {
         IconButton(
             onClick = onGoBack,
             modifier = Modifier
-                .size(30.dp)
+                .size(35.dp)
                 .clip(CircleShape)
                 .align(Alignment.CenterStart)
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Button",
-                tint = White,
+            Image(
+                painter = painterResource(id = R.drawable.back),
+                contentDescription = "Icon",
+                colorFilter = ColorFilter.tint(White),
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -264,12 +264,14 @@ fun VybeStatsBar() {
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
                 modifier = Modifier.padding(horizontal = 1.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.ThumbUp,
-                    contentDescription = "Button",
-                    tint = Color.White,
+                Image(
+                    painter = painterResource(id = R.drawable.thumb_up),
+                    contentDescription = "Icon",
+                    colorFilter = ColorFilter.tint(White),
                     modifier = Modifier
                         .size(25.dp)
+                        .clip(CircleShape)
+                        .align(Alignment.CenterVertically)
                 )
                 Text(
                     text = "1",
@@ -278,26 +280,26 @@ fun VybeStatsBar() {
                     style = artistsStyle
                 )
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                modifier = Modifier.padding(horizontal = 1.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.ThumbUp,
-                    contentDescription = "Button",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .rotate(180f)
-                        .size(25.dp)
-                )
-                Text(
-                    text = "0",
-                    textAlign = TextAlign.Start,
-                    color = White,
-                    style = artistsStyle
-                )
-            }
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.spacedBy(5.dp),
+//                modifier = Modifier.padding(horizontal = 1.dp)
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Outlined.ThumbUp,
+//                    contentDescription = "Button",
+//                    tint = Color.White,
+//                    modifier = Modifier
+//                        .rotate(180f)
+//                        .size(25.dp)
+//                )
+//                Text(
+//                    text = "0",
+//                    textAlign = TextAlign.Start,
+//                    color = White,
+//                    style = artistsStyle
+//                )
+//            }
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -307,12 +309,14 @@ fun VybeStatsBar() {
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
                 modifier = Modifier.padding(horizontal = 1.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.MailOutline,
-                    contentDescription = "Button",
-                    tint = Color.White,
+                Image(
+                    painter = painterResource(id = R.drawable.comment),
+                    contentDescription = "Icon",
+                    colorFilter = ColorFilter.tint(White),
                     modifier = Modifier
                         .size(25.dp)
+                        .clip(CircleShape)
+                        .align(Alignment.CenterVertically)
                 )
                 Text(
                     text = "3",
@@ -321,14 +325,15 @@ fun VybeStatsBar() {
                     style = artistsStyle
                 )
             }
-            Icon(
-                imageVector = Icons.Outlined.PlayArrow,
-                contentDescription = "Button",
-                tint = Color.White,
+            Image(
+                painter = painterResource(id = R.drawable.spotify),
+                contentDescription = "Spotify",
+                colorFilter = ColorFilter.tint(White),
                 modifier = Modifier
-                    .size(25.dp)
+                    .size(23.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.CenterVertically)
             )
-
         }
     }
 }
@@ -342,7 +347,6 @@ fun CommentSection() {
         Comment("This is a comment. It could be super long or it could be super short but this one is testing long comments to see how they fit on the screen and how it looks")
         Comment("This is a short one")
         Comment("Another one for you ")
-
     }
 }
 
@@ -359,10 +363,10 @@ fun Comment(commentText: String) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Face,
-                    contentDescription = "Button",
-                    tint = Color.Gray,
+                Image(
+                    painter = painterResource(id = R.drawable.user),
+                    contentDescription = "Icon",
+                    colorFilter = ColorFilter.tint(White),
                     modifier = Modifier
                         .size(25.dp)
                         .clip(CircleShape)
@@ -405,10 +409,10 @@ fun Comment(commentText: String) {
             Modifier.padding(horizontal = 5.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = Icons.Default.FavoriteBorder,
-                contentDescription = "Button",
-                tint = Color.Gray,
+            Image(
+                painter = painterResource(id = R.drawable.heart),
+                contentDescription = "Icon",
+                colorFilter = ColorFilter.tint(White),
                 modifier = Modifier
                     .size(20.dp)
                     .clip(CircleShape)

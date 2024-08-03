@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,30 +29,34 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.example.vybes.R
 import com.example.vybes.ui.feed.model.Vybe
+import com.example.vybes.ui.feed.model.vybes
 import com.example.vybes.ui.theme.SpotifyDarkGrey
 import com.example.vybes.ui.theme.SpotifyLighterGrey
 import com.example.vybes.ui.theme.White
 import com.example.vybes.ui.theme.artistsStyle
 import com.example.vybes.ui.theme.songTitleStyle
-import java.time.format.DateTimeFormatter
 import java.util.stream.Collectors
 
 @Composable
 fun VybePost(vybe: Vybe, onClickCard: () -> Unit) {
     Column(modifier = Modifier.padding(vertical = 5.dp)) {
         Row {
-            Icon(
-                imageVector = Icons.Default.Face,
-                contentDescription = "Button",
-                tint = Color.Gray,
+            Image(
+                painter = painterResource(id = R.drawable.user),
+                contentDescription = "Icon",
+                colorFilter = ColorFilter.tint(Color.Gray),
                 modifier = Modifier
                     .size(30.dp)
                     .clip(CircleShape)
@@ -144,14 +147,12 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            Icon(
-                imageVector = Icons.Rounded.MoreVert,
-                contentDescription = "Button",
-                tint = White,
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(end = 10.dp)
-            )
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewPost() {
+    VybePost(vybe = vybes.get(4), {})
 }
