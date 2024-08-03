@@ -1,5 +1,6 @@
 package com.example.vybes.ui.feed
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,19 +55,27 @@ import java.util.stream.Collectors
 fun VybePost(vybe: Vybe, onClickCard: () -> Unit) {
     Column(modifier = Modifier.padding(vertical = 5.dp)) {
         Row {
-            Image(
-                painter = painterResource(id = R.drawable.user),
-                contentDescription = "Icon",
-                colorFilter = ColorFilter.tint(Color.Gray),
+            val context = LocalContext.current
+            IconButton(
+                onClick = {
+                    Toast.makeText(context, "Go to user profile", Toast.LENGTH_SHORT).show()
+                },
                 modifier = Modifier
                     .size(30.dp)
                     .clip(CircleShape)
                     .align(Alignment.CenterVertically)
-            )
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.user),
+                    contentDescription = "Go to user profile",
+                    colorFilter = ColorFilter.tint(Color.Gray),
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
-                    .padding(start = 5.dp)
+                    .padding(start = 5.dp, top = 3.dp, bottom = 3.dp)
                     .align(Alignment.CenterVertically)
             ) {
                 Text(
@@ -76,7 +86,6 @@ fun VybePost(vybe: Vybe, onClickCard: () -> Unit) {
                 Text(
                     text = vybe.postedDate,
                     color = Color.LightGray,
-                    modifier = Modifier.padding(top = 3.dp, bottom = 7.dp),
                     style = MaterialTheme.typography.labelSmall
                 )
             }
