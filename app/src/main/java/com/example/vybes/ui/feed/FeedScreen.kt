@@ -71,6 +71,20 @@ fun TopBar(navController: NavController) {
             .fillMaxWidth()
             .padding(10.dp)
     ) {
+        IconButton(
+            onClick = { navController.navigate(ProfileScreen) },
+            modifier = Modifier
+                .size(30.dp)
+                .clip(CircleShape)
+                .align(Alignment.CenterStart)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.lightbulb),
+                contentDescription = "Feedback Button",
+                colorFilter = ColorFilter.tint(Color.White),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         Text(
             text = "vybes",
             color = White,
@@ -89,7 +103,6 @@ fun TopBar(navController: NavController) {
                 contentDescription = "Profile Button",
                 colorFilter = ColorFilter.tint(Color.White),
                 modifier = Modifier.fillMaxSize()
-
             )
         }
     }
