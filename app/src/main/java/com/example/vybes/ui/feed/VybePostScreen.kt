@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -75,8 +74,21 @@ fun VybePostScreen(vybe: Vybe, onGoBack: () -> Unit) {
         ) {
             TopBar(vybe = vybe, onGoBack = onGoBack)
             SongBanner(vybe = vybe)
-            VybeStatsBar()
-            Divider(color = Color.DarkGray)
+            StatsBar(
+                vybe = vybe,
+                modifier = Modifier.padding(top = 8.dp, start = 8.dp),
+                onClickSpotify = {
+                    Toast.makeText(
+                        context,
+                        "Going to spotify...",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                onClickThumbsUp = {
+                    Toast.makeText(context, "Liking vybe...", Toast.LENGTH_SHORT).show()
+                },
+                iconSize = 23.dp
+            )
             CommentSection()
         }
         Row(

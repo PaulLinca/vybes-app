@@ -1,5 +1,7 @@
 package com.example.vybes.ui.feed
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,9 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -91,6 +91,96 @@ fun VybePost(vybe: Vybe, onClickCard: () -> Unit) {
             }
         }
         VybeCard(vybe, onClickCard)
+        StatsBar(vybe = vybe, onClickComment = onClickCard, modifier = Modifier.padding(top = 5.dp))
+    }
+}
+
+@Composable
+fun StatsBar(
+    vybe: Vybe,
+    onClickComment: () -> Unit = {},
+    onClickSpotify: () -> Unit = {},
+    onClickThumbsUp: () -> Unit = {},
+    modifier: Modifier,
+    iconSize: Dp = 20.dp
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = modifier
+    ) {
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(SpotifyDarkGrey)
+                .padding(horizontal = 10.dp, vertical = 3.dp)
+                .clickable(onClick = onClickThumbsUp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.thumb_up),
+                contentDescription = "Like this vybe",
+                colorFilter = ColorFilter.tint(Color.White),
+                modifier = Modifier
+                    .size(iconSize)
+            )
+            Text(
+                text = vybe.likes.toString(),
+                color = White,
+                style = artistsStyle,
+            )
+        }
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(SpotifyDarkGrey)
+                .padding(horizontal = 10.dp, vertical = 3.dp)
+                .clickable(onClick = onClickComment),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.comment),
+                contentDescription = "See comments",
+                colorFilter = ColorFilter.tint(Color.White),
+                modifier = Modifier
+                    .size(iconSize)
+            )
+            Text(
+                text = "3",
+                color = White,
+                style = artistsStyle,
+            )
+        }
+        val context = LocalContext.current
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(SpotifyDarkGrey)
+                .padding(horizontal = 10.dp, vertical = 3.dp)
+                .clickable(onClick = {
+                    val urlIntent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://open.spotify.com/track/" + vybe.spotifyTrackId)
+                    )
+                    context.startActivity(urlIntent)
+                }),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Listen on",
+                color = White,
+                style = artistsStyle,
+            )
+            Image(
+                painter = painterResource(id = R.drawable.spotify),
+                contentDescription = "Go to user profile",
+                colorFilter = ColorFilter.tint(Color.White),
+                modifier = Modifier
+                    .size(iconSize)
+            )
+        }
     }
 }
 
@@ -157,6 +247,7 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
                 )
             }
         }
+
     }
 }
 

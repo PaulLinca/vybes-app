@@ -1,5 +1,6 @@
 package com.example.vybes.ui.feed
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +25,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.vybes.R
 import com.example.vybes.ui.feed.model.vybes
 import com.example.vybes.ui.profile.ProfileScreen
@@ -90,4 +93,11 @@ fun TopBar(navController: NavController) {
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun preview() {
+    val navController = rememberNavController()
+    FeedScreen(navController)
 }
