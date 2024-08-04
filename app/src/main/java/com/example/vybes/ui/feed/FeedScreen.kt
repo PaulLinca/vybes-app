@@ -1,6 +1,5 @@
 package com.example.vybes.ui.feed
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,9 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.vybes.R
+import com.example.vybes.ui.feed.feedback.FeedbackScreen
 import com.example.vybes.ui.feed.model.vybes
 import com.example.vybes.ui.profile.ProfileScreen
 import com.example.vybes.ui.theme.White
@@ -72,7 +69,7 @@ fun TopBar(navController: NavController) {
             .padding(10.dp)
     ) {
         IconButton(
-            onClick = { navController.navigate(ProfileScreen) },
+            onClick = { navController.navigate(FeedbackScreen) },
             modifier = Modifier
                 .size(30.dp)
                 .clip(CircleShape)

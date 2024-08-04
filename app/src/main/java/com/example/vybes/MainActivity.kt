@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.vybes.ui.feed.FeedScreen
 import com.example.vybes.ui.feed.VybePostScreen
+import com.example.vybes.ui.feed.feedback.FeedbackScreen
 import com.example.vybes.ui.feed.model.Vybe
 import com.example.vybes.ui.profile.ProfileScreen
 import com.example.vybes.ui.theme.VybesTheme
@@ -24,11 +25,14 @@ class MainActivity : ComponentActivity() {
                         FeedScreen(navController)
                     }
                     composable<ProfileScreen> {
-                        ProfileScreen()
+                        ProfileScreen(onGoBack = { navController.popBackStack() })
                     }
                     composable<Vybe> { backStackEntry ->
                         val vybe: Vybe = backStackEntry.toRoute()
                         VybePostScreen(vybe, onGoBack = { navController.popBackStack() })
+                    }
+                    composable<FeedbackScreen> {
+                        FeedbackScreen(onGoBack = { navController.popBackStack() })
                     }
                 }
             }
