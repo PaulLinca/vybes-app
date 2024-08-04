@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
+import com.example.vybes.ui.elements.MultilineTextField
 import com.example.vybes.ui.feed.model.Vybe
 import com.example.vybes.ui.feed.model.vybes
 import com.example.vybes.ui.theme.Black
@@ -121,41 +123,6 @@ fun VybePostScreen(vybe: Vybe, onGoBack: () -> Unit) {
             }
         }
     }
-}
-
-@Composable
-fun MultilineTextField(
-    value: String,
-    onValueChanged: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    hintText: String = "",
-    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
-    maxLines: Int = 4
-) {
-    BasicTextField(
-        value = value,
-        onValueChange = onValueChanged,
-        textStyle = textStyle,
-        modifier = modifier,
-        maxLines = maxLines,
-        cursorBrush = SolidColor(Color.White),
-        decorationBox = { innerTextField ->
-            Box(
-                modifier = Modifier.padding(15.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                if (value.isEmpty()) {
-                    Text(
-                        style = textStyle,
-                        textAlign = TextAlign.Center,
-                        text = hintText,
-                        color = Color.Gray
-                    )
-                }
-                innerTextField()
-            }
-        }
-    )
 }
 
 @Composable
@@ -257,90 +224,6 @@ fun SongBanner(vybe: Vybe) {
 }
 
 @Composable
-fun VybeStatsBar() {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth()
-    ) {
-        val context = LocalContext.current
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                modifier = Modifier.padding(horizontal = 1.dp)
-            ) {
-                IconButton(
-                    onClick = {
-                        Toast.makeText(context, "Liking vybe", Toast.LENGTH_SHORT).show()
-                    },
-                    modifier = Modifier
-                        .size(25.dp)
-                        .clip(CircleShape)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.thumb_up),
-                        contentDescription = "Like vybe",
-                        colorFilter = ColorFilter.tint(White),
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-                Text(
-                    text = "1",
-                    textAlign = TextAlign.Start,
-                    color = White,
-                    style = artistsStyle
-                )
-            }
-        }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                modifier = Modifier.padding(horizontal = 1.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.comment),
-                    contentDescription = "Icon",
-                    colorFilter = ColorFilter.tint(White),
-                    modifier = Modifier
-                        .size(25.dp)
-                        .clip(CircleShape)
-                        .align(Alignment.CenterVertically)
-                )
-                Text(
-                    text = "3",
-                    textAlign = TextAlign.Start,
-                    color = White,
-                    style = artistsStyle
-                )
-            }
-            IconButton(
-                onClick = {
-                    Toast.makeText(context, "Going to spotify", Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier
-                    .size(23.dp)
-                    .clip(CircleShape)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.spotify),
-                    contentDescription = "Spotify",
-                    colorFilter = ColorFilter.tint(White),
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-        }
-    }
-}
-
-@Composable
 fun CommentSection() {
     Column(
         modifier = Modifier
@@ -390,6 +273,11 @@ fun Comment(commentText: String) {
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
+                        .clickable {
+                            Toast
+                                .makeText(context, "Go to user profile", Toast.LENGTH_SHORT)
+                                .show()
+                        }
                 )
                 Text(
                     text = "12:45:42",
@@ -447,7 +335,6 @@ fun Comment(commentText: String) {
         }
     }
 }
-
 
 @Preview
 @Composable
