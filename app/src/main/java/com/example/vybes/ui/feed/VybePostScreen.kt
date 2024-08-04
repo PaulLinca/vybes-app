@@ -77,13 +77,6 @@ fun VybePostScreen(vybe: Vybe, onGoBack: () -> Unit) {
             StatsBar(
                 vybe = vybe,
                 modifier = Modifier.padding(top = 8.dp, start = 8.dp),
-                onClickSpotify = {
-                    Toast.makeText(
-                        context,
-                        "Going to spotify...",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                },
                 onClickThumbsUp = {
                     Toast.makeText(context, "Liking vybe...", Toast.LENGTH_SHORT).show()
                 },

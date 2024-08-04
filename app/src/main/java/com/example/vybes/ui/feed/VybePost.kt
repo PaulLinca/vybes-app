@@ -42,6 +42,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
+import com.example.vybes.ui.elements.IconTextButton
 import com.example.vybes.ui.feed.model.Vybe
 import com.example.vybes.ui.feed.model.vybes
 import com.example.vybes.ui.theme.SpotifyDarkGrey
@@ -99,7 +100,6 @@ fun VybePost(vybe: Vybe, onClickCard: () -> Unit) {
 fun StatsBar(
     vybe: Vybe,
     onClickComment: () -> Unit = {},
-    onClickSpotify: () -> Unit = {},
     onClickThumbsUp: () -> Unit = {},
     modifier: Modifier,
     iconSize: Dp = 20.dp
@@ -108,79 +108,34 @@ fun StatsBar(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier = modifier
     ) {
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(SpotifyDarkGrey)
-                .padding(horizontal = 10.dp, vertical = 3.dp)
-                .clickable(onClick = onClickThumbsUp),
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.thumb_up),
-                contentDescription = "Like this vybe",
-                colorFilter = ColorFilter.tint(Color.White),
-                modifier = Modifier
-                    .size(iconSize)
-            )
-            Text(
-                text = vybe.likes.toString(),
-                color = White,
-                style = artistsStyle,
-            )
-        }
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(SpotifyDarkGrey)
-                .padding(horizontal = 10.dp, vertical = 3.dp)
-                .clickable(onClick = onClickComment),
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.comment),
-                contentDescription = "See comments",
-                colorFilter = ColorFilter.tint(Color.White),
-                modifier = Modifier
-                    .size(iconSize)
-            )
-            Text(
-                text = "3",
-                color = White,
-                style = artistsStyle,
-            )
-        }
+        IconTextButton(
+            description = "Linking vybe...",
+            onClick = onClickThumbsUp,
+            text = vybe.likes.toString(),
+            drawableId = R.drawable.thumb_up,
+            iconSize = iconSize
+        )
+        IconTextButton(
+            description = "Opening comments...",
+            onClick = onClickComment,
+            text = "3",
+            drawableId = R.drawable.comment,
+            iconSize = iconSize
+        )
         val context = LocalContext.current
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(SpotifyDarkGrey)
-                .padding(horizontal = 10.dp, vertical = 3.dp)
-                .clickable(onClick = {
-                    val urlIntent = Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://open.spotify.com/track/" + vybe.spotifyTrackId)
-                    )
-                    context.startActivity(urlIntent)
-                }),
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = "Listen on",
-                color = White,
-                style = artistsStyle,
-            )
-            Image(
-                painter = painterResource(id = R.drawable.spotify),
-                contentDescription = "Go to user profile",
-                colorFilter = ColorFilter.tint(Color.White),
-                modifier = Modifier
-                    .size(iconSize)
-            )
-        }
+        val urlIntent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("https://open.spotify.com/track/" + vybe.spotifyTrackId)
+        )
+        val onClickSpotify = { context.startActivity(urlIntent) }
+        IconTextButton(
+            description = "Going to spotify...",
+            onClick = onClickSpotify,
+            text = "Listen on",
+            drawableId = R.drawable.spotify,
+            iconSize = iconSize,
+            reversed = true
+        )
     }
 }
 
