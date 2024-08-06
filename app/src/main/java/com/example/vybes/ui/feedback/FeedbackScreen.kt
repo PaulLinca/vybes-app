@@ -1,4 +1,4 @@
-package com.example.vybes.ui.feed.feedback
+package com.example.vybes.ui.feedback
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

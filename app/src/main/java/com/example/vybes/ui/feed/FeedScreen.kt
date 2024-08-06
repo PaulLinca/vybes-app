@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.vybes.R
-import com.example.vybes.ui.feed.feedback.FeedbackScreen
+import com.example.vybes.ui.feedback.FeedbackScreen
 import com.example.vybes.ui.feed.model.vybes
 import com.example.vybes.ui.profile.ProfileScreen
 import com.example.vybes.ui.theme.White

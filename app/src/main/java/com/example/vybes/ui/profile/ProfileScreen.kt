@@ -25,7 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.vybes.R
-import com.example.vybes.ui.feed.feedback.FeedbackScreen
+import com.example.vybes.ui.feedback.FeedbackScreen
 import com.example.vybes.ui.theme.SpotifyDarkGrey
 import com.example.vybes.ui.theme.White
 import com.example.vybes.ui.theme.songTitleStyle
