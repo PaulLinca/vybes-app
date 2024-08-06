@@ -9,8 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.vybes.ui.feed.FeedScreen
 import com.example.vybes.ui.feed.VybePostScreen
-import com.example.vybes.ui.feed.feedback.FeedbackScreen
 import com.example.vybes.ui.feed.model.Vybe
+import com.example.vybes.ui.feedback.FeedbackScreen
 import com.example.vybes.ui.profile.ProfileScreen
 import com.example.vybes.ui.theme.VybesTheme
 
