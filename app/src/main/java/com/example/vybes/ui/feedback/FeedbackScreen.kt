@@ -1,5 +1,6 @@
 package com.example.vybes.ui.feedback
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,10 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vybes.R
 import com.example.vybes.ui.elements.MultilineTextField
 import com.example.vybes.ui.theme.SpotifyDarkGrey
@@ -42,7 +44,10 @@ import kotlinx.serialization.Serializable
 object FeedbackScreen
 
 @Composable
-fun FeedbackScreen(onGoBack: () -> Unit) {
+fun FeedbackScreen(
+    feedbackViewModel: FeedbackViewModel = hiltViewModel(),
+    onGoBack: () -> Unit
+) {
     var text by remember {
         mutableStateOf("")
     }
@@ -102,23 +107,23 @@ fun FeedbackScreen(onGoBack: () -> Unit) {
             )
             Spacer(modifier = Modifier.size(20.dp))
             Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .align(Alignment.CenterHorizontally)
-                        .background(SpotifyDarkGrey)
-                        .padding(horizontal = 20.dp, vertical = 8.dp)
-                        .clickable(onClick = { }),
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .align(Alignment.CenterHorizontally)
+                    .background(SpotifyDarkGrey)
+                    .padding(horizontal = 20.dp, vertical = 8.dp)
+                    .clickable(onClick = {feedbackViewModel.submitFeedback("shit")}),
             ) {
-            Text(
-                text = "Submit", color = White,
-            )
-        }
+                Text(
+                    text = "Submit", color = White,
+                )
+            }
         }
     }
 }
 
-@Preview
-@Composable
-fun Preview() {
-    FeedbackScreen({})
-}
+//@Preview
+//@Composable
+//fun Preview() {
+//    FeedbackScreen({})
+//}

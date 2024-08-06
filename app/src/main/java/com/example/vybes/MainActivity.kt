@@ -13,7 +13,9 @@ import com.example.vybes.ui.feed.model.Vybe
 import com.example.vybes.ui.feedback.FeedbackScreen
 import com.example.vybes.ui.profile.ProfileScreen
 import com.example.vybes.ui.theme.VybesTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
-
