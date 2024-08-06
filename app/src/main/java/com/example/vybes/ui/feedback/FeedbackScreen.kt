@@ -48,10 +48,6 @@ fun FeedbackScreen(
     feedbackViewModel: FeedbackViewModel = hiltViewModel(),
     onGoBack: () -> Unit
 ) {
-    var text by remember {
-        mutableStateOf("")
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -91,8 +87,8 @@ fun FeedbackScreen(
             )
             Spacer(modifier = Modifier.size(20.dp))
             MultilineTextField(
-                value = text,
-                onValueChanged = { text = it },
+                value = feedbackViewModel.text,
+                onValueChanged = { feedbackViewModel.updateText(it) },
                 hintText = "Type your feedback here...",
                 textStyle = artistsStyle,
                 maxLines = 10,
@@ -112,7 +108,7 @@ fun FeedbackScreen(
                     .align(Alignment.CenterHorizontally)
                     .background(SpotifyDarkGrey)
                     .padding(horizontal = 20.dp, vertical = 8.dp)
-                    .clickable(onClick = {feedbackViewModel.submitFeedback("shit")}),
+                    .clickable(onClick = {feedbackViewModel.submitFeedback()}),
             ) {
                 Text(
                     text = "Submit", color = White,
