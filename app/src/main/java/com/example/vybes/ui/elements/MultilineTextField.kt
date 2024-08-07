@@ -16,14 +16,16 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MultilineTextField(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     value: String,
     onValueChanged: (String) -> Unit,
-    modifier: Modifier = Modifier,
     hintText: String = "",
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     maxLines: Int = 4
 ) {
     BasicTextField(
+        enabled = enabled,
         value = value,
         onValueChange = onValueChanged,
         textStyle = textStyle,

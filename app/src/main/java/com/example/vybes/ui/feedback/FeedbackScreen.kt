@@ -1,6 +1,5 @@
 package com.example.vybes.ui.feedback
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,16 +18,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,6 +34,7 @@ import com.example.vybes.ui.elements.MultilineTextField
 import com.example.vybes.ui.theme.SpotifyDarkGrey
 import com.example.vybes.ui.theme.White
 import com.example.vybes.ui.theme.artistsStyle
+import com.example.vybes.ui.theme.disabledStyle
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -77,8 +74,12 @@ fun FeedbackScreen(
                 .padding(20.dp)
                 .fillMaxWidth()
         ) {
+            val infoText by feedbackViewModel.infoText.collectAsState()
+            val isSubmitted by feedbackViewModel.isSubmitted.collectAsState()
+            var textColor = if (isSubmitted) Color.DarkGray else White
+            var fieldTextStyle = if (isSubmitted) disabledStyle else artistsStyle
             Text(
-                text = "We value your input! Please use the text field below to share any feedback, suggest new features, or report bugs. Your comments help us improve the app and make it better for you. Thank you for your support!",
+                text = infoText,
                 textAlign = TextAlign.Center,
                 color = Color.LightGray,
                 style = artistsStyle,
@@ -87,10 +88,11 @@ fun FeedbackScreen(
             )
             Spacer(modifier = Modifier.size(20.dp))
             MultilineTextField(
+                enabled = !isSubmitted,
                 value = feedbackViewModel.text,
                 onValueChanged = { feedbackViewModel.updateText(it) },
                 hintText = "Type your feedback here...",
-                textStyle = artistsStyle,
+                textStyle = fieldTextStyle,
                 maxLines = 10,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -108,10 +110,15 @@ fun FeedbackScreen(
                     .align(Alignment.CenterHorizontally)
                     .background(SpotifyDarkGrey)
                     .padding(horizontal = 20.dp, vertical = 8.dp)
-                    .clickable(onClick = {feedbackViewModel.submitFeedback()}),
+                    .clickable(
+                        enabled = !isSubmitted,
+                        onClick = {
+                            feedbackViewModel.submitFeedback()
+                            feedbackViewModel.setSuccess()
+                        }),
             ) {
                 Text(
-                    text = "Submit", color = White,
+                    text = "Submit", color = textColor,
                 )
             }
         }

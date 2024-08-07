@@ -31,3 +31,9 @@ val artistsStyle = TextStyle(
     fontSize = 14.sp,
     color = Color.LightGray
 )
+
+val disabledStyle = TextStyle(
+    fontWeight = FontWeight.Normal,
+    fontSize = 14.sp,
+    color = Color.DarkGray
+)
