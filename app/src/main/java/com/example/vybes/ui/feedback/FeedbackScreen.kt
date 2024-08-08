@@ -74,10 +74,20 @@ fun FeedbackScreen(
                 .padding(20.dp)
                 .fillMaxWidth()
         ) {
-            val infoText by feedbackViewModel.infoText.collectAsState()
             val isSubmitted by feedbackViewModel.isSubmitted.collectAsState()
             var textColor = if (isSubmitted) Color.DarkGray else White
             var fieldTextStyle = if (isSubmitted) disabledStyle else artistsStyle
+
+            val isTextInvalid by feedbackViewModel.isTextInvalid.collectAsState()
+            var borderColor = if (isTextInvalid) Color.Red else White
+
+            val alertText by feedbackViewModel.alertText.collectAsState()
+            val alertTextColor =
+                if (isSubmitted) Color.Green else if (isTextInvalid) Color.Red else White
+
+            val infoText =
+                "We value your input! Please use the text field below to share any feedback, suggest new features, or report bugs. Your comments help us improve the app and make it better for you. Thank you for your support!"
+
             Text(
                 text = infoText,
                 textAlign = TextAlign.Center,
@@ -86,11 +96,27 @@ fun FeedbackScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
+
+            if (isTextInvalid || isSubmitted) {
+                Spacer(modifier = Modifier.size(20.dp))
+                Text(
+                    text = alertText,
+                    textAlign = TextAlign.Center,
+                    color = alertTextColor,
+                    style = artistsStyle,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+
             Spacer(modifier = Modifier.size(20.dp))
             MultilineTextField(
                 enabled = !isSubmitted,
                 value = feedbackViewModel.text,
-                onValueChanged = { feedbackViewModel.updateText(it) },
+                onValueChanged = {
+                    feedbackViewModel.updateText(it)
+                    feedbackViewModel.resetTextValidity()
+                },
                 hintText = "Type your feedback here...",
                 textStyle = fieldTextStyle,
                 maxLines = 10,
@@ -100,7 +126,7 @@ fun FeedbackScreen(
                     .clip(RoundedCornerShape(25.dp))
                     .background(Color.Black, shape = RoundedCornerShape(25.dp))
                     .border(
-                        1.dp, Color.White, RoundedCornerShape(25.dp)
+                        1.dp, borderColor, RoundedCornerShape(25.dp)
                     )
             )
             Spacer(modifier = Modifier.size(20.dp))
@@ -114,7 +140,6 @@ fun FeedbackScreen(
                         enabled = !isSubmitted,
                         onClick = {
                             feedbackViewModel.submitFeedback()
-                            feedbackViewModel.setSuccess()
                         }),
             ) {
                 Text(
@@ -124,9 +149,3 @@ fun FeedbackScreen(
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun Preview() {
-//    FeedbackScreen({})
-//}

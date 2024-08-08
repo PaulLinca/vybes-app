@@ -3,8 +3,6 @@ package com.example.vybes.ui.feedback
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vybes.ui.feedback.data.FeedbackService
@@ -19,7 +17,6 @@ class FeedbackViewModel @Inject constructor(
     private val feedbackService: FeedbackService
 ) : ViewModel() {
 
-    private val initialInfoText = "We value your input! Please use the text field below to share any feedback, suggest new features, or report bugs. Your comments help us improve the app and make it better for you. Thank you for your support!"
     private val minFeedbackLength = 10
 
     private var _text: String by mutableStateOf("")
@@ -30,33 +27,41 @@ class FeedbackViewModel @Inject constructor(
         _text = updatedText
     }
 
-    private val _infoText = MutableStateFlow(initialInfoText)
-    val infoText = _infoText.asStateFlow()
+    private val _alertText = MutableStateFlow("")
+    val alertText = _alertText.asStateFlow()
 
     private val _isSubmitted = MutableStateFlow(false)
     val isSubmitted = _isSubmitted.asStateFlow()
 
+    private val _isTextInvalid = MutableStateFlow(false)
+    val isTextInvalid = _isTextInvalid.asStateFlow()
+
     fun submitFeedback() {
-        if(isTextValid()) {
+        if (isTextValid()) {
             viewModelScope.launch {
                 feedbackService.submit(text)
             }
             setSuccess()
         } else {
-
+            _isTextInvalid.value = true
+            _alertText.value = "Input too short"
         }
     }
 
-    fun setSuccess() {
-        _infoText.value = "Feedback successfully submitted!"
+    private fun setSuccess() {
+        _alertText.value = "Feedback successfully submitted!"
         _isSubmitted.value = true
+    }
+
+    fun resetTextValidity() {
+        _isTextInvalid.value = false
     }
 
     private fun isTextValid(): Boolean {
         if (text.isBlank()) {
             return false
         }
-        if(text.length < minFeedbackLength) {
+        if (text.length < minFeedbackLength) {
             return false
         }
         return true
