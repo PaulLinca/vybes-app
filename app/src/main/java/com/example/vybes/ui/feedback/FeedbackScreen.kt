@@ -61,11 +61,11 @@ fun FeedbackScreen(
                 .fillMaxWidth()
         ) {
             val isSubmitted by feedbackViewModel.isSubmitted.collectAsState()
-            var textColor = if (isSubmitted) Color.DarkGray else White
-            var fieldTextStyle = if (isSubmitted) disabledStyle else artistsStyle
+            val textColor = if (isSubmitted) Color.DarkGray else White
+            val fieldTextStyle = if (isSubmitted) disabledStyle else artistsStyle
 
             val isTextInvalid by feedbackViewModel.isTextInvalid.collectAsState()
-            var borderColor = if (isTextInvalid) ErrorRed else White
+            val borderColor = if (isTextInvalid) ErrorRed else White
 
             val alertText by feedbackViewModel.alertText.collectAsState()
             val alertTextColor =
