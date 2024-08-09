@@ -1,4 +1,4 @@
-package com.example.vybes.ui.theme
+package com.example.vybes.common.theme
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle

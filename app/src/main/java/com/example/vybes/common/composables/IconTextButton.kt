@@ -1,4 +1,4 @@
-package com.example.vybes.ui.elements
+package com.example.vybes.common.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,9 +18,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.vybes.ui.theme.SpotifyDarkGrey
-import com.example.vybes.ui.theme.White
-import com.example.vybes.ui.theme.artistsStyle
+import com.example.vybes.common.theme.SpotifyDarkGrey
+import com.example.vybes.common.theme.White
+import com.example.vybes.common.theme.artistsStyle
 
 @Composable
 fun IconTextButton(

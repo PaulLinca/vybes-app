@@ -1,4 +1,4 @@
-package com.example.vybes.ui.feed
+package com.example.vybes.feed
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,11 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.vybes.R
-import com.example.vybes.ui.feedback.FeedbackScreen
-import com.example.vybes.ui.feed.model.vybes
-import com.example.vybes.ui.profile.ProfileScreen
-import com.example.vybes.ui.theme.White
-import com.example.vybes.ui.theme.logoStyle
+import com.example.vybes.feedback.FeedbackScreen
+import com.example.vybes.feed.model.vybes
+import com.example.vybes.profile.ProfileScreen
+import com.example.vybes.common.theme.White
+import com.example.vybes.common.theme.logoStyle
 import kotlinx.serialization.Serializable
 
 @Serializable

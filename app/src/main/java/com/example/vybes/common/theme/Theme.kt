@@ -1,4 +1,4 @@
-package com.example.vybes.ui.theme
+package com.example.vybes.common.theme
 
 import android.app.Activity
 import android.os.Build

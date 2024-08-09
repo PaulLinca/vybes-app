@@ -1,4 +1,4 @@
-package com.example.vybes.ui.feed.model
+package com.example.vybes.feed.model
 
 import kotlinx.serialization.Serializable
 import java.time.ZonedDateTime

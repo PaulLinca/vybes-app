@@ -1,4 +1,4 @@
-package com.example.vybes.ui.profile
+package com.example.vybes.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,10 +22,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.vybes.R
-import com.example.vybes.ui.elements.TopBarWithBackButton
-import com.example.vybes.ui.theme.SpotifyDarkGrey
-import com.example.vybes.ui.theme.White
-import com.example.vybes.ui.theme.songTitleStyle
+import com.example.vybes.common.composables.TopBarWithBackButton
+import com.example.vybes.common.theme.SpotifyDarkGrey
+import com.example.vybes.common.theme.White
+import com.example.vybes.common.theme.songTitleStyle
 import kotlinx.serialization.Serializable
 
 @Serializable

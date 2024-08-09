@@ -1,4 +1,4 @@
-package com.example.vybes.ui.elements
+package com.example.vybes.common.composables
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding

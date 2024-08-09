@@ -1,7 +1,7 @@
-package com.example.vybes.ui.dependencyInjection
+package com.example.vybes.dependencyInjection
 
-import com.example.vybes.ui.feedback.data.DummyFeedbackService
-import com.example.vybes.ui.feedback.data.FeedbackService
+import com.example.vybes.feedback.service.DummyFeedbackService
+import com.example.vybes.feedback.service.FeedbackService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,4 +1,4 @@
-package com.example.vybes.ui.feedback
+package com.example.vybes.feedback
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,15 +23,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.vybes.ui.elements.TopBarWithBackButton
-import com.example.vybes.ui.elements.MultilineTextField
-import com.example.vybes.ui.theme.ErrorRed
-import com.example.vybes.ui.theme.SpotifyDarkGrey
-import com.example.vybes.ui.theme.SuccessGreen
-import com.example.vybes.ui.theme.White
-import com.example.vybes.ui.theme.artistsStyle
-import com.example.vybes.ui.theme.disabledStyle
-import com.example.vybes.ui.theme.songTitleStyle
+import com.example.vybes.common.composables.TopBarWithBackButton
+import com.example.vybes.common.composables.MultilineTextField
+import com.example.vybes.common.theme.ErrorRed
+import com.example.vybes.common.theme.SpotifyDarkGrey
+import com.example.vybes.common.theme.SuccessGreen
+import com.example.vybes.common.theme.White
+import com.example.vybes.common.theme.artistsStyle
+import com.example.vybes.common.theme.disabledStyle
+import com.example.vybes.common.theme.songTitleStyle
 import kotlinx.serialization.Serializable
 
 @Serializable

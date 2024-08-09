@@ -1,4 +1,4 @@
-package com.example.vybes.ui.feed
+package com.example.vybes.feed
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -44,15 +44,15 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
-import com.example.vybes.ui.elements.TopBarWithBackButton
-import com.example.vybes.ui.elements.MultilineTextField
-import com.example.vybes.ui.feed.model.Vybe
-import com.example.vybes.ui.feed.model.vybes
-import com.example.vybes.ui.theme.Black
-import com.example.vybes.ui.theme.SpotifyDarkGrey
-import com.example.vybes.ui.theme.White
-import com.example.vybes.ui.theme.artistsStyle
-import com.example.vybes.ui.theme.songTitleStyle
+import com.example.vybes.common.composables.TopBarWithBackButton
+import com.example.vybes.common.composables.MultilineTextField
+import com.example.vybes.feed.model.Vybe
+import com.example.vybes.feed.model.vybes
+import com.example.vybes.common.theme.Black
+import com.example.vybes.common.theme.SpotifyDarkGrey
+import com.example.vybes.common.theme.White
+import com.example.vybes.common.theme.artistsStyle
+import com.example.vybes.common.theme.songTitleStyle
 import java.util.stream.Collectors
 
 @Composable

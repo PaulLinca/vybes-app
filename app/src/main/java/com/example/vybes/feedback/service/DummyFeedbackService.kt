@@ -1,4 +1,4 @@
-package com.example.vybes.ui.feedback.data
+package com.example.vybes.feedback.service
 
 import android.util.Log
 
