@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vybes.R
 import com.example.vybes.ui.elements.MultilineTextField
+import com.example.vybes.ui.theme.SuccessGreen
+import com.example.vybes.ui.theme.ErrorRed
 import com.example.vybes.ui.theme.SpotifyDarkGrey
 import com.example.vybes.ui.theme.White
 import com.example.vybes.ui.theme.artistsStyle
@@ -79,11 +81,11 @@ fun FeedbackScreen(
             var fieldTextStyle = if (isSubmitted) disabledStyle else artistsStyle
 
             val isTextInvalid by feedbackViewModel.isTextInvalid.collectAsState()
-            var borderColor = if (isTextInvalid) Color.Red else White
+            var borderColor = if (isTextInvalid) ErrorRed else White
 
             val alertText by feedbackViewModel.alertText.collectAsState()
             val alertTextColor =
-                if (isSubmitted) Color.Green else if (isTextInvalid) Color.Red else White
+                if (isSubmitted) SuccessGreen else if (isTextInvalid) ErrorRed else White
 
             val infoText =
                 "We value your input! Please use the text field below to share any feedback, suggest new features, or report bugs. Your comments help us improve the app and make it better for you. Thank you for your support!"
