@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,11 +33,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,6 +44,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
+import com.example.vybes.ui.elements.TopBarWithBackButton
 import com.example.vybes.ui.elements.MultilineTextField
 import com.example.vybes.ui.feed.model.Vybe
 import com.example.vybes.ui.feed.model.vybes
@@ -74,7 +72,20 @@ fun VybePostScreen(vybe: Vybe, onGoBack: () -> Unit) {
                 .fillMaxSize()
                 .background(Black)
         ) {
-            TopBar(vybe = vybe, onGoBack = onGoBack)
+            TopBarWithBackButton(onGoBack = onGoBack) {
+                Text(
+                    text = vybe.vybesUser,
+                    color = White,
+                    textAlign = TextAlign.Center,
+                    style = songTitleStyle,
+                )
+                Text(
+                    text = vybe.postedDate,
+                    color = Color.LightGray,
+                    textAlign = TextAlign.Center,
+                    style = artistsStyle,
+                )
+            }
             SongBanner(vybe = vybe)
             StatsBar(
                 vybe = vybe,
@@ -121,48 +132,6 @@ fun VybePostScreen(vybe: Vybe, onGoBack: () -> Unit) {
                     modifier = Modifier.fillMaxSize()
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun TopBar(vybe: Vybe, onGoBack: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-    ) {
-        IconButton(
-            onClick = onGoBack,
-            modifier = Modifier
-                .size(35.dp)
-                .clip(CircleShape)
-                .align(Alignment.CenterStart)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.back),
-                contentDescription = "Icon",
-                colorFilter = ColorFilter.tint(White),
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.align(Alignment.Center)
-        ) {
-            Text(
-                text = vybe.vybesUser,
-                color = White,
-                textAlign = TextAlign.Center,
-                style = songTitleStyle,
-            )
-            Text(
-                text = vybe.postedDate,
-                color = Color.LightGray,
-                textAlign = TextAlign.Center,
-                style = artistsStyle,
-            )
         }
     }
 }
