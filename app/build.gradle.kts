@@ -72,6 +72,8 @@ dependencies {
 
     implementation("androidx.compose.material:material:1.6.8")
 
+    implementation(libs.core.splashscreen)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
