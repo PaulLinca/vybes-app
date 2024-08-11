@@ -111,14 +111,14 @@ fun StatsBar(
         IconTextButton(
             description = "Linking vybe...",
             onClick = onClickThumbsUp,
-            text = "2",
+            text = vybe.likes.size.toString(),
             drawableId = R.drawable.thumb_up,
             iconSize = iconSize
         )
         IconTextButton(
             description = "Opening comments...",
             onClick = onClickComment,
-            text = "3",
+            text = vybe.comments.size.toString(),
             drawableId = R.drawable.comment,
             iconSize = iconSize
         )

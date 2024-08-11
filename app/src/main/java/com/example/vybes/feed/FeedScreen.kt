@@ -31,6 +31,7 @@ import com.example.vybes.feed.model.vybes
 import com.example.vybes.profile.ProfileScreen
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.logoStyle
+import com.example.vybes.feed.model.VybeScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -54,7 +55,7 @@ fun FeedScreen(navController: NavController) {
         ) {
             vybes.forEach { v ->
                 VybePost(vybe = v, onClickCard = {
-                    navController.navigate(v)
+                    navController.navigate(VybeScreen(v.id))
                 })
             }
         }

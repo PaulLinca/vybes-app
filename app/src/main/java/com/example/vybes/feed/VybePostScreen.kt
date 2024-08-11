@@ -53,6 +53,7 @@ import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
+import com.example.vybes.feed.model.Comment
 import java.util.stream.Collectors
 
 @Composable
@@ -95,7 +96,7 @@ fun VybePostScreen(vybe: Vybe, onGoBack: () -> Unit) {
                 },
                 iconSize = 23.dp
             )
-            CommentSection()
+            CommentSection(vybe)
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -193,19 +194,19 @@ fun SongBanner(vybe: Vybe) {
 }
 
 @Composable
-fun CommentSection() {
+fun CommentSection(vybe: Vybe) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        Comment("This is a comment. It could be super long or it could be super short but this one is testing long comments to see how they fit on the screen and how it looks")
-        Comment("This is a short one")
-        Comment("Another one for you ")
+        vybe.comments.forEach { c ->
+            Comment(c)
+        }
     }
 }
 
 @Composable
-fun Comment(commentText: String) {
+fun Comment(comment: Comment) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -236,7 +237,7 @@ fun Comment(commentText: String) {
                     )
                 }
                 Text(
-                    text = "Sir Cumalot",
+                    text = comment.user.name,
                     textAlign = TextAlign.Start,
                     color = White,
                     style = MaterialTheme.typography.labelLarge,
@@ -249,7 +250,7 @@ fun Comment(commentText: String) {
                         }
                 )
                 Text(
-                    text = "12:45:42",
+                    text = comment.postedDate,
                     textAlign = TextAlign.Start,
                     color = Color.LightGray,
                     style = MaterialTheme.typography.labelSmall,
@@ -264,7 +265,7 @@ fun Comment(commentText: String) {
             ) {
                 Spacer(modifier = Modifier.size(25.dp))
                 Text(
-                    text = commentText,
+                    text = comment.text,
                     textAlign = TextAlign.Start,
                     color = White,
                     style = artistsStyle,
@@ -294,7 +295,7 @@ fun Comment(commentText: String) {
                 )
             }
             Text(
-                text = "3",
+                text = comment.likes.count().toString(),
                 textAlign = TextAlign.Start,
                 color = White,
                 fontSize = 10.sp,
