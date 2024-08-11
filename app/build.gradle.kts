@@ -64,11 +64,6 @@ dependencies {
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-    implementation(libs.koin.android)
-    implementation(libs.koin.androidx.compose)
-    api(libs.koin.core)
-    implementation(libs.koin.compose)
-    implementation(libs.lifecycle.viewmodel)
 
     implementation("androidx.compose.material:material:1.6.8")
 
