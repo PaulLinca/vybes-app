@@ -23,10 +23,6 @@ class FeedbackViewModel @Inject constructor(
     val text: String
         get() = _text
 
-    fun updateText(updatedText: String) {
-        _text = updatedText
-    }
-
     private val _alertText = MutableStateFlow("")
     val alertText = _alertText.asStateFlow()
 
@@ -48,13 +44,17 @@ class FeedbackViewModel @Inject constructor(
         }
     }
 
+    fun resetTextValidity() {
+        _isTextInvalid.value = false
+    }
+
+    fun updateText(updatedText: String) {
+        _text = updatedText
+    }
+
     private fun setSuccess() {
         _alertText.value = "Feedback successfully submitted!"
         _isSubmitted.value = true
-    }
-
-    fun resetTextValidity() {
-        _isTextInvalid.value = false
     }
 
     private fun isTextValid(): Boolean {

@@ -1,4 +1,4 @@
-package com.example.vybes.feed
+package com.example.vybes.post
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -46,95 +46,96 @@ import coil.size.Size
 import com.example.vybes.R
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.composables.MultilineTextField
-import com.example.vybes.feed.model.Vybe
-import com.example.vybes.feed.model.vybes
+import com.example.vybes.post.model.Vybe
 import com.example.vybes.common.theme.Black
 import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
-import com.example.vybes.feed.model.Comment
+import com.example.vybes.post.feed.StatsBar
+import com.example.vybes.post.model.Comment
 import java.util.stream.Collectors
 
 @Composable
-fun VybePostScreen(vybe: Vybe, onGoBack: () -> Unit) {
-    var text by remember {
-        mutableStateOf("")
-    }
-    val context = LocalContext.current
+fun VybePostScreen(vybeId: Int, onGoBack: () -> Unit) {
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Black)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Black)
-        ) {
-            TopBarWithBackButton(onGoBack = onGoBack) {
-                Text(
-                    text = vybe.vybesUser,
-                    color = White,
-                    textAlign = TextAlign.Center,
-                    style = songTitleStyle,
-                )
-                Text(
-                    text = vybe.postedDate,
-                    color = Color.LightGray,
-                    textAlign = TextAlign.Center,
-                    style = artistsStyle,
-                )
-            }
-            SongBanner(vybe = vybe)
-            StatsBar(
-                vybe = vybe,
-                modifier = Modifier.padding(top = 8.dp, start = 8.dp),
-                onClickThumbsUp = {
-                    Toast.makeText(context, "Liking vybe...", Toast.LENGTH_SHORT).show()
-                },
-                iconSize = 23.dp
-            )
-            CommentSection(vybe)
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(8.dp)
-        ) {
-            MultilineTextField(
-                value = text,
-                onValueChanged = { text = it },
-                hintText = "Add a comment...",
-                textStyle = artistsStyle,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(25.dp))
-                    .weight(1f)
-                    .background(Color.Black, shape = RoundedCornerShape(25.dp))
-                    .border(
-                        1.dp, Color.White, RoundedCornerShape(25.dp)
-                    )
-            )
-            IconButton(
-                onClick = {
-                    Toast.makeText(context, "Adding comment", Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.send),
-                    contentDescription = "Send Button",
-                    colorFilter = ColorFilter.tint(White),
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-        }
-    }
+//    var text by remember {
+//        mutableStateOf("")
+//    }
+//    val context = LocalContext.current
+//
+//    Box(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(Black)
+//    ) {
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .background(Black)
+//        ) {
+//            TopBarWithBackButton(onGoBack = onGoBack) {
+//                Text(
+//                    text = vybe.vybesUser,
+//                    color = White,
+//                    textAlign = TextAlign.Center,
+//                    style = songTitleStyle,
+//                )
+//                Text(
+//                    text = vybe.postedDate,
+//                    color = Color.LightGray,
+//                    textAlign = TextAlign.Center,
+//                    style = artistsStyle,
+//                )
+//            }
+//            SongBanner(vybe = vybe)
+//            StatsBar(
+//                vybe = vybe,
+//                modifier = Modifier.padding(top = 8.dp, start = 8.dp),
+//                onClickThumbsUp = {
+//                    Toast.makeText(context, "Liking vybe...", Toast.LENGTH_SHORT).show()
+//                },
+//                iconSize = 23.dp
+//            )
+//            CommentSection(vybe)
+//        }
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//            modifier = Modifier
+//                .align(Alignment.BottomEnd)
+//                .padding(8.dp)
+//        ) {
+//            MultilineTextField(
+//                value = text,
+//                onValueChanged = { text = it },
+//                hintText = "Add a comment...",
+//                textStyle = artistsStyle,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .clip(RoundedCornerShape(25.dp))
+//                    .weight(1f)
+//                    .background(Color.Black, shape = RoundedCornerShape(25.dp))
+//                    .border(
+//                        1.dp, Color.White, RoundedCornerShape(25.dp)
+//                    )
+//            )
+//            IconButton(
+//                onClick = {
+//                    Toast.makeText(context, "Adding comment", Toast.LENGTH_SHORT).show()
+//                },
+//                modifier = Modifier
+//                    .size(40.dp)
+//                    .clip(CircleShape)
+//            ) {
+//                Image(
+//                    painter = painterResource(id = R.drawable.send),
+//                    contentDescription = "Send Button",
+//                    colorFilter = ColorFilter.tint(White),
+//                    modifier = Modifier.fillMaxSize()
+//                )
+//            }
+//        }
+//    }
 }
 
 @Composable
@@ -306,8 +307,8 @@ fun Comment(comment: Comment) {
     }
 }
 
-@Preview
-@Composable
-fun Preview() {
-    VybePostScreen(vybe = vybes.get(1), {})
-}
+//@Preview
+//@Composable
+//fun Preview() {
+//    VybePostScreen(vybe = vybes.get(1), {})
+//}

@@ -1,4 +1,4 @@
-package com.example.vybes.feed.model
+package com.example.vybes.post.model
 
 data class Comment(
     val text: String,

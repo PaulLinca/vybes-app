@@ -1,4 +1,4 @@
-package com.example.vybes.feed
+package com.example.vybes.post.feed
 
 import android.content.Intent
 import android.net.Uri
@@ -43,8 +43,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
 import com.example.vybes.common.composables.IconTextButton
-import com.example.vybes.feed.model.Vybe
-import com.example.vybes.feed.model.vybes
+import com.example.vybes.post.model.Vybe
 import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.SpotifyLighterGrey
 import com.example.vybes.common.theme.White
@@ -206,8 +205,8 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
     }
 }
 
-@Preview
-@Composable
-fun PreviewPost() {
-    VybePost(vybe = vybes.get(4), {})
-}
+//@Preview
+//@Composable
+//fun PreviewPost() {
+//    VybePost(vybe = vybes.get(4), {})
+//}

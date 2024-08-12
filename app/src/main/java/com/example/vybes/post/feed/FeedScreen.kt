@@ -1,4 +1,4 @@
-package com.example.vybes.feed
+package com.example.vybes.post.feed
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +15,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,22 +25,25 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.vybes.R
-import com.example.vybes.feedback.FeedbackScreen
-import com.example.vybes.feed.model.vybes
-import com.example.vybes.profile.ProfileScreen
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.logoStyle
-import com.example.vybes.feed.model.VybeScreen
+import com.example.vybes.feedback.FeedbackScreen
+import com.example.vybes.post.model.VybeScreen
+import com.example.vybes.profile.ProfileScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
 object FeedScreen
 
 @Composable
-fun FeedScreen(navController: NavController) {
+fun FeedScreen(
+    navController: NavController,
+    viewModel: FeedViewModel = hiltViewModel()
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,6 +58,7 @@ fun FeedScreen(navController: NavController) {
                 ),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            val vybes by viewModel.vybes.collectAsState()
             vybes.forEach { v ->
                 VybePost(vybe = v, onClickCard = {
                     navController.navigate(VybeScreen(v.id))
