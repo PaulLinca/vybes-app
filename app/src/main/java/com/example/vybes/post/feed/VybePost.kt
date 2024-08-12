@@ -97,7 +97,7 @@ fun VybePost(vybe: Vybe, onClickCard: () -> Unit) {
 
 @Composable
 fun StatsBar(
-    vybe: Vybe,
+    vybe: Vybe?,
     onClickComment: () -> Unit = {},
     onClickThumbsUp: () -> Unit = {},
     modifier: Modifier,
@@ -110,21 +110,21 @@ fun StatsBar(
         IconTextButton(
             description = "Linking vybe...",
             onClick = onClickThumbsUp,
-            text = vybe.likes.size.toString(),
+            text = vybe?.likes?.size.toString(),
             drawableId = R.drawable.thumb_up,
             iconSize = iconSize
         )
         IconTextButton(
             description = "Opening comments...",
             onClick = onClickComment,
-            text = vybe.comments.size.toString(),
+            text = vybe?.comments?.size.toString(),
             drawableId = R.drawable.comment,
             iconSize = iconSize
         )
         val context = LocalContext.current
         val urlIntent = Intent(
             Intent.ACTION_VIEW,
-            Uri.parse("https://open.spotify.com/track/" + vybe.spotifyTrackId)
+            Uri.parse("https://open.spotify.com/track/" + vybe?.spotifyTrackId)
         )
         val onClickSpotify = { context.startActivity(urlIntent) }
         IconTextButton(

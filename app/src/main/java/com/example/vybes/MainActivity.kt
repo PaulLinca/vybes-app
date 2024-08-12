@@ -7,12 +7,11 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.example.vybes.common.theme.VybesTheme
-import com.example.vybes.post.feed.FeedScreen
-import com.example.vybes.post.VybePostScreen
-import com.example.vybes.post.model.VybeScreen
 import com.example.vybes.feedback.FeedbackScreen
+import com.example.vybes.post.VybePostScreen
+import com.example.vybes.post.feed.FeedScreen
+import com.example.vybes.post.model.VybeScreen
 import com.example.vybes.profile.ProfileScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,10 +32,8 @@ class MainActivity : ComponentActivity() {
                     composable<ProfileScreen> {
                         ProfileScreen(onGoBack = { navController.popBackStack() })
                     }
-                    composable<VybeScreen>()
-                    { backStackEntry ->
-                        val vybeScreen: VybeScreen = backStackEntry.toRoute()
-                        VybePostScreen(vybeScreen.id, onGoBack = { navController.popBackStack() })
+                    composable<VybeScreen> {
+                        VybePostScreen(onGoBack = { navController.popBackStack() })
                     }
                     composable<FeedbackScreen> {
                         FeedbackScreen(onGoBack = { navController.popBackStack() })
