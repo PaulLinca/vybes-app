@@ -29,7 +29,8 @@ fun IconTextButton(
     iconSize: Dp,
     description: String,
     drawableId: Int,
-    reversed: Boolean = false
+    reversed: Boolean = false,
+    iconColor: Color = White
 ) {
     Row(
         modifier = Modifier
@@ -50,7 +51,7 @@ fun IconTextButton(
         Image(
             painter = painterResource(id = drawableId),
             contentDescription = description,
-            colorFilter = ColorFilter.tint(Color.White),
+            colorFilter = ColorFilter.tint(iconColor),
             modifier = Modifier
                 .size(iconSize)
         )

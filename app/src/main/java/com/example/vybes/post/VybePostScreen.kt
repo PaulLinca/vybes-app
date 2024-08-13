@@ -67,6 +67,7 @@ fun VybePostScreen(
     }
     val context = LocalContext.current
     val vybe by vybeViewModel.vybe.collectAsState()
+    val isLikedByUser by vybeViewModel.isLikedByCurrentUser.collectAsState()
 
     Box(
         modifier = Modifier
@@ -97,9 +98,14 @@ fun VybePostScreen(
                 vybe = vybe,
                 modifier = Modifier.padding(top = 8.dp, start = 8.dp),
                 onClickThumbsUp = {
-                    Toast.makeText(context, "Liking vybe...", Toast.LENGTH_SHORT).show()
+                    if(isLikedByUser) {
+                        vybeViewModel.unlikeVybe()
+                    } else {
+                        vybeViewModel.likeVybe()
+                    }
                 },
-                iconSize = 23.dp
+                iconSize = 23.dp,
+                isLiked = isLikedByUser
             )
             CommentSection(vybe)
         }

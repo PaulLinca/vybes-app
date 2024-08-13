@@ -23,6 +23,6 @@ data class Vybe(
     val imageUrl: String,
     val postedDate: String,
     val vybesUser: String,
-    val likes: List<Like>,
-    val comments: List<Comment>
+    val likes: MutableList<Like>,
+    val comments: MutableList<Comment>
 )

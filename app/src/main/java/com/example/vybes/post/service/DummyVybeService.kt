@@ -17,6 +17,16 @@ class DummyVybeService : VybeService {
         return vybes[id]
     }
 
+    override suspend fun likeVybe(id: Int): Vybe {
+        vybes[id].likes.add(Like(User("currentuser")))
+        return vybes[id]
+    }
+
+    override suspend fun unlikeVybe(id: Int): Vybe {
+        vybes[id].likes.removeIf{l-> l.user.name == "currentuser" }
+        return vybes[id]
+    }
+
     val user = User("John Boy")
     val vybes = listOf(
         Vybe(
@@ -29,12 +39,12 @@ class DummyVybeService : VybeService {
             "https://i.scdn.co/image/ab67616d0000b27390e72fba2f3f0f9889091c15",
             ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
             "Tim Tam Tum",
-            listOf(Like(user), Like(user), Like(user)),
-            listOf(
+            mutableListOf(Like(user), Like(user), Like(user)),
+            mutableListOf(
                 Comment(
                     "This is a comment",
                     user,
-                    listOf(Like(user)),
+                    mutableListOf(Like(user)),
                     ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                 )
             )
@@ -49,12 +59,12 @@ class DummyVybeService : VybeService {
             "https://i.scdn.co/image/ab67616d0000b273cae6e44dcc84e2035c3ad092",
             ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
             "John Doe",
-            listOf(Like(user)),
-            listOf(
+            mutableListOf(Like(user)),
+            mutableListOf(
                 Comment(
                     "This is a comment. It could be super long or it could be super short but this one is testing long comments to see how they fit on the screen and how it looks",
                     user,
-                    listOf(Like(user)),
+                    mutableListOf(Like(user)),
                     ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                 )
             )
@@ -70,12 +80,12 @@ class DummyVybeService : VybeService {
             ZonedDateTime.now().minusMinutes(44)
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss")),
             "Matt Smith",
-            listOf(Like(user)),
-            listOf(
+            mutableListOf(Like(user)),
+            mutableListOf(
                 Comment(
                     "This is a comment",
                     user,
-                    listOf(Like(user)),
+                    mutableListOf(Like(user)),
                     ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                 )
             )
@@ -91,12 +101,12 @@ class DummyVybeService : VybeService {
             ZonedDateTime.now().minusMinutes(13)
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss")),
             "Cristian Pin",
-            listOf(Like(user)),
-            listOf(
+            mutableListOf(Like(user)),
+            mutableListOf(
                 Comment(
                     "This is a comment",
                     user,
-                    listOf(Like(user)),
+                    mutableListOf(Like(user)),
                     ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                 )
             )
@@ -112,12 +122,12 @@ class DummyVybeService : VybeService {
             ZonedDateTime.now().minusMinutes(200)
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss")),
             "Clíona Murphy",
-            listOf(Like(user)),
-            listOf(
+            mutableListOf(Like(user)),
+            mutableListOf(
                 Comment(
                     "This is a comment",
                     user,
-                    listOf(Like(user)),
+                    mutableListOf(Like(user)),
                     ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                 )
             )
@@ -133,12 +143,12 @@ class DummyVybeService : VybeService {
             ZonedDateTime.now().minusMinutes(34)
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss")),
             "John Travolta",
-            listOf(Like(user)),
-            listOf(
+            mutableListOf(Like(user)),
+            mutableListOf(
                 Comment(
                     "This is a comment",
                     user,
-                    listOf(Like(user)),
+                    mutableListOf(Like(user)),
                     ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                 )
             )
@@ -154,12 +164,12 @@ class DummyVybeService : VybeService {
             ZonedDateTime.now().minusMinutes(34)
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss")),
             "Ion Creanga",
-            listOf(Like(user)),
-            listOf(
+            mutableListOf(Like(user)),
+            mutableListOf(
                 Comment(
                     "This is a comment",
                     user,
-                    listOf(Like(user)),
+                    mutableListOf(Like(user)),
                     ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                 )
             )
@@ -175,12 +185,12 @@ class DummyVybeService : VybeService {
             ZonedDateTime.now().minusMinutes(233)
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss")),
             "Fiona Apple",
-            listOf(Like(user), Like(user)),
-            listOf(
+            mutableListOf(Like(user), Like(user)),
+            mutableListOf(
                 Comment(
                     "This is a comment",
                     user,
-                    listOf(Like(user)),
+                    mutableListOf(Like(user)),
                     ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                 )
             )
