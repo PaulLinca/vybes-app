@@ -33,6 +33,10 @@ class DummyVybeService : VybeService {
         return Like(User("currentuser"))
     }
 
+    override suspend fun addComment(text: String): Comment {
+        return Comment(1, text, User("currentuser"), listOf(), ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+    }
+
     val user = User("John Boy")
     val vybes = listOf(
         Vybe(

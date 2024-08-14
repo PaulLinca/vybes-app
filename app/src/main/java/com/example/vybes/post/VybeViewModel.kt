@@ -1,5 +1,8 @@
 package com.example.vybes.post
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,6 +25,10 @@ class VybeViewModel @Inject constructor(
 
     private val _vybe = MutableStateFlow<Vybe?>(null)
     val vybe: StateFlow<Vybe?> = _vybe
+
+    private var _commentText: String by mutableStateOf("")
+    val commentText: String
+        get() = _commentText
 
     private val _isLikedByCurrentUser = MutableStateFlow(false)
     val isLikedByCurrentUser = _isLikedByCurrentUser.asStateFlow()
@@ -81,6 +88,25 @@ class VybeViewModel @Inject constructor(
                 _vybe.value = v.copy(comments = updatedComments)
             }
         }
+    }
+
+    fun addComment() {
+        viewModelScope.launch {
+            val addedComment = vybeService.addComment(commentText)
+            _vybe.value?.let { v ->
+                _vybe.value = v.copy(comments = v.comments + addedComment
+                )
+            }
+            clearText()
+        }
+    }
+
+    fun updateText(updatedText: String) {
+        _commentText = updatedText
+    }
+
+    private fun clearText() {
+        _commentText = ""
     }
 
     private fun loadVybe() {

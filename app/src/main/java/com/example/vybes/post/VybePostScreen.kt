@@ -16,17 +16,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -63,63 +62,51 @@ fun VybePostScreen(
     vybeViewModel: VybeViewModel = hiltViewModel(),
     onGoBack: () -> Unit
 ) {
-
-    var text by remember {
-        mutableStateOf("")
-    }
-    val context = LocalContext.current
     val vybe by vybeViewModel.vybe.collectAsState()
     val isLikedByUser by vybeViewModel.isLikedByCurrentUser.collectAsState()
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Black)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Black)
-        ) {
-            TopBarWithBackButton(onGoBack = onGoBack) {
-                Text(
-                    text = vybe?.vybesUser.orEmpty(),
-                    color = White,
-                    textAlign = TextAlign.Center,
-                    style = songTitleStyle,
-                )
-                Text(
-                    text = vybe?.postedDate.orEmpty(),
-                    color = Color.LightGray,
-                    textAlign = TextAlign.Center,
-                    style = artistsStyle,
-                )
-            }
-            SongBanner(vybe = vybe)
-            StatsBar(
-                vybe = vybe,
-                modifier = Modifier.padding(top = 8.dp, start = 8.dp),
-                onClickThumbsUp = {
-                    if (isLikedByUser) {
-                        vybeViewModel.unlikeVybe()
-                    } else {
-                        vybeViewModel.likeVybe()
-                    }
-                },
-                iconSize = 23.dp,
-                isLiked = isLikedByUser
+        TopBarWithBackButton(onGoBack = onGoBack) {
+            Text(
+                text = vybe?.vybesUser.orEmpty(),
+                color = White,
+                textAlign = TextAlign.Center,
+                style = songTitleStyle,
             )
-            CommentSection(vybe, vybeViewModel)
+            Text(
+                text = vybe?.postedDate.orEmpty(),
+                color = Color.LightGray,
+                textAlign = TextAlign.Center,
+                style = artistsStyle,
+            )
         }
+        SongBanner(vybe = vybe)
+        StatsBar(
+            vybe = vybe,
+            modifier = Modifier.padding(top = 8.dp, start = 8.dp, bottom = 8.dp),
+            onClickThumbsUp = {
+                if (isLikedByUser) {
+                    vybeViewModel.unlikeVybe()
+                } else {
+                    vybeViewModel.likeVybe()
+                }
+            },
+            iconSize = 23.dp,
+            isLiked = isLikedByUser
+        )
+        CommentSection(vybe, vybeViewModel, Modifier.weight(1f))
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .align(Alignment.BottomEnd)
                 .padding(8.dp)
         ) {
             MultilineTextField(
-                value = text,
-                onValueChanged = { text = it },
+                value = vybeViewModel.commentText,
+                onValueChanged = { vybeViewModel.updateText(it) },
                 hintText = "Add a comment...",
                 textStyle = artistsStyle,
                 modifier = Modifier
@@ -133,7 +120,7 @@ fun VybePostScreen(
             )
             IconButton(
                 onClick = {
-                    Toast.makeText(context, "Adding comment", Toast.LENGTH_SHORT).show()
+                    vybeViewModel.addComment()
                 },
                 modifier = Modifier
                     .size(40.dp)
@@ -208,9 +195,10 @@ fun SongBanner(vybe: Vybe?) {
 }
 
 @Composable
-fun CommentSection(vybe: Vybe?, vybeViewModel: VybeViewModel) {
+fun CommentSection(vybe: Vybe?, vybeViewModel: VybeViewModel, modifier: Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
             .fillMaxSize()
     ) {
         vybe?.comments.orEmpty().forEach { c ->
@@ -295,7 +283,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel) {
             val isLikedByCurrentUser = comment.likes.any { it.user.name == "currentuser" }
             IconButton(
                 onClick = {
-                    if(isLikedByCurrentUser) {
+                    if (isLikedByCurrentUser) {
                         vybeViewModel.unlikeComment(comment.id)
                     } else {
                         vybeViewModel.likeComment(comment.id)
@@ -306,7 +294,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel) {
                     .align(Alignment.CenterHorizontally)
             ) {
                 Image(
-                    painter = painterResource(id = if (isLikedByCurrentUser) R.drawable.heart_filled else R.drawable.heart ),
+                    painter = painterResource(id = if (isLikedByCurrentUser) R.drawable.heart_filled else R.drawable.heart),
                     contentDescription = "Go to user profile",
                     colorFilter = ColorFilter.tint(if (isLikedByCurrentUser) ErrorRed else White),
                     modifier = Modifier.fillMaxSize()

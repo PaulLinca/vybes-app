@@ -1,5 +1,6 @@
 package com.example.vybes.post.service
 
+import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Like
 import com.example.vybes.post.model.Vybe
 
@@ -15,4 +16,6 @@ interface VybeService {
     suspend fun likeComment(vybeId: Int, commentId: Int): Like
 
     suspend fun unlikeComment(vybeId: Int, commentId: Int): Like
+
+    suspend fun addComment(text: String): Comment
 }
