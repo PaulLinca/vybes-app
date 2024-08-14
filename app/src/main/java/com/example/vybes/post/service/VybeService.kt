@@ -1,5 +1,6 @@
 package com.example.vybes.post.service
 
+import com.example.vybes.post.model.Like
 import com.example.vybes.post.model.Vybe
 
 interface VybeService {
@@ -7,7 +8,11 @@ interface VybeService {
 
     suspend fun getVybe(id: Int): Vybe
 
-    suspend fun likeVybe(id: Int): Vybe
+    suspend fun likeVybe(id: Int): Like
 
-    suspend fun unlikeVybe(id: Int): Vybe
+    suspend fun unlikeVybe(id: Int): Like
+
+    suspend fun likeComment(vybeId: Int, commentId: Int): Like
+
+    suspend fun unlikeComment(vybeId: Int, commentId: Int): Like
 }

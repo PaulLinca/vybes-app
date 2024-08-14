@@ -17,14 +17,20 @@ class DummyVybeService : VybeService {
         return vybes[id]
     }
 
-    override suspend fun likeVybe(id: Int): Vybe {
-        vybes[id].likes.add(Like(User("currentuser")))
-        return vybes[id]
+    override suspend fun likeVybe(id: Int): Like {
+        return Like(User("currentuser"))
     }
 
-    override suspend fun unlikeVybe(id: Int): Vybe {
-        vybes[id].likes.removeIf{l-> l.user.name == "currentuser" }
-        return vybes[id]
+    override suspend fun unlikeVybe(id: Int): Like {
+        return Like(User("currentuser"))
+    }
+
+    override suspend fun likeComment(vybeId: Int, commentId: Int): Like {
+        return Like(User("currentuser"))
+    }
+
+    override suspend fun unlikeComment(vybeId: Int, commentId: Int): Like {
+        return Like(User("currentuser"))
     }
 
     val user = User("John Boy")
@@ -42,6 +48,7 @@ class DummyVybeService : VybeService {
             mutableListOf(Like(user), Like(user), Like(user)),
             mutableListOf(
                 Comment(
+                    0,
                     "This is a comment",
                     user,
                     mutableListOf(Like(user)),
@@ -62,6 +69,7 @@ class DummyVybeService : VybeService {
             mutableListOf(Like(user)),
             mutableListOf(
                 Comment(
+                    0,
                     "This is a comment. It could be super long or it could be super short but this one is testing long comments to see how they fit on the screen and how it looks",
                     user,
                     mutableListOf(Like(user)),
@@ -83,6 +91,7 @@ class DummyVybeService : VybeService {
             mutableListOf(Like(user)),
             mutableListOf(
                 Comment(
+                    0,
                     "This is a comment",
                     user,
                     mutableListOf(Like(user)),
@@ -104,6 +113,7 @@ class DummyVybeService : VybeService {
             mutableListOf(Like(user)),
             mutableListOf(
                 Comment(
+                    0,
                     "This is a comment",
                     user,
                     mutableListOf(Like(user)),
@@ -125,6 +135,7 @@ class DummyVybeService : VybeService {
             mutableListOf(Like(user)),
             mutableListOf(
                 Comment(
+                    0,
                     "This is a comment",
                     user,
                     mutableListOf(Like(user)),
@@ -146,6 +157,7 @@ class DummyVybeService : VybeService {
             mutableListOf(Like(user)),
             mutableListOf(
                 Comment(
+                    0,
                     "This is a comment",
                     user,
                     mutableListOf(Like(user)),
@@ -167,6 +179,7 @@ class DummyVybeService : VybeService {
             mutableListOf(Like(user)),
             mutableListOf(
                 Comment(
+                    0,
                     "This is a comment",
                     user,
                     mutableListOf(Like(user)),
@@ -188,6 +201,7 @@ class DummyVybeService : VybeService {
             mutableListOf(Like(user), Like(user)),
             mutableListOf(
                 Comment(
+                    0,
                     "This is a comment",
                     user,
                     mutableListOf(Like(user)),

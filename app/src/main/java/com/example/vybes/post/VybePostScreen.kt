@@ -48,6 +48,7 @@ import com.example.vybes.R
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.Black
+import com.example.vybes.common.theme.ErrorRed
 import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
@@ -60,7 +61,8 @@ import java.util.stream.Collectors
 @Composable
 fun VybePostScreen(
     vybeViewModel: VybeViewModel = hiltViewModel(),
-    onGoBack: () -> Unit) {
+    onGoBack: () -> Unit
+) {
 
     var text by remember {
         mutableStateOf("")
@@ -98,7 +100,7 @@ fun VybePostScreen(
                 vybe = vybe,
                 modifier = Modifier.padding(top = 8.dp, start = 8.dp),
                 onClickThumbsUp = {
-                    if(isLikedByUser) {
+                    if (isLikedByUser) {
                         vybeViewModel.unlikeVybe()
                     } else {
                         vybeViewModel.likeVybe()
@@ -107,7 +109,7 @@ fun VybePostScreen(
                 iconSize = 23.dp,
                 isLiked = isLikedByUser
             )
-            CommentSection(vybe)
+            CommentSection(vybe, vybeViewModel)
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -195,7 +197,8 @@ fun SongBanner(vybe: Vybe?) {
                 style = songTitleStyle,
             )
             Text(
-                text = vybe?.spotifyArtistNames.orEmpty().stream().collect(Collectors.joining(", ")),
+                text = vybe?.spotifyArtistNames.orEmpty().stream()
+                    .collect(Collectors.joining(", ")),
                 color = Color.LightGray,
                 textAlign = TextAlign.Center,
                 style = artistsStyle,
@@ -205,19 +208,19 @@ fun SongBanner(vybe: Vybe?) {
 }
 
 @Composable
-fun CommentSection(vybe: Vybe?) {
+fun CommentSection(vybe: Vybe?, vybeViewModel: VybeViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
         vybe?.comments.orEmpty().forEach { c ->
-            Comment(c)
+            Comment(c, vybeViewModel)
         }
     }
 }
 
 @Composable
-fun Comment(comment: Comment) {
+fun Comment(comment: Comment, vybeViewModel: VybeViewModel) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -289,19 +292,23 @@ fun Comment(comment: Comment) {
             Modifier.padding(horizontal = 5.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val isLikedByCurrentUser = comment.likes.any { it.user.name == "currentuser" }
             IconButton(
                 onClick = {
-                    Toast.makeText(context, "Liking comment", Toast.LENGTH_SHORT).show()
+                    if(isLikedByCurrentUser) {
+                        vybeViewModel.unlikeComment(comment.id)
+                    } else {
+                        vybeViewModel.likeComment(comment.id)
+                    }
                 },
                 modifier = Modifier
                     .size(20.dp)
-                    .clip(CircleShape)
                     .align(Alignment.CenterHorizontally)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.heart),
+                    painter = painterResource(id = if (isLikedByCurrentUser) R.drawable.heart_filled else R.drawable.heart ),
                     contentDescription = "Go to user profile",
-                    colorFilter = ColorFilter.tint(White),
+                    colorFilter = ColorFilter.tint(if (isLikedByCurrentUser) ErrorRed else White),
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -316,9 +323,3 @@ fun Comment(comment: Comment) {
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun Preview() {
-//    VybePostScreen(vybe = vybes.get(1), {})
-//}
