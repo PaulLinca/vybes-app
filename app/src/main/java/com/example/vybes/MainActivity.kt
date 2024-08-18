@@ -29,12 +29,15 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = RegisterScreen) {
                     composable<RegisterScreen> {
-                        RegisterScreen(onRegister = { navController.navigate(LoginScreen) })
+                        RegisterScreen(
+                            onRegisterSuccess = { navController.navigate(LoginScreen) },
+                            onLoginClick = { navController.navigate(LoginScreen) }
+                        )
                     }
                     composable<LoginScreen> {
                         LoginScreen(
-                            onLogin = { navController.navigate(FeedScreen) },
-                            onRegister = { navController.navigate(RegisterScreen) })
+                            onLoginSuccess = { navController.navigate(FeedScreen) },
+                            onRegisterClick = { navController.navigate(RegisterScreen) })
                     }
                     composable<FeedScreen> {
                         FeedScreen(navController)

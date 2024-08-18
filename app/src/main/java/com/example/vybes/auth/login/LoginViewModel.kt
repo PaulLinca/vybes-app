@@ -11,6 +11,7 @@ import com.example.vybes.auth.service.AuthService
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -21,6 +22,9 @@ class LoginViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val authService: AuthService
 ) : ViewModel() {
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
     private var _usernameText: String by mutableStateOf("")
     val usernameText: String
@@ -50,12 +54,16 @@ class LoginViewModel @Inject constructor(
         _isLoginInfoInvalid.value = !isUsernameValid || !isPasswordValid
     }
 
-    fun login() {
+    fun login(onLoginSuccess: () -> Unit) {
         viewModelScope.launch {
+            _isLoginInfoInvalid.value = false
+            _isLoading.value = true
+
             validateRegisterInfo()
+
+            delay(1000)
             if (!_isLoginInfoInvalid.value) {
                 val response = authService.login(usernameText, passwordText)
-                Log.e("RESPONSE", response.toString() + response.body())
                 if (response.isSuccessful && response.body() != null) {
                     val user = response.body()!!
                     SharedPreferencesManager.saveUserData(
@@ -64,8 +72,13 @@ class LoginViewModel @Inject constructor(
                         user.username,
                         user.jwt
                     )
+                    _isLoading.value = false
+                    onLoginSuccess()
+                } else {
+                    _isLoginInfoInvalid.value = true
                 }
             }
+            _isLoading.value = false
         }
     }
 }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,9 +43,12 @@ object LoginScreen
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    onLogin: () -> Unit,
-    onRegister: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onRegisterClick: () -> Unit
 ) {
+
+    val isLoading by viewModel.isLoading.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,6 +75,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.size(20.dp))
         }
         MultilineTextField(
+            enabled = !isLoading,
             value = viewModel.usernameText,
             onValueChanged = { viewModel.updateUsernameText(it) },
             textStyle = artistsStyle,
@@ -86,6 +91,7 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.size(20.dp))
         MultilineTextField(
+            enabled = !isLoading,
             value = viewModel.passwordText,
             onValueChanged = { viewModel.updatePasswordText(it) },
             textStyle = artistsStyle,
@@ -101,11 +107,9 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.size(20.dp))
         Button(
+            enabled = !isLoading,
             onClick = {
-                viewModel.login()
-                if (!viewModel.isLoginInfoInvalid.value) {
-                    onLogin()
-                }
+                viewModel.login(onLoginSuccess)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -118,7 +122,11 @@ fun LoginScreen(
                 disabledContentColor = Color.LightGray
             )
         ) {
-            Text(text = stringResource(R.string.login))
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.size(20.dp))
+            } else {
+                Text(text = stringResource(R.string.login))
+            }
         }
         Spacer(modifier = Modifier.size(20.dp))
         Text(
@@ -130,7 +138,11 @@ fun LoginScreen(
             text = stringResource(R.string.register),
             color = Blue,
             modifier = Modifier.clickable(
-                onClick = onRegister
+                onClick = {
+                    if (!isLoading) {
+                        onRegisterClick()
+                    }
+                }
             ),
             style = artistsStyle
         )

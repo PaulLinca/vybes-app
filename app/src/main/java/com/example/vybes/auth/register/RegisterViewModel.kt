@@ -1,6 +1,5 @@
 package com.example.vybes.auth.register
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vybes.auth.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -19,6 +19,9 @@ class RegisterViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val MIN_PASSWORD_LENGTH = 8
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
     private var _usernameText: String by mutableStateOf("")
     val usernameText: String
@@ -59,14 +62,24 @@ class RegisterViewModel @Inject constructor(
             !isUsernameValid || !isPasswordValid || !isRepeatPasswordValid
     }
 
-    fun register() {
+    fun register(onRegisterSuccess: () -> Unit) {
         viewModelScope.launch {
-            validateRegisterInfo()
-            if(!_isRegisterInfoInvalid.value) {
-                val response = authService.register(usernameText, passwordText)
-                Log.e("RESPONSE", response.toString())
+            _isRegisterInfoInvalid.value = false
+            _isLoading.value = true
 
+            validateRegisterInfo()
+
+            delay(1000)
+            if (!_isRegisterInfoInvalid.value) {
+                val response = authService.register(usernameText, passwordText)
+                if (response.isSuccessful && response.body() != null) {
+                    _isLoading.value = false
+                    onRegisterSuccess()
+                } else {
+                    _isRegisterInfoInvalid.value = true
+                }
             }
+            _isLoading.value = false
         }
     }
 }

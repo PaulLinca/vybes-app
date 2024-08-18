@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,7 +43,14 @@ import kotlinx.serialization.Serializable
 object RegisterScreen
 
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: () -> Unit) {
+fun RegisterScreen(
+    viewModel: RegisterViewModel = hiltViewModel(),
+    onRegisterSuccess: () -> Unit,
+    onLoginClick: () -> Unit
+) {
+
+    val isLoading by viewModel.isLoading.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -69,6 +77,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
             Spacer(modifier = Modifier.size(20.dp))
         }
         MultilineTextField(
+            enabled = !isLoading,
             value = viewModel.usernameText,
             onValueChanged = { viewModel.updateUsernameText(it) },
             textStyle = artistsStyle,
@@ -84,6 +93,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
         )
         Spacer(modifier = Modifier.size(20.dp))
         MultilineTextField(
+            enabled = !isLoading,
             value = viewModel.passwordText,
             onValueChanged = { viewModel.updatePasswordText(it) },
             textStyle = artistsStyle,
@@ -99,6 +109,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
         )
         Spacer(modifier = Modifier.size(20.dp))
         MultilineTextField(
+            enabled = !isLoading,
             value = viewModel.repeatPasswordText,
             onValueChanged = { viewModel.updateRepeatPasswordText(it) },
             textStyle = artistsStyle,
@@ -114,11 +125,9 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
         )
         Spacer(modifier = Modifier.size(20.dp))
         Button(
+            enabled = !isLoading,
             onClick = {
-                viewModel.register()
-                if (!viewModel.isRegisterInfoInvalid.value) {
-                    onRegister()
-                }
+                viewModel.register(onRegisterSuccess)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -131,7 +140,11 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
                 disabledContentColor = Color.LightGray
             )
         ) {
-            Text(text = stringResource(R.string.register))
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.size(20.dp))
+            } else {
+                Text(text = stringResource(R.string.register))
+            }
         }
         Spacer(modifier = Modifier.size(20.dp))
         Text(
@@ -142,8 +155,14 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
         Text(
             text = stringResource(R.string.login),
             color = Blue,
-            modifier = Modifier.clickable(onClick = onRegister),
-            style = artistsStyle
+            modifier = Modifier.clickable(
+                onClick = {
+                    if (!isLoading) {
+                        onLoginClick()
+                    }
+                }
+            ),
+            style = artistsStyle,
         )
     }
 }
@@ -151,5 +170,5 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
 @Preview
 @Composable
 fun Preview() {
-    RegisterScreen(viewModel = RegisterViewModel(DummyAuthService()), {})
+    RegisterScreen(viewModel = RegisterViewModel(DummyAuthService()), {}, {})
 }
