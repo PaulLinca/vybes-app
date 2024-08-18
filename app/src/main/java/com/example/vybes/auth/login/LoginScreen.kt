@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -131,10 +132,4 @@ fun LoginScreen(
             style = artistsStyle
         )
     }
-}
-
-@Preview
-@Composable
-fun PreviewLogin() {
-    LoginScreen(LoginViewModel(DummyAuthService()), {}, {})
 }
