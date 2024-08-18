@@ -1,6 +1,7 @@
 package com.example.vybes.auth.login
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -53,13 +54,17 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             validateRegisterInfo()
             if (!_isLoginInfoInvalid.value) {
-                val loginResponse = authService.login(usernameText, passwordText)
-                SharedPreferencesManager.saveUserData(
-                    context,
-                    loginResponse.userId,
-                    loginResponse.username,
-                    loginResponse.jwt
-                )
+                val response = authService.login(usernameText, passwordText)
+                Log.e("RESPONSE", response.toString() + response.body())
+                if (response.isSuccessful && response.body() != null) {
+                    val user = response.body()!!
+                    SharedPreferencesManager.saveUserData(
+                        context,
+                        user.userId,
+                        user.username,
+                        user.jwt
+                    )
+                }
             }
         }
     }

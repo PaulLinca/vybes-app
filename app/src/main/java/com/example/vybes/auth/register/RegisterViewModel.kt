@@ -1,5 +1,6 @@
 package com.example.vybes.auth.register
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -62,7 +63,9 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch {
             validateRegisterInfo()
             if(!_isRegisterInfoInvalid.value) {
-                authService.register(usernameText, passwordText)
+                val response = authService.register(usernameText, passwordText)
+                Log.e("RESPONSE", response.toString())
+
             }
         }
     }
