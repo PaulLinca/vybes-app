@@ -1,5 +1,7 @@
 package com.example.vybes.dependencyInjection
 
+import com.example.vybes.auth.service.AuthService
+import com.example.vybes.auth.service.DummyAuthService
 import com.example.vybes.feedback.service.DummyFeedbackService
 import com.example.vybes.feedback.service.FeedbackService
 import com.example.vybes.post.service.DummyVybeService
@@ -21,5 +23,10 @@ object AppModule {
     @Provides
     fun provideVybeService(): VybeService {
         return DummyVybeService()
+    }
+
+    @Provides
+    fun provideAuthService(): AuthService {
+        return DummyAuthService()
     }
 }

@@ -24,14 +24,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -44,7 +42,6 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
 import com.example.vybes.common.composables.IconTextButton
-import com.example.vybes.common.theme.ErrorRed
 import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.SpotifyLighterGrey
 import com.example.vybes.common.theme.White
@@ -81,7 +78,7 @@ fun VybePost(vybe: Vybe, onClickCard: () -> Unit) {
                     .align(Alignment.CenterVertically)
             ) {
                 Text(
-                    text = vybe.vybesUser,
+                    text = vybe.user.name,
                     color = White,
                     style = MaterialTheme.typography.labelLarge
                 )

@@ -48,7 +48,7 @@ class DummyVybeService : VybeService {
             "5uAILcUFqdFsH5K3Cip47a",
             "https://i.scdn.co/image/ab67616d0000b27390e72fba2f3f0f9889091c15",
             ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-            "Tim Tam Tum",
+            User("Tim Tam Tum"),
             mutableListOf(Like(user), Like(user), Like(user)),
             mutableListOf(
                 Comment(
@@ -69,7 +69,7 @@ class DummyVybeService : VybeService {
             "4rJDCELWL0fjdmN9Gn4f4g",
             "https://i.scdn.co/image/ab67616d0000b273cae6e44dcc84e2035c3ad092",
             ZonedDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-            "John Doe",
+            User("John Doe"),
             mutableListOf(Like(user)),
             mutableListOf(
                 Comment(
@@ -91,7 +91,7 @@ class DummyVybeService : VybeService {
             "https://i.scdn.co/image/ab67616d0000b2739cf15c7323fb85b7112197d5",
             ZonedDateTime.now().minusMinutes(44)
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-            "Matt Smith",
+            User("Matt Smith"),
             mutableListOf(Like(user)),
             mutableListOf(
                 Comment(
@@ -113,7 +113,7 @@ class DummyVybeService : VybeService {
             "https://i.scdn.co/image/ab67616d0000b273d9194aa18fa4c9362b47464f",
             ZonedDateTime.now().minusMinutes(13)
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-            "Cristian Pin",
+            User("Cristian Pin"),
             mutableListOf(Like(user)),
             mutableListOf(
                 Comment(
@@ -135,7 +135,7 @@ class DummyVybeService : VybeService {
             "https://i.scdn.co/image/ab67616d0000b27394d08ab63e57b0cae74e8595",
             ZonedDateTime.now().minusMinutes(200)
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-            "Clíona Murphy",
+            User("Clíona Murphy"),
             mutableListOf(Like(user)),
             mutableListOf(
                 Comment(
@@ -157,7 +157,7 @@ class DummyVybeService : VybeService {
             "https://i.scdn.co/image/ab67616d0000b2732e02117d76426a08ac7c174f",
             ZonedDateTime.now().minusMinutes(34)
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-            "John Travolta",
+            User("John Travolta"),
             mutableListOf(Like(user)),
             mutableListOf(
                 Comment(
@@ -179,7 +179,7 @@ class DummyVybeService : VybeService {
             "https://i.scdn.co/image/ab67616d0000b273c5663e50de353981ed2b1a37",
             ZonedDateTime.now().minusMinutes(34)
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-            "Ion Creanga",
+            User("Ion Creanga"),
             mutableListOf(Like(user)),
             mutableListOf(
                 Comment(
@@ -201,7 +201,7 @@ class DummyVybeService : VybeService {
             "https://i.scdn.co/image/ab67616d0000b273810603c94c9246379604cf1a",
             ZonedDateTime.now().minusMinutes(233)
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-            "Fiona Apple",
+            User("Fiona Apple"),
             mutableListOf(Like(user), Like(user)),
             mutableListOf(
                 Comment(

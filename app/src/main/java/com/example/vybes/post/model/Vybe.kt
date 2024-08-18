@@ -22,7 +22,7 @@ data class Vybe(
     val spotifyAlbumId: String,
     val imageUrl: String,
     val postedDate: String,
-    val vybesUser: String,
+    val user: User,
     val likes: List<Like>,
     val comments: List<Comment>
 )

@@ -72,7 +72,7 @@ fun VybePostScreen(
     ) {
         TopBarWithBackButton(onGoBack = onGoBack) {
             Text(
-                text = vybe?.vybesUser.orEmpty(),
+                text = vybe?.user?.name.orEmpty(),
                 color = White,
                 textAlign = TextAlign.Center,
                 style = songTitleStyle,

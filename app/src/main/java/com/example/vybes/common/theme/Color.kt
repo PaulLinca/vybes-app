@@ -15,3 +15,4 @@ val SpotifyLighterGrey = Color(0xFF383a40)
 
 val SuccessGreen = Color(0xFF4DFF56)
 val ErrorRed = Color(0xFFFF674D)
+val Blue = Color(0xFF4D8EFF)

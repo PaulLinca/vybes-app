@@ -7,6 +7,8 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.vybes.auth.login.LoginScreen
+import com.example.vybes.auth.register.RegisterScreen
 import com.example.vybes.common.theme.VybesTheme
 import com.example.vybes.feedback.FeedbackScreen
 import com.example.vybes.post.VybePostScreen
@@ -25,7 +27,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             VybesTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = FeedScreen) {
+                NavHost(navController = navController, startDestination = RegisterScreen) {
+                    composable<RegisterScreen> {
+                        RegisterScreen(onRegister = { navController.navigate(LoginScreen) })
+                    }
+                    composable<LoginScreen> {
+                        LoginScreen(
+                            onLogin = { navController.navigate(FeedScreen) },
+                            onRegister = { navController.navigate(RegisterScreen) })
+                    }
                     composable<FeedScreen> {
                         FeedScreen(navController)
                     }

@@ -22,7 +22,8 @@ fun MultilineTextField(
     onValueChanged: (String) -> Unit,
     hintText: String = "",
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
-    maxLines: Int = 4
+    maxLines: Int = 4,
+    isPassword: Boolean = false
 ) {
     BasicTextField(
         enabled = enabled,
