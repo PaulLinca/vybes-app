@@ -20,9 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.vybes.R
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.theme.ErrorRed
@@ -49,7 +51,7 @@ fun FeedbackScreen(
     ) {
         TopBarWithBackButton(onGoBack = onGoBack) {
             Text(
-                text = "Feedback",
+                text = stringResource(R.string.feedback),
                 color = White,
                 textAlign = TextAlign.Center,
                 style = songTitleStyle,
@@ -71,11 +73,8 @@ fun FeedbackScreen(
             val alertTextColor =
                 if (isSubmitted) SuccessGreen else if (isTextInvalid) ErrorRed else White
 
-            val infoText =
-                "We value your input! Please use the text field below to share any feedback, suggest new features, or report bugs. Your comments help us improve the app and make it better for you. Thank you for your support!"
-
             Text(
-                text = infoText,
+                text = stringResource(R.string.feedback_info_text),
                 textAlign = TextAlign.Center,
                 color = Color.LightGray,
                 style = artistsStyle,
@@ -103,7 +102,7 @@ fun FeedbackScreen(
                     feedbackViewModel.updateText(it)
                     feedbackViewModel.resetTextValidity()
                 },
-                hintText = "Type your feedback here...",
+                hintText = stringResource(R.string.feedback_field_hint),
                 textStyle = fieldTextStyle,
                 maxLines = 10,
                 modifier = Modifier
@@ -129,7 +128,7 @@ fun FeedbackScreen(
                         }),
             ) {
                 Text(
-                    text = "Submit", color = textColor,
+                    text = stringResource(R.string.submit), color = textColor,
                 )
             }
         }

@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -131,7 +132,7 @@ fun StatsBar(
         IconTextButton(
             description = "Going to spotify...",
             onClick = onClickSpotify,
-            text = "Listen on",
+            text = stringResource(R.string.listen_on),
             drawableId = R.drawable.spotify,
             iconSize = iconSize,
             reversed = true
@@ -205,9 +206,3 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
 
     }
 }
-
-//@Preview
-//@Composable
-//fun PreviewPost() {
-//    VybePost(vybe = vybes.get(4), {})
-//}

@@ -1,3 +1,17 @@
 <resources>
-    <string name="app_name">Vybes</string>
+    <string name="app_name">vybes</string>
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="need_an_account">Need an account?</string>
+    <string name="invalid_input">Invalid input</string>
+    <string name="feedback_field_hint">Type your feedback here…</string>
+    <string name="submit">Submit</string>
+    <string name="feedback_info_text">We value your input! Please use the text field below to share any feedback, suggest new features, or report bugs. Your comments help us improve the app and make it better for you. Thank you for your support!</string>
+    <string name="feedback">Feedback</string>
+    <string name="listen_on">Listen on</string>
+
 </resources>

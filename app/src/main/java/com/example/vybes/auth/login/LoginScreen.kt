@@ -21,13 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.vybes.auth.service.DummyAuthService
+import com.example.vybes.R
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.theme.Blue
 import com.example.vybes.common.theme.ErrorRed
@@ -64,7 +63,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.size(30.dp))
         if (isRegisterInfoInvalid) {
             Text(
-                text = "Invalid input",
+                text = stringResource(R.string.invalid_input),
                 textAlign = TextAlign.Center,
                 color = ErrorRed,
                 style = artistsStyle
@@ -75,7 +74,7 @@ fun LoginScreen(
             value = viewModel.usernameText,
             onValueChanged = { viewModel.updateUsernameText(it) },
             textStyle = artistsStyle,
-            hintText = "Username",
+            hintText = stringResource(R.string.username),
             maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
@@ -90,7 +89,7 @@ fun LoginScreen(
             value = viewModel.passwordText,
             onValueChanged = { viewModel.updatePasswordText(it) },
             textStyle = artistsStyle,
-            hintText = "Password",
+            hintText = stringResource(R.string.password),
             maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
@@ -119,12 +118,16 @@ fun LoginScreen(
                 disabledContentColor = Color.LightGray
             )
         ) {
-            Text(text = "Register")
+            Text(text = stringResource(R.string.login))
         }
         Spacer(modifier = Modifier.size(20.dp))
-        Text(text = "Need an account?", color = Color.LightGray, style = artistsStyle)
         Text(
-            text = "Register",
+            text = stringResource(R.string.need_an_account),
+            color = Color.LightGray,
+            style = artistsStyle
+        )
+        Text(
+            text = stringResource(R.string.register),
             color = Blue,
             modifier = Modifier.clickable(
                 onClick = onRegister

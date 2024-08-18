@@ -21,11 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.vybes.R
 import com.example.vybes.auth.service.DummyAuthService
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.theme.Blue
@@ -50,7 +52,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = "vybes",
+            text = stringResource(R.string.app_name),
             color = White,
             style = logoStyle,
             fontSize = 50.sp
@@ -59,7 +61,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
         Spacer(modifier = Modifier.size(30.dp))
         if (isRegisterInfoInvalid) {
             Text(
-                text = "Invalid input",
+                text = stringResource(R.string.invalid_input),
                 textAlign = TextAlign.Center,
                 color = ErrorRed,
                 style = artistsStyle
@@ -70,7 +72,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
             value = viewModel.usernameText,
             onValueChanged = { viewModel.updateUsernameText(it) },
             textStyle = artistsStyle,
-            hintText = "Username",
+            hintText = stringResource(R.string.username),
             maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
@@ -85,7 +87,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
             value = viewModel.passwordText,
             onValueChanged = { viewModel.updatePasswordText(it) },
             textStyle = artistsStyle,
-            hintText = "Password",
+            hintText = stringResource(R.string.password),
             maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
@@ -100,7 +102,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
             value = viewModel.repeatPasswordText,
             onValueChanged = { viewModel.updateRepeatPasswordText(it) },
             textStyle = artistsStyle,
-            hintText = "Repeat password",
+            hintText = stringResource(R.string.repeat_password),
             maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
@@ -129,12 +131,16 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel(), onRegister: (
                 disabledContentColor = Color.LightGray
             )
         ) {
-            Text(text = "Register")
+            Text(text = stringResource(R.string.register))
         }
         Spacer(modifier = Modifier.size(20.dp))
-        Text(text = "Already have an account?", color = Color.LightGray, style = artistsStyle)
         Text(
-            text = "Login",
+            text = stringResource(R.string.already_have_an_account),
+            color = Color.LightGray,
+            style = artistsStyle
+        )
+        Text(
+            text = stringResource(R.string.login),
             color = Blue,
             modifier = Modifier.clickable(onClick = onRegister),
             style = artistsStyle
