@@ -7,8 +7,8 @@ import com.example.vybes.feedback.service.DummyFeedbackService
 import com.example.vybes.feedback.service.FeedbackService
 import com.example.vybes.network.AuthInterceptor
 import com.example.vybes.network.VybesApiClient
-import com.example.vybes.post.service.DummyVybeService
-import com.example.vybes.post.service.VybeService
+import com.example.vybes.post.service.PostService
+import com.example.vybes.post.service.VybesPostService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -63,7 +63,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideVybeService(): VybeService {
-        return DummyVybeService()
+    fun provideVybeService(vybesApiClient: VybesApiClient): PostService {
+        return VybesPostService(vybesApiClient)
     }
 }

@@ -6,9 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.vybes.post.model.Like
+import com.example.vybes.post.model.User
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.VybeScreen
-import com.example.vybes.post.service.VybeService
+import com.example.vybes.post.service.PostService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VybeViewModel @Inject constructor(
-    private val vybeService: VybeService,
+    private val postService: PostService,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val args = VybeScreen.from(savedStateHandle)
@@ -39,32 +41,49 @@ class VybeViewModel @Inject constructor(
 
     fun likeVybe() {
         viewModelScope.launch {
-            val newLike = vybeService.likeVybe(args.id)
-            _vybe.value?.let { v ->
-                _vybe.value = v.copy(likes = v.likes + newLike)
+            val response = postService.likeVybe(args.id)
+            if (response.isSuccessful) {
+                _vybe.value?.let { v ->
+                    _vybe.value = v.copy(
+                        likes = v.likes + Like(
+                            user = User(
+                                response.body()!!.userId,
+                                response.body()!!.username
+                            )
+                        )
+                    )
+                }
             }
+
             _isLikedByCurrentUser.value = true
         }
     }
 
     fun unlikeVybe() {
         viewModelScope.launch {
-            val removedLike = vybeService.unlikeVybe(args.id)
+            val removedLike = postService.unlikeVybe(args.id)
             _vybe.value?.let { v ->
                 _vybe.value =
-                    v.copy(likes = v.likes.filterNot { it.user.name == removedLike.user.name })
+                    v.copy(likes = v.likes.filterNot { it.user.name == removedLike.body()!!.username })
             }
             _isLikedByCurrentUser.value = false
         }
     }
 
-    fun likeComment(commentId: Int) {
+    fun likeComment(commentId: Long) {
         viewModelScope.launch {
-            val newLike = vybeService.likeComment(args.id, commentId)
+            val newLike = postService.likeComment(args.id, commentId)
             _vybe.value?.let { v ->
                 val updatedComments = v.comments.map { comment ->
                     if (comment.id == commentId) {
-                        comment.copy(likes = comment.likes + newLike)
+                        comment.copy(
+                            likes = comment.likes + Like(
+                                User(
+                                    newLike.body()!!.userId,
+                                    newLike.body()!!.username
+                                )
+                            )
+                        )
                     } else {
                         comment
                     }
@@ -74,13 +93,13 @@ class VybeViewModel @Inject constructor(
         }
     }
 
-    fun unlikeComment(commentId: Int) {
+    fun unlikeComment(commentId: Long) {
         viewModelScope.launch {
-            val removedLike = vybeService.unlikeComment(args.id, commentId)
+            val removedLike = postService.unlikeComment(args.id, commentId)
             _vybe.value?.let { v ->
                 val updatedComments = v.comments.map { comment ->
                     if (comment.id == commentId) {
-                        comment.copy(likes = comment.likes.filterNot { it.user.name == removedLike.user.name })
+                        comment.copy(likes = comment.likes.filterNot { it.user.name == removedLike.body()!!.username })
                     } else {
                         comment
                     }
@@ -92,9 +111,10 @@ class VybeViewModel @Inject constructor(
 
     fun addComment() {
         viewModelScope.launch {
-            val addedComment = vybeService.addComment(commentText)
+            val addedComment = postService.addComment(args.id, commentText)
             _vybe.value?.let { v ->
-                _vybe.value = v.copy(comments = v.comments + addedComment
+                _vybe.value = v.copy(
+                    comments = v.comments + addedComment.body()!!
                 )
             }
             clearText()
@@ -111,8 +131,8 @@ class VybeViewModel @Inject constructor(
 
     private fun loadVybe() {
         viewModelScope.launch {
-            val retrievedVybe = vybeService.getVybe(args.id)
-            _vybe.value = retrievedVybe
+            val retrievedVybe = postService.getVybe(args.id)
+            _vybe.value = retrievedVybe.body()!!
         }
     }
 }

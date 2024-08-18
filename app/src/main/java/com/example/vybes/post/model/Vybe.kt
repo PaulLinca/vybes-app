@@ -5,7 +5,7 @@ import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class VybeScreen(val id: Int) {
+data class VybeScreen(val id: Long) {
     companion object {
         fun from(savedStateHandle: SavedStateHandle) =
             savedStateHandle.toRoute<VybeScreen>()
