@@ -14,7 +14,7 @@ data class VybeScreen(val id: Long) {
 
 
 data class Vybe(
-    val id: Int,
+    val id: Long,
     val songName: String,
     val spotifyTrackId: String,
     val spotifyArtistNames: List<String>,

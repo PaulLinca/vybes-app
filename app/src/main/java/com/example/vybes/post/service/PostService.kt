@@ -10,13 +10,19 @@ interface PostService {
 
     suspend fun getVybe(id: Long): Response<Vybe>
 
+    suspend fun getAllLikesOnVybe(vybeId: Long): Response<List<LikeResponse>>
+
     suspend fun likeVybe(vybeId: Long): Response<LikeResponse>
 
     suspend fun unlikeVybe(vybeId: Long): Response<LikeResponse>
+
+    suspend fun getAllComments(vybeId: Long): Response<List<Comment>>
 
     suspend fun likeComment(vybeId: Long, commentId: Long): Response<LikeResponse>
 
     suspend fun unlikeComment(vybeId: Long, commentId: Long): Response<LikeResponse>
 
     suspend fun addComment(vybeId: Long, text: String): Response<Comment>
+
+    suspend fun deleteComment(vybeId: Long, commentId: Long): Response<Comment>
 }

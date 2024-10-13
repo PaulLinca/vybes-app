@@ -34,26 +34,40 @@ interface VybesApiClient {
     @POST("api/vybes/{vybeId}/likes")
     suspend fun likeVybe(@Path("vybeId") vybeId: Long): Response<LikeResponse>
 
-    @DELETE("api/vybes/{vybeId}/likes/")
+    @DELETE("api/vybes/{vybeId}/likes")
     suspend fun unlikeVybe(@Path("vybeId") vybeId: Long): Response<LikeResponse>
 
-    @POST("api/vybes/{vybeId}/comments/{commentId}/like")
-    suspend fun likeComment(
-        @Path("vybeId") vybeId: Long,
-        @Path("commentId") commentId: Long,
-    ): Response<LikeResponse>
+    @GET("api/vybes/{vybeId}/comments")
+    suspend fun getLikesByVybeId(
+        @Path("vybeId") vybeId: Long
+    ): Response<List<LikeResponse>>
 
-
-    @DELETE("api/vybes/{vybeId}/comments/{commentId}/unlike")
-    suspend fun unlikeComment(
-        @Path("vybeId") vybeId: Long,
-        @Path("commentId") commentId: Long
-    ): Response<LikeResponse>
-
+    @GET("api/vybes/{vybeId}/comments")
+    suspend fun getCommentsByVybeId(
+        @Path("vybeId") vybeId: Long
+    ): Response<List<Comment>>
 
     @POST("api/vybes/{vybeId}/comments")
     suspend fun addComment(
         @Path("vybeId") vybeId: Long,
         @Body addCommentRequest: AddCommentRequest
     ): Response<Comment>
+
+    @DELETE("api/vybes/{vybeId}/comments/{commentId}")
+    suspend fun deleteComment(
+        @Path("vybeId") vybeId: Long,
+        @Path("commentId") commentId: Long,
+    ): Response<Comment>
+
+    @POST("api/vybes/{vybeId}/comments/{commentId}/likes")
+    suspend fun likeComment(
+        @Path("vybeId") vybeId: Long,
+        @Path("commentId") commentId: Long,
+    ): Response<LikeResponse>
+
+    @DELETE("api/vybes/{vybeId}/comments/{commentId}/likes")
+    suspend fun unlikeComment(
+        @Path("vybeId") vybeId: Long,
+        @Path("commentId") commentId: Long
+    ): Response<LikeResponse>
 }
