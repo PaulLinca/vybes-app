@@ -9,6 +9,7 @@ import com.example.vybes.network.AuthInterceptor
 import com.example.vybes.network.VybesApiClient
 import com.example.vybes.post.service.PostService
 import com.example.vybes.post.service.VybesPostService
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,6 +18,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.ZonedDateTime
 import javax.inject.Singleton
 
 @Module
@@ -36,10 +38,14 @@ object AppModule {
             .addInterceptor(AuthInterceptor(context))
             .build()
 
+        val gson = GsonBuilder()
+            .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeDeserializer())
+            .create()
+
         return Retrofit.Builder()
             .baseUrl("http://10.0.2.2:8080/")
             .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 

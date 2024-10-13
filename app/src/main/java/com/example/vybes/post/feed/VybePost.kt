@@ -79,7 +79,7 @@ fun VybePost(vybe: Vybe, onClickCard: () -> Unit) {
                     .align(Alignment.CenterVertically)
             ) {
                 Text(
-                    text = vybe.user.name,
+                    text = vybe.user.username,
                     color = White,
                     style = MaterialTheme.typography.labelLarge
                 )
@@ -111,7 +111,7 @@ fun StatsBar(
         IconTextButton(
             description = "Like this vybe",
             onClick = onClickThumbsUp,
-            text = vybe?.likes?.size.toString(),
+            text = vybe?.likes.orEmpty().count().toString(),
             drawableId = if (isLiked) R.drawable.thumb_up_filled else R.drawable.thumb_up,
             iconSize = iconSize,
             iconColor = White
@@ -119,7 +119,7 @@ fun StatsBar(
         IconTextButton(
             description = "Opening comments...",
             onClick = onClickComment,
-            text = vybe?.comments?.size.toString(),
+            text = vybe?.comments.orEmpty().count().toString(),
             drawableId = R.drawable.comment,
             iconSize = iconSize
         )
@@ -195,7 +195,9 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
                     maxLines = 3
                 )
                 Text(
-                    text = vybe.spotifyArtistNames.stream().collect(Collectors.joining(", ")),
+                    text = vybe.spotifyArtists.stream()
+                        .map { a -> a.name }
+                        .collect(Collectors.joining(", ")),
                     modifier = Modifier.padding(top = 3.dp, bottom = 7.dp),
                     style = artistsStyle,
                     maxLines = 1,

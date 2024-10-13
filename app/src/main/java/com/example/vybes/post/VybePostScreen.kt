@@ -55,6 +55,7 @@ import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.post.feed.StatsBar
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
+import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import java.util.stream.Collectors
 
 @Composable
@@ -72,7 +73,7 @@ fun VybePostScreen(
     ) {
         TopBarWithBackButton(onGoBack = onGoBack) {
             Text(
-                text = vybe?.user?.name.orEmpty(),
+                text = vybe?.user?.username.orEmpty(),
                 color = White,
                 textAlign = TextAlign.Center,
                 style = songTitleStyle,
@@ -184,7 +185,8 @@ fun SongBanner(vybe: Vybe?) {
                 style = songTitleStyle,
             )
             Text(
-                text = vybe?.spotifyArtistNames.orEmpty().stream()
+                text = vybe?.spotifyArtists.orEmpty().stream()
+                    .map { a -> a.name }
                     .collect(Collectors.joining(", ")),
                 color = Color.LightGray,
                 textAlign = TextAlign.Center,
@@ -239,7 +241,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel) {
                     )
                 }
                 Text(
-                    text = comment.user.name,
+                    text = comment.user.username,
                     textAlign = TextAlign.Start,
                     color = White,
                     style = MaterialTheme.typography.labelLarge,
@@ -252,7 +254,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel) {
                         }
                 )
                 Text(
-                    text = comment.postedDate,
+                    text = comment.timestamp.toString(),
                     textAlign = TextAlign.Start,
                     color = Color.LightGray,
                     style = MaterialTheme.typography.labelSmall,
@@ -280,7 +282,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel) {
             Modifier.padding(horizontal = 5.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val isLikedByCurrentUser = comment.likes.any { it.user.name == "currentuser" }
+            val isLikedByCurrentUser = comment.likeIds.any { it == SharedPreferencesManager.getUserId(context) }
             IconButton(
                 onClick = {
                     if (isLikedByCurrentUser) {
@@ -301,7 +303,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel) {
                 )
             }
             Text(
-                text = comment.likes.count().toString(),
+                text = comment.likeIds.count().toString(),
                 textAlign = TextAlign.Start,
                 color = White,
                 fontSize = 10.sp,

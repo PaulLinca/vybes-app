@@ -64,7 +64,7 @@ class VybeViewModel @Inject constructor(
             val removedLike = postService.unlikeVybe(args.id)
             _vybe.value?.let { v ->
                 _vybe.value =
-                    v.copy(likes = v.likes.filterNot { it.user.name == removedLike.body()!!.username })
+                    v.copy(likes = v.likes.filterNot { it.user.username == removedLike.body()!!.username })
             }
             _isLikedByCurrentUser.value = false
         }
@@ -77,12 +77,7 @@ class VybeViewModel @Inject constructor(
                 val updatedComments = v.comments.map { comment ->
                     if (comment.id == commentId) {
                         comment.copy(
-                            likes = comment.likes + Like(
-                                User(
-                                    newLike.body()!!.userId,
-                                    newLike.body()!!.username
-                                )
-                            )
+                            likeIds = comment.likeIds + listOf(newLike.body()!!.userId)
                         )
                     } else {
                         comment
@@ -99,7 +94,7 @@ class VybeViewModel @Inject constructor(
             _vybe.value?.let { v ->
                 val updatedComments = v.comments.map { comment ->
                     if (comment.id == commentId) {
-                        comment.copy(likes = comment.likes.filterNot { it.user.name == removedLike.body()!!.username })
+                        comment.copy(likeIds = comment.likeIds.filterNot { it == removedLike.body()!!.userId })
                     } else {
                         comment
                     }

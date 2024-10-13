@@ -72,6 +72,7 @@ class LoginViewModel @Inject constructor(
                         user.username,
                         user.jwt
                     )
+
                     _isLoading.value = false
                     onLoginSuccess()
                 } else {

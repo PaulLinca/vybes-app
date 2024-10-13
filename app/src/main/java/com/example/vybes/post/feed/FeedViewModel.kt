@@ -1,5 +1,6 @@
 package com.example.vybes.post.feed
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vybes.post.model.Vybe
@@ -25,6 +26,7 @@ class FeedViewModel @Inject constructor(
     private fun loadPosts() {
         viewModelScope.launch {
             _vybes.value = postService.getAllVybes().body()!!
+            Log.e("GET VYBES", _vybes.value.get(0).toString())
         }
     }
 }
