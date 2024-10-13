@@ -1,16 +1,17 @@
 package com.example.vybes.post
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vybes.post.model.Like
-import com.example.vybes.post.model.User
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.VybeScreen
 import com.example.vybes.post.service.PostService
+import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,8 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class VybeViewModel @Inject constructor(
     private val postService: PostService,
-    savedStateHandle: SavedStateHandle
-) : ViewModel() {
+    savedStateHandle: SavedStateHandle,
+    application: Application
+) : AndroidViewModel(application) {
     private val args = VybeScreen.from(savedStateHandle)
 
     private val _vybe = MutableStateFlow<Vybe?>(null)
@@ -45,12 +47,7 @@ class VybeViewModel @Inject constructor(
             if (response.isSuccessful) {
                 _vybe.value?.let { v ->
                     _vybe.value = v.copy(
-                        likes = v.likes + Like(
-                            user = User(
-                                response.body()!!.userId,
-                                response.body()!!.username
-                            )
-                        )
+                        likes = v.likes + Like(response.body()!!.userId)
                     )
                 }
             }
@@ -64,7 +61,7 @@ class VybeViewModel @Inject constructor(
             val removedLike = postService.unlikeVybe(args.id)
             _vybe.value?.let { v ->
                 _vybe.value =
-                    v.copy(likes = v.likes.filterNot { it.user.username == removedLike.body()!!.username })
+                    v.copy(likes = v.likes.filterNot { it.userId == removedLike.body()!!.userId })
             }
             _isLikedByCurrentUser.value = false
         }
@@ -127,7 +124,13 @@ class VybeViewModel @Inject constructor(
     private fun loadVybe() {
         viewModelScope.launch {
             val retrievedVybe = postService.getVybe(args.id)
-            _vybe.value = retrievedVybe.body()!!
+
+            retrievedVybe.body().let { v ->
+                val context = getApplication<Application>().applicationContext
+                val currentUserId = SharedPreferencesManager.getUserId(context)
+                _isLikedByCurrentUser.value = v?.likes?.any { it.userId == currentUserId } == true
+                _vybe.value = v
+            }
         }
     }
 }
