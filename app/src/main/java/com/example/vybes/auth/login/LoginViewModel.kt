@@ -26,32 +26,29 @@ class LoginViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
-    private var _usernameText: String by mutableStateOf("")
+    private var _usernameText by mutableStateOf("")
     val usernameText: String
         get() = _usernameText
+
+    private var _passwordText by mutableStateOf("")
+    val passwordText: String
+        get() = _passwordText
+
+    private val _isLoginInfoInvalid = MutableStateFlow(false)
+    val isLoginInfoInvalid = _isLoginInfoInvalid.asStateFlow()
 
     fun updateUsernameText(updatedText: String) {
         _usernameText = updatedText
         _isLoginInfoInvalid.value = false
     }
 
-    private var _passwordText: String by mutableStateOf("")
-    val passwordText: String
-        get() = _passwordText
-
     fun updatePasswordText(updatedText: String) {
         _passwordText = updatedText
         _isLoginInfoInvalid.value = false
     }
 
-    private val _isLoginInfoInvalid = MutableStateFlow(false)
-    val isLoginInfoInvalid = _isLoginInfoInvalid.asStateFlow()
-
-    private fun validateRegisterInfo() {
-        val isUsernameValid = usernameText.isNotBlank()
-        val isPasswordValid = passwordText.isNotBlank()
-
-        _isLoginInfoInvalid.value = !isUsernameValid || !isPasswordValid
+    private fun validateLoginInfo() {
+        _isLoginInfoInvalid.value = usernameText.isBlank() || passwordText.isBlank()
     }
 
     fun login(onLoginSuccess: () -> Unit) {
@@ -59,7 +56,7 @@ class LoginViewModel @Inject constructor(
             _isLoginInfoInvalid.value = false
             _isLoading.value = true
 
-            validateRegisterInfo()
+            validateLoginInfo()
 
             delay(1000)
             if (!_isLoginInfoInvalid.value) {
@@ -73,7 +70,6 @@ class LoginViewModel @Inject constructor(
                         user.jwt
                     )
 
-                    _isLoading.value = false
                     onLoginSuccess()
                 } else {
                     _isLoginInfoInvalid.value = true

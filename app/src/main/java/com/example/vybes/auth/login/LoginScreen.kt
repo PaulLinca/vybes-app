@@ -46,8 +46,8 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit
 ) {
-
     val isLoading by viewModel.isLoading.collectAsState()
+    val isLoginInfoInvalid by viewModel.isLoginInfoInvalid.collectAsState()
 
     Column(
         modifier = Modifier
@@ -63,9 +63,8 @@ fun LoginScreen(
             style = logoStyle,
             fontSize = 50.sp
         )
-        val isRegisterInfoInvalid by viewModel.isLoginInfoInvalid.collectAsState()
         Spacer(modifier = Modifier.size(30.dp))
-        if (isRegisterInfoInvalid) {
+        if (isLoginInfoInvalid) {
             Text(
                 text = stringResource(R.string.invalid_input),
                 textAlign = TextAlign.Center,
@@ -74,60 +73,14 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.size(20.dp))
         }
-        MultilineTextField(
-            enabled = !isLoading,
-            value = viewModel.usernameText,
-            onValueChanged = { viewModel.updateUsernameText(it) },
-            textStyle = artistsStyle,
-            hintText = stringResource(R.string.username),
-            maxLines = 1,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp))
-                .background(Color.Black, shape = RoundedCornerShape(20.dp))
-                .border(
-                    1.dp, White, RoundedCornerShape(20.dp)
-                )
-        )
+
+        UsernameField(viewModel, isLoading)
         Spacer(modifier = Modifier.size(20.dp))
-        MultilineTextField(
-            enabled = !isLoading,
-            value = viewModel.passwordText,
-            onValueChanged = { viewModel.updatePasswordText(it) },
-            textStyle = artistsStyle,
-            hintText = stringResource(R.string.password),
-            maxLines = 1,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp))
-                .background(Color.Black, shape = RoundedCornerShape(20.dp))
-                .border(
-                    1.dp, White, RoundedCornerShape(20.dp)
-                )
-        )
+        PasswordField(viewModel, isLoading)
         Spacer(modifier = Modifier.size(20.dp))
-        Button(
-            enabled = !isLoading,
-            onClick = {
-                viewModel.login(onLoginSuccess)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp))
-                .background(SpotifyDarkGrey),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = SpotifyDarkGrey,
-                contentColor = Color.White,
-                disabledContainerColor = Color.Gray,
-                disabledContentColor = Color.LightGray
-            )
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp))
-            } else {
-                Text(text = stringResource(R.string.login))
-            }
-        }
+
+        LoginButton(viewModel, onLoginSuccess, isLoading)
+
         Spacer(modifier = Modifier.size(20.dp))
         Text(
             text = stringResource(R.string.need_an_account),
@@ -146,5 +99,63 @@ fun LoginScreen(
             ),
             style = artistsStyle
         )
+    }
+}
+
+@Composable
+fun UsernameField(viewModel: LoginViewModel, isLoading: Boolean) {
+    MultilineTextField(
+        enabled = !isLoading,
+        value = viewModel.usernameText,
+        onValueChanged = { viewModel.updateUsernameText(it) },
+        textStyle = artistsStyle,
+        hintText = stringResource(R.string.username),
+        maxLines = 1,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color.Black, shape = RoundedCornerShape(20.dp))
+            .border(1.dp, White, RoundedCornerShape(20.dp))
+    )
+}
+
+@Composable
+fun PasswordField(viewModel: LoginViewModel, isLoading: Boolean) {
+    MultilineTextField(
+        enabled = !isLoading,
+        value = viewModel.passwordText,
+        onValueChanged = { viewModel.updatePasswordText(it) },
+        textStyle = artistsStyle,
+        hintText = stringResource(R.string.password),
+        maxLines = 1,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color.Black, shape = RoundedCornerShape(20.dp))
+            .border(1.dp, White, RoundedCornerShape(20.dp))
+    )
+}
+
+@Composable
+fun LoginButton(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, isLoading: Boolean) {
+    Button(
+        enabled = !isLoading,
+        onClick = { viewModel.login(onLoginSuccess) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(SpotifyDarkGrey),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = SpotifyDarkGrey,
+            contentColor = Color.White,
+            disabledContainerColor = Color.Gray,
+            disabledContentColor = Color.LightGray
+        )
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.size(20.dp))
+        } else {
+            Text(text = stringResource(R.string.login))
+        }
     }
 }
