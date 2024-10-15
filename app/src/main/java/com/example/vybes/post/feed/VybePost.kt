@@ -48,70 +48,100 @@ import com.example.vybes.common.theme.SpotifyLighterGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
+import com.example.vybes.common.util.DateUtils
 import com.example.vybes.post.model.Vybe
-import java.util.stream.Collectors
+import com.example.vybes.sharedpreferences.SharedPreferencesManager
+import java.time.ZonedDateTime
 
 @Composable
-fun VybePost(vybe: Vybe, onClickCard: () -> Unit) {
+fun VybePost(
+    vybe: Vybe,
+    onClickCard: () -> Unit,
+    onLikeClicked: () -> Unit = {}
+) {
+    val context = LocalContext.current
+    val currentUserId = SharedPreferencesManager.getUserId(context)
+    val isLikedByCurrentUser = vybe.likes.any { it.userId == currentUserId }
+
     Column(modifier = Modifier.padding(vertical = 5.dp)) {
-        Row {
-            val context = LocalContext.current
-            IconButton(
-                onClick = {
-                    Toast.makeText(context, "Go to user profile", Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier
-                    .size(30.dp)
-                    .clip(CircleShape)
-                    .align(Alignment.CenterVertically)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.user),
-                    contentDescription = "Go to user profile",
-                    colorFilter = ColorFilter.tint(Color.Gray),
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .padding(start = 5.dp, top = 3.dp, bottom = 3.dp)
-                    .align(Alignment.CenterVertically)
-            ) {
-                Text(
-                    text = vybe.user.username,
-                    color = White,
-                    style = MaterialTheme.typography.labelLarge
-                )
-                Text(
-                    text = vybe.postedDate,
-                    color = Color.LightGray,
-                    style = MaterialTheme.typography.labelSmall
-                )
-            }
-        }
+        TopBar(username = vybe.user.username, postedDate = vybe.postedDate)
         VybeCard(vybe, onClickCard)
-        StatsBar(vybe = vybe, onClickComment = onClickCard, modifier = Modifier.padding(top = 5.dp))
+        StatsBar(
+            vybe = vybe,
+            onClickComment = onClickCard,
+            onLikeClicked = onLikeClicked,
+            modifier = Modifier.padding(top = 5.dp),
+            isLiked = isLikedByCurrentUser
+        )
+    }
+}
+
+@Composable
+fun TopBar(username: String, postedDate: ZonedDateTime) {
+    val context = LocalContext.current
+    Row {
+        IconButton(
+            onClick = {
+                Toast.makeText(context, "Go to user profile", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier
+                .size(30.dp)
+                .clip(CircleShape)
+                .align(Alignment.CenterVertically)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.user),
+                contentDescription = "Go to user profile",
+                colorFilter = ColorFilter.tint(Color.Gray),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .padding(start = 5.dp, top = 3.dp, bottom = 3.dp)
+                .align(Alignment.CenterVertically)
+        ) {
+            Text(
+                text = username,
+                color = White,
+                style = MaterialTheme.typography.labelLarge
+            )
+            Text(
+                text = DateUtils.formatPostedDate(postedDate),
+                color = Color.LightGray,
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
     }
 }
 
 @Composable
 fun StatsBar(
-    vybe: Vybe?,
+    vybe: Vybe,
     onClickComment: () -> Unit = {},
-    onClickThumbsUp: () -> Unit = {},
+    onLikeClicked: () -> Unit = {},
     modifier: Modifier,
     iconSize: Dp = 20.dp,
     isLiked: Boolean = false
 ) {
+    val context = LocalContext.current
+    val onClickSpotify = {
+        val urlIntent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("https://open.spotify.com/track/${vybe.spotifyTrackId}")
+        )
+        context.startActivity(urlIntent)
+    }
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier = modifier
     ) {
         IconTextButton(
             description = "Like this vybe",
-            onClick = onClickThumbsUp,
-            text = vybe?.likes.orEmpty().count().toString(),
+            onClick = onLikeClicked,
+            text = vybe.likes.size.toString(),
             drawableId = if (isLiked) R.drawable.thumb_up_filled else R.drawable.thumb_up,
             iconSize = iconSize,
             iconColor = White
@@ -119,16 +149,10 @@ fun StatsBar(
         IconTextButton(
             description = "Opening comments...",
             onClick = onClickComment,
-            text = vybe?.comments.orEmpty().count().toString(),
+            text = vybe.comments.size.toString(),
             drawableId = R.drawable.comment,
             iconSize = iconSize
         )
-        val context = LocalContext.current
-        val urlIntent = Intent(
-            Intent.ACTION_VIEW,
-            Uri.parse("https://open.spotify.com/track/" + vybe?.spotifyTrackId)
-        )
-        val onClickSpotify = { context.startActivity(urlIntent) }
         IconTextButton(
             description = "Going to spotify...",
             onClick = onClickSpotify,
@@ -195,9 +219,7 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
                     maxLines = 3
                 )
                 Text(
-                    text = vybe.spotifyArtists.stream()
-                        .map { a -> a.name }
-                        .collect(Collectors.joining(", ")),
+                    text = vybe.spotifyArtists.joinToString(", ") { it.name },
                     modifier = Modifier.padding(top = 3.dp, bottom = 7.dp),
                     style = artistsStyle,
                     maxLines = 1,

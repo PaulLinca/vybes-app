@@ -3,6 +3,7 @@ package com.example.vybes.post.model
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
+import java.time.ZonedDateTime
 
 @Serializable
 data class VybeScreen(val id: Long) {
@@ -19,7 +20,7 @@ data class Vybe(
     val spotifyArtists: List<Artist>,
     val spotifyAlbumId: String,
     val imageUrl: String,
-    val postedDate: String,
+    val postedDate: ZonedDateTime,
     val user: User,
     val likes: List<Like> = mutableListOf(),
     val comments: List<Comment> = mutableListOf(),

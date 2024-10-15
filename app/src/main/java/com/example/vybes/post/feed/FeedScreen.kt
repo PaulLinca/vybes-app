@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +36,7 @@ import com.example.vybes.common.theme.logoStyle
 import com.example.vybes.feedback.FeedbackScreen
 import com.example.vybes.post.model.VybeScreen
 import com.example.vybes.profile.ProfileScreen
+import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -61,9 +63,13 @@ fun FeedScreen(
         ) {
             val vybes by viewModel.vybes.collectAsState()
             vybes.forEach { v ->
-                VybePost(vybe = v, onClickCard = {
-                    navController.navigate(VybeScreen(v.id))
-                })
+                val currentUserId = SharedPreferencesManager.getUserId(LocalContext.current)
+                val isLikedByCurrentUser = v.likes.any { it.userId == currentUserId }
+
+                VybePost(
+                    vybe = v,
+                    onClickCard = { navController.navigate(VybeScreen(v.id)) },
+                    onLikeClicked = { viewModel.clickLikeButton(v.id, isLikedByCurrentUser) })
             }
         }
     }

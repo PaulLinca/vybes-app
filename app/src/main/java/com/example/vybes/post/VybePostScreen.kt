@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -52,6 +53,7 @@ import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
+import com.example.vybes.common.util.DateUtils
 import com.example.vybes.post.feed.StatsBar
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
@@ -65,7 +67,20 @@ fun VybePostScreen(
 ) {
     val vybe by vybeViewModel.vybe.collectAsState()
     val isLikedByUser by vybeViewModel.isLikedByCurrentUser.collectAsState()
+    if (vybe != null) {
+        VybePostScreen(onGoBack, vybe!!, isLikedByUser, vybeViewModel)
+    } else {
+        CircularProgressIndicator(modifier = Modifier.size(20.dp))
+    }
+}
 
+@Composable
+fun VybePostScreen(
+    onGoBack: () -> Unit,
+    vybe: Vybe,
+    isLikedByUser: Boolean,
+    vybeViewModel: VybeViewModel
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -73,13 +88,13 @@ fun VybePostScreen(
     ) {
         TopBarWithBackButton(onGoBack = onGoBack) {
             Text(
-                text = vybe?.user?.username.orEmpty(),
+                text = vybe.user.username,
                 color = White,
                 textAlign = TextAlign.Center,
                 style = songTitleStyle,
             )
             Text(
-                text = vybe?.postedDate.orEmpty(),
+                text = DateUtils.formatPostedDate(vybe.postedDate),
                 color = Color.LightGray,
                 textAlign = TextAlign.Center,
                 style = artistsStyle,
@@ -89,7 +104,7 @@ fun VybePostScreen(
         StatsBar(
             vybe = vybe,
             modifier = Modifier.padding(top = 8.dp, start = 8.dp, bottom = 8.dp),
-            onClickThumbsUp = {
+            onLikeClicked = {
                 if (isLikedByUser) {
                     vybeViewModel.unlikeVybe()
                 } else {
@@ -197,13 +212,13 @@ fun SongBanner(vybe: Vybe?) {
 }
 
 @Composable
-fun CommentSection(vybe: Vybe?, vybeViewModel: VybeViewModel, modifier: Modifier) {
+fun CommentSection(vybe: Vybe, vybeViewModel: VybeViewModel, modifier: Modifier) {
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
     ) {
-        vybe?.comments.orEmpty().forEach { c ->
+        vybe.comments.forEach { c ->
             Comment(c, vybeViewModel)
         }
     }
@@ -282,7 +297,8 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel) {
             Modifier.padding(horizontal = 5.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val isLikedByCurrentUser = comment.likeIds.any { it == SharedPreferencesManager.getUserId(context) }
+            val isLikedByCurrentUser =
+                comment.likeIds.any { it == SharedPreferencesManager.getUserId(context) }
             IconButton(
                 onClick = {
                     if (isLikedByCurrentUser) {
