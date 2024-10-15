@@ -69,7 +69,6 @@ class RegisterViewModel @Inject constructor(
 
             validateRegisterInfo()
 
-            delay(1000)
             if (!_isRegisterInfoInvalid.value) {
                 val response = authService.register(usernameText, passwordText)
                 if (response.isSuccessful && response.body() != null) {

@@ -48,8 +48,8 @@ fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
     onLoginClick: () -> Unit
 ) {
-
     val isLoading by viewModel.isLoading.collectAsState()
+    val isRegisterInfoInvalid by viewModel.isRegisterInfoInvalid.collectAsState()
 
     Column(
         modifier = Modifier
@@ -65,8 +65,8 @@ fun RegisterScreen(
             style = logoStyle,
             fontSize = 50.sp
         )
-        val isRegisterInfoInvalid by viewModel.isRegisterInfoInvalid.collectAsState()
         Spacer(modifier = Modifier.size(30.dp))
+
         if (isRegisterInfoInvalid) {
             Text(
                 text = stringResource(R.string.invalid_input),
@@ -76,6 +76,7 @@ fun RegisterScreen(
             )
             Spacer(modifier = Modifier.size(20.dp))
         }
+
         MultilineTextField(
             enabled = !isLoading,
             value = viewModel.usernameText,
@@ -87,11 +88,10 @@ fun RegisterScreen(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
                 .background(Color.Black, shape = RoundedCornerShape(20.dp))
-                .border(
-                    1.dp, White, RoundedCornerShape(20.dp)
-                )
+                .border(1.dp, White, RoundedCornerShape(20.dp))
         )
         Spacer(modifier = Modifier.size(20.dp))
+
         MultilineTextField(
             enabled = !isLoading,
             value = viewModel.passwordText,
@@ -103,11 +103,10 @@ fun RegisterScreen(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
                 .background(Color.Black, shape = RoundedCornerShape(20.dp))
-                .border(
-                    1.dp, White, RoundedCornerShape(20.dp)
-                )
+                .border(1.dp, White, RoundedCornerShape(20.dp))
         )
         Spacer(modifier = Modifier.size(20.dp))
+
         MultilineTextField(
             enabled = !isLoading,
             value = viewModel.repeatPasswordText,
@@ -119,11 +118,10 @@ fun RegisterScreen(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
                 .background(Color.Black, shape = RoundedCornerShape(20.dp))
-                .border(
-                    1.dp, White, RoundedCornerShape(20.dp)
-                )
+                .border(1.dp, White, RoundedCornerShape(20.dp))
         )
         Spacer(modifier = Modifier.size(20.dp))
+
         Button(
             enabled = !isLoading,
             onClick = {
@@ -147,6 +145,7 @@ fun RegisterScreen(
             }
         }
         Spacer(modifier = Modifier.size(20.dp))
+
         Text(
             text = stringResource(R.string.already_have_an_account),
             color = Color.LightGray,
@@ -155,13 +154,11 @@ fun RegisterScreen(
         Text(
             text = stringResource(R.string.login),
             color = Blue,
-            modifier = Modifier.clickable(
-                onClick = {
-                    if (!isLoading) {
-                        onLoginClick()
-                    }
+            modifier = Modifier.clickable {
+                if (!isLoading) {
+                    onLoginClick()
                 }
-            ),
+            },
             style = artistsStyle,
         )
     }
