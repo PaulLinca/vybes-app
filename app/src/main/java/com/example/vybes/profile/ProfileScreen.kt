@@ -1,5 +1,6 @@
 package com.example.vybes.profile
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,27 +19,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.vybes.R
+import com.example.vybes.auth.login.LoginScreen
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.songTitleStyle
+import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import kotlinx.serialization.Serializable
 
 @Serializable
 object ProfileScreen
 
 @Composable
-fun ProfileScreen(onGoBack: () -> Unit) {
+fun ProfileScreen(navController: NavController) {
+
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        TopBarWithBackButton(onGoBack = onGoBack) {}
+        TopBarWithBackButton(onGoBack = { navController.popBackStack() }) {}
         Column(
             modifier = Modifier
                 .padding(top = 40.dp)
@@ -52,25 +59,30 @@ fun ProfileScreen(onGoBack: () -> Unit) {
                     .size(80.dp)
                     .align(Alignment.CenterHorizontally)
             )
-            Spacer(modifier = Modifier
-                .size(10.dp)
-                .fillMaxWidth())
+            Spacer(
+                modifier = Modifier
+                    .size(10.dp)
+                    .fillMaxWidth()
+            )
             Text(
-                text = "Current User", color = White,
+                text = getCurrentUsername(context),
+                color = White,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally),
                 style = songTitleStyle,
             )
-            Spacer(modifier = Modifier
-                .size(30.dp)
-                .fillMaxWidth())
+            Spacer(
+                modifier = Modifier
+                    .size(30.dp)
+                    .fillMaxWidth()
+            )
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
                     .align(Alignment.CenterHorizontally)
                     .background(SpotifyDarkGrey)
                     .padding(horizontal = 20.dp, vertical = 8.dp)
-                    .clickable(onClick = { }),
+                    .clickable(onClick = onClearCache(context, navController)),
             ) {
                 Text(
                     text = "Clear cache", color = White,
@@ -80,8 +92,16 @@ fun ProfileScreen(onGoBack: () -> Unit) {
     }
 }
 
-@Preview
-@Composable
-fun Preview() {
-    ProfileScreen({})
+private fun getCurrentUsername(context: Context) =
+    SharedPreferencesManager.getUsername(context).orEmpty()
+
+private fun onClearCache(
+    context: Context,
+    navController: NavController
+): () -> Unit = {
+    SharedPreferencesManager.clearUserData(context)
+    navController.navigate(LoginScreen) {
+        popUpTo(0) { inclusive = true }
+        launchSingleTop = true
+    }
 }

@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
                         FeedScreen(navController)
                     }
                     composable<ProfileScreen> {
-                        ProfileScreen(onGoBack = { navController.popBackStack() })
+                        ProfileScreen(navController)
                     }
                     composable<VybeScreen> {
                         VybePostScreen(onGoBack = { navController.popBackStack() })
