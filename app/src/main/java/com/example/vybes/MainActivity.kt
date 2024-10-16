@@ -1,8 +1,11 @@
 package com.example.vybes
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,6 +18,7 @@ import com.example.vybes.post.VybePostScreen
 import com.example.vybes.post.feed.FeedScreen
 import com.example.vybes.post.model.VybeScreen
 import com.example.vybes.profile.ProfileScreen
+import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,8 +30,12 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             VybesTheme {
+
+                val isLoggedIn = remember { mutableStateOf(checkIfUserIsLoggedIn(this)) }
+                val startDestination = if (isLoggedIn.value) FeedScreen else RegisterScreen
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = RegisterScreen) {
+
+                NavHost(navController = navController, startDestination = startDestination) {
                     composable<RegisterScreen> {
                         RegisterScreen(
                             onRegisterSuccess = { navController.navigate(LoginScreen) },
@@ -36,7 +44,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<LoginScreen> {
                         LoginScreen(
-                            onLoginSuccess = { navController.navigate(FeedScreen) },
+                            navController = navController,
                             onRegisterClick = { navController.navigate(RegisterScreen) })
                     }
                     composable<FeedScreen> {
@@ -55,4 +63,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+fun checkIfUserIsLoggedIn(context: Context): Boolean {
+    val jwt = SharedPreferencesManager.getJwt(context)
+    return !jwt.isNullOrEmpty()
 }

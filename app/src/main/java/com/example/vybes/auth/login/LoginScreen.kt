@@ -16,6 +16,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,7 +28,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.vybes.R
+import com.example.vybes.auth.register.RegisterScreen
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.theme.Blue
 import com.example.vybes.common.theme.ErrorRed
@@ -35,6 +38,7 @@ import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.logoStyle
+import com.example.vybes.post.feed.FeedScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -43,11 +47,21 @@ object LoginScreen
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    onLoginSuccess: () -> Unit,
+    navController: NavController,
     onRegisterClick: () -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val isLoginInfoInvalid by viewModel.isLoginInfoInvalid.collectAsState()
+    val isLoginSuccess by viewModel.isLoginSuccess.collectAsState()
+
+    // Handle login success and navigation
+    LaunchedEffect(isLoginSuccess) {
+        if (isLoginSuccess) {
+            navController.navigate(FeedScreen) {
+                popUpTo(RegisterScreen) { inclusive = true } // Remove both screens
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -79,7 +93,7 @@ fun LoginScreen(
         PasswordField(viewModel, isLoading)
         Spacer(modifier = Modifier.size(20.dp))
 
-        LoginButton(viewModel, onLoginSuccess, isLoading)
+        LoginButton(viewModel, isLoading)
 
         Spacer(modifier = Modifier.size(20.dp))
         Text(
@@ -137,10 +151,10 @@ fun PasswordField(viewModel: LoginViewModel, isLoading: Boolean) {
 }
 
 @Composable
-fun LoginButton(viewModel: LoginViewModel, onLoginSuccess: () -> Unit, isLoading: Boolean) {
+fun LoginButton(viewModel: LoginViewModel, isLoading: Boolean) {
     Button(
         enabled = !isLoading,
-        onClick = { viewModel.login(onLoginSuccess) },
+        onClick = { viewModel.login() },
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))

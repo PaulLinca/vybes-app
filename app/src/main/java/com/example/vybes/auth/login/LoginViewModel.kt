@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,6 +26,9 @@ class LoginViewModel @Inject constructor(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
+
+    private val _isLoginSuccess = MutableStateFlow(false)
+    val isLoginSuccess = _isLoginSuccess.asStateFlow()
 
     private var _usernameText by mutableStateOf("")
     val usernameText: String
@@ -51,7 +55,7 @@ class LoginViewModel @Inject constructor(
         _isLoginInfoInvalid.value = usernameText.isBlank() || passwordText.isBlank()
     }
 
-    fun login(onLoginSuccess: () -> Unit) {
+    fun login() {
         viewModelScope.launch {
             _isLoginInfoInvalid.value = false
             _isLoading.value = true
@@ -70,7 +74,7 @@ class LoginViewModel @Inject constructor(
                         user.jwt
                     )
 
-                    onLoginSuccess()
+                    _isLoginSuccess.value = true
                 } else {
                     _isLoginInfoInvalid.value = true
                 }
