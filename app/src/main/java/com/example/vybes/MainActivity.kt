@@ -10,6 +10,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.vybes.add.SearchTrackScreen
 import com.example.vybes.auth.login.LoginScreen
 import com.example.vybes.auth.register.RegisterScreen
 import com.example.vybes.common.theme.VybesTheme
@@ -49,6 +50,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<FeedScreen> {
                         FeedScreen(navController)
+                    }
+                    composable<SearchTrackScreen> {
+                        SearchTrackScreen()
                     }
                     composable<ProfileScreen> {
                         ProfileScreen(navController)

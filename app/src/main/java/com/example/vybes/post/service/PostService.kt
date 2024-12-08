@@ -1,5 +1,6 @@
 package com.example.vybes.post.service
 
+import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.network.LikeResponse
@@ -25,4 +26,6 @@ interface PostService {
     suspend fun addComment(vybeId: Long, text: String): Response<Comment>
 
     suspend fun deleteComment(vybeId: Long, commentId: Long): Response<Comment>
+
+    suspend fun searchTrack(query: String): Response<List<TrackSearchResult>>
 }

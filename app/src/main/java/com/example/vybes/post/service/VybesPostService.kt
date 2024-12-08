@@ -1,5 +1,6 @@
 package com.example.vybes.post.service
 
+import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.network.VybesApiClient
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
@@ -57,5 +58,9 @@ class VybesPostService @Inject constructor(
         return vybesApiClient.getCommentsByVybeId(
             vybeId
         )
+    }
+
+    override suspend fun searchTrack(query: String): Response<List<TrackSearchResult>> {
+        return vybesApiClient.getSearchResults(query)
     }
 }

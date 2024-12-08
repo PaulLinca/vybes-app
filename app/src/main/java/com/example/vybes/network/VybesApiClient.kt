@@ -1,5 +1,6 @@
 package com.example.vybes.network
 
+import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.auth.model.AuthRequest
 import com.example.vybes.auth.model.LoginResponse
 import com.example.vybes.auth.model.RegisterResponse
@@ -13,6 +14,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface VybesApiClient {
 
@@ -70,4 +72,9 @@ interface VybesApiClient {
         @Path("vybeId") vybeId: Long,
         @Path("commentId") commentId: Long
     ): Response<LikeResponse>
+
+    @GET("api/spotify")
+    suspend fun getSearchResults(
+        @Query("query") query: String
+    ): Response<List<TrackSearchResult>>
 }

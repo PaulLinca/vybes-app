@@ -16,6 +16,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.ZonedDateTime
@@ -34,8 +35,13 @@ object AppModule {
     @Provides
     @Singleton
     fun provideRetrofit(@ApplicationContext context: Context): Retrofit {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
         val client = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(context))
+            .addInterceptor(loggingInterceptor)
             .build()
 
         val gson = GsonBuilder()

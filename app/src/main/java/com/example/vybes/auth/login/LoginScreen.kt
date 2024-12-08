@@ -54,7 +54,6 @@ fun LoginScreen(
     val isLoginInfoInvalid by viewModel.isLoginInfoInvalid.collectAsState()
     val isLoginSuccess by viewModel.isLoginSuccess.collectAsState()
 
-    // Handle login success and navigation
     LaunchedEffect(isLoginSuccess) {
         if (isLoginSuccess) {
             navController.navigate(FeedScreen) {
