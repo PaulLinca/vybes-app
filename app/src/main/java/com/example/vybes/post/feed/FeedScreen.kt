@@ -72,7 +72,7 @@ fun FeedScreen(
             ) {
                 val vybes by viewModel.vybes.collectAsState()
                 vybes.forEach { v ->
-                    val currentUserId = SharedPreferencesManager.getUserId(LocalContext.current)
+                    val currentUserId = SharedPreferencesManager.getUserId()
                     val isLikedByCurrentUser = v.likes.any { it.userId == currentUserId }
 
                     VybePost(

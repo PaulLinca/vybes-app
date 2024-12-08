@@ -6,6 +6,7 @@ import com.example.vybes.auth.service.VybesAuthService
 import com.example.vybes.feedback.service.DummyFeedbackService
 import com.example.vybes.feedback.service.FeedbackService
 import com.example.vybes.network.AuthInterceptor
+import com.example.vybes.network.TokenAuthenticator
 import com.example.vybes.network.VybesApiClient
 import com.example.vybes.post.service.PostService
 import com.example.vybes.post.service.VybesPostService
@@ -28,19 +29,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideContext(@ApplicationContext context: Context): Context {
-        return context
-    }
-
-    @Provides
-    @Singleton
-    fun provideRetrofit(@ApplicationContext context: Context): Retrofit {
+    fun provideRetrofit(): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
         val client = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(context))
+            .addInterceptor(AuthInterceptor())
+            .authenticator(TokenAuthenticator)
             .addInterceptor(loggingInterceptor)
             .build()
 
@@ -57,7 +53,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit): VybesApiClient {
+    fun provideApiClient(retrofit: Retrofit): VybesApiClient {
         return retrofit.create(VybesApiClient::class.java)
     }
 
@@ -69,13 +65,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFeedbackService(): FeedbackService {
-        return DummyFeedbackService()
+    fun provideVybeService(vybesApiClient: VybesApiClient): PostService {
+        return VybesPostService(vybesApiClient)
     }
 
     @Provides
     @Singleton
-    fun provideVybeService(vybesApiClient: VybesApiClient): PostService {
-        return VybesPostService(vybesApiClient)
+    fun provideFeedbackService(): FeedbackService {
+        return DummyFeedbackService()
     }
 }

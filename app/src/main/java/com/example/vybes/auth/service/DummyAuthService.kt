@@ -10,6 +10,10 @@ class DummyAuthService : AuthService {
     }
 
     override suspend fun login(username: String, password: String): Response<LoginResponse> {
-        return Response.success(LoginResponse(1, "currentuser", "jwt"))
+        return Response.success(LoginResponse(1, "currentuser", "jwt", "refresh"))
+    }
+
+    override suspend fun refresh(token: String): Response<LoginResponse> {
+        return Response.success(LoginResponse(1, "currentuser", "jwt", "refresh"))
     }
 }

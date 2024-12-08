@@ -298,7 +298,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val isLikedByCurrentUser =
-                comment.likeIds.any { it == SharedPreferencesManager.getUserId(context) }
+                comment.likeIds.any { it == SharedPreferencesManager.getUserId() }
             IconButton(
                 onClick = {
                     if (isLikedByCurrentUser) {

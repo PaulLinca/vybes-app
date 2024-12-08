@@ -127,7 +127,7 @@ class VybeViewModel @Inject constructor(
 
             retrievedVybe.body().let { v ->
                 val context = getApplication<Application>().applicationContext
-                val currentUserId = SharedPreferencesManager.getUserId(context)
+                val currentUserId = SharedPreferencesManager.getUserId()
                 _isLikedByCurrentUser.value = v?.likes?.any { it.userId == currentUserId } == true
                 _vybe.value = v
             }

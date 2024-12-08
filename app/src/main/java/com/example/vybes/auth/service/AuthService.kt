@@ -8,4 +8,6 @@ interface AuthService {
     suspend fun register(username: String, password: String) : Response<RegisterResponse>
 
     suspend fun login(username: String, password: String): Response<LoginResponse>
+
+    suspend fun refresh(token: String): Response<LoginResponse>
 }

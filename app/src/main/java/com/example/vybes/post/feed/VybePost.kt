@@ -59,8 +59,7 @@ fun VybePost(
     onClickCard: () -> Unit,
     onLikeClicked: () -> Unit = {}
 ) {
-    val context = LocalContext.current
-    val currentUserId = SharedPreferencesManager.getUserId(context)
+    val currentUserId = SharedPreferencesManager.getUserId()
     val isLikedByCurrentUser = vybe.likes.any { it.userId == currentUserId }
 
     Column(modifier = Modifier.padding(vertical = 5.dp)) {

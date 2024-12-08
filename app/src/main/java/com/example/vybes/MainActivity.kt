@@ -1,6 +1,6 @@
 package com.example.vybes
 
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,6 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,7 +33,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             VybesTheme {
 
-                val isLoggedIn = remember { mutableStateOf(checkIfUserIsLoggedIn(this)) }
+                val isLoggedIn = remember { mutableStateOf(checkIfUserIsLoggedIn()) }
                 val startDestination = if (isLoggedIn.value) FeedScreen else RegisterScreen
                 val navController = rememberNavController()
 
@@ -69,7 +70,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-fun checkIfUserIsLoggedIn(context: Context): Boolean {
-    val jwt = SharedPreferencesManager.getJwt(context)
-    return !jwt.isNullOrEmpty()
+fun checkIfUserIsLoggedIn(): Boolean {
+    return !SharedPreferencesManager.getJwt().isNullOrEmpty()
 }
+

@@ -1,6 +1,5 @@
 package com.example.vybes.profile
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -37,8 +35,6 @@ object ProfileScreen
 
 @Composable
 fun ProfileScreen(navController: NavController) {
-
-    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -65,7 +61,7 @@ fun ProfileScreen(navController: NavController) {
                     .fillMaxWidth()
             )
             Text(
-                text = getCurrentUsername(context),
+                text = getCurrentUsername(),
                 color = White,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally),
@@ -82,7 +78,7 @@ fun ProfileScreen(navController: NavController) {
                     .align(Alignment.CenterHorizontally)
                     .background(SpotifyDarkGrey)
                     .padding(horizontal = 20.dp, vertical = 8.dp)
-                    .clickable(onClick = onClearCache(context, navController)),
+                    .clickable(onClick = onClearCache(navController)),
             ) {
                 Text(
                     text = "Clear cache", color = White,
@@ -92,14 +88,13 @@ fun ProfileScreen(navController: NavController) {
     }
 }
 
-private fun getCurrentUsername(context: Context) =
-    SharedPreferencesManager.getUsername(context).orEmpty()
+private fun getCurrentUsername() =
+    SharedPreferencesManager.getUsername().orEmpty()
 
 private fun onClearCache(
-    context: Context,
     navController: NavController
 ): () -> Unit = {
-    SharedPreferencesManager.clearUserData(context)
+    SharedPreferencesManager.clearUserData()
     navController.navigate(LoginScreen) {
         popUpTo(0) { inclusive = true }
         launchSingleTop = true

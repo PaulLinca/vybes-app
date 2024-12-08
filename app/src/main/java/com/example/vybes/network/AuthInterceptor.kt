@@ -1,11 +1,10 @@
 package com.example.vybes.network
 
-import android.content.Context
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class AuthInterceptor(private val context: Context) : Interceptor {
+class AuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val url = request.url.toString()
@@ -15,7 +14,7 @@ class AuthInterceptor(private val context: Context) : Interceptor {
         }
 
         val requestBuilder = request.newBuilder()
-        val token = SharedPreferencesManager.getJwt(context)
+        val token = SharedPreferencesManager.getJwt()
 
         if (token != null) {
             requestBuilder.addHeader("Authorization", "Bearer $token")

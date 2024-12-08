@@ -10,13 +10,16 @@ object SharedPreferencesManager {
     private const val USER_ID_KEY = "USER_ID"
     private const val USERNAME_KEY = "USERNAME"
     private const val JWT_KEY = "JWT"
+    private const val REFRESH_TOKEN = "REFRESH_TOKEN"
 
-    private fun getEncryptedPreferences(context: Context): SharedPreferences {
+    private lateinit var sharedPreferences: SharedPreferences
+
+    fun init(context: Context) {
         val masterKeyAlias = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
 
-        return EncryptedSharedPreferences.create(
+        sharedPreferences = EncryptedSharedPreferences.create(
             context,
             PREF_NAME,
             masterKeyAlias,
@@ -25,29 +28,34 @@ object SharedPreferencesManager {
         )
     }
 
-    fun saveUserData(context: Context, userId: Long, username: String, jwt: String) {
-        val editor = getEncryptedPreferences(context).edit()
-        editor.putLong(USER_ID_KEY, userId)
-        editor.putString(USERNAME_KEY, username)
-        editor.putString(JWT_KEY, jwt)
-        editor.apply()
+    fun saveDataOnLogin(userId: Long, username: String, jwt: String, refreshToken: String) {
+        saveUserData(userId, username)
+        saveTokens(jwt, refreshToken)
     }
 
-    fun getUserId(context: Context): Long {
-        return getEncryptedPreferences(context).getLong(USER_ID_KEY, -1)
+    fun saveUserData(userId: Long, username: String) {
+        sharedPreferences.edit()
+            .putLong(USER_ID_KEY, userId)
+            .putString(USERNAME_KEY, username)
+            .apply()
     }
 
-    fun getUsername(context: Context): String? {
-        return getEncryptedPreferences(context).getString(USERNAME_KEY, null)
+    fun saveTokens(jwt: String, refreshToken: String) {
+        sharedPreferences.edit()
+            .putString(JWT_KEY, jwt)
+            .putString(REFRESH_TOKEN, refreshToken)
+            .apply()
     }
 
-    fun getJwt(context: Context): String? {
-        return getEncryptedPreferences(context).getString(JWT_KEY, null)
-    }
+    fun getUserId(): Long = sharedPreferences.getLong(USER_ID_KEY, -1)
 
-    fun clearUserData(context: Context) {
-        val editor = getEncryptedPreferences(context).edit()
-        editor.clear()
-        editor.apply()
+    fun getUsername(): String? = sharedPreferences.getString(USERNAME_KEY, null)
+
+    fun getJwt(): String? = sharedPreferences.getString(JWT_KEY, null)
+
+    fun getRefreshToken(): String? = sharedPreferences.getString(REFRESH_TOKEN, null)
+
+    fun clearUserData() {
+        sharedPreferences.edit().clear().apply()
     }
 }
