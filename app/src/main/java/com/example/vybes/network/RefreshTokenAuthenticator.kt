@@ -1,6 +1,5 @@
 package com.example.vybes.network
 
-import android.util.Log
 import com.example.vybes.auth.model.LoginResponse
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import com.google.gson.GsonBuilder
@@ -16,7 +15,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 object TokenAuthenticator : Authenticator {
     override fun authenticate(route: Route?, response: Response): Request? {
         val refreshToken = SharedPreferencesManager.getRefreshToken()
-        Log.e("WTF", "WTF")
         if (refreshToken.isNullOrEmpty()) {
             return null
         }

@@ -1,6 +1,5 @@
 package com.example.vybes.dependencyInjection
 
-import android.content.Context
 import com.example.vybes.auth.service.AuthService
 import com.example.vybes.auth.service.VybesAuthService
 import com.example.vybes.feedback.service.DummyFeedbackService
@@ -14,7 +13,6 @@ import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
