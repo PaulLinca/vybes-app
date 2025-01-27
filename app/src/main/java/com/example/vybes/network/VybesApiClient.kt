@@ -77,7 +77,7 @@ interface VybesApiClient {
         @Path("commentId") commentId: Long
     ): Response<LikeResponse>
 
-    @GET("api/spotify")
+    @GET("api/spotify/search")
     suspend fun getSearchResults(
         @Query("query") query: String
     ): Response<List<TrackSearchResult>>
