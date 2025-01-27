@@ -27,6 +27,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.common.composables.MultilineTextField
+import com.example.vybes.common.theme.SpotifyDarkGrey
+import com.example.vybes.common.theme.artistsStyle
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -44,19 +46,21 @@ fun SearchTrackScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = Color.Black)
             .padding(16.dp)
     ) {
         MultilineTextField(
             value = searchQuery,
             onValueChanged = { viewModel.updateSearchQuery(it) },
             hintText = "Search for tracks...",
-            textStyle = MaterialTheme.typography.body1,
+            textStyle = artistsStyle,
+            maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(25.dp))
-                .background(Color.Black, shape = RoundedCornerShape(25.dp))
-                .border(1.dp, Color.White, RoundedCornerShape(25.dp))
-                .padding(8.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.Black, shape = RoundedCornerShape(16.dp))
+                .border(1.dp, Color.White, RoundedCornerShape(16.dp))
+                .padding(6.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -91,7 +95,7 @@ fun TrackItem(track: TrackSearchResult) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .background(Color.DarkGray, shape = RoundedCornerShape(8.dp))
+            .background(SpotifyDarkGrey, shape = RoundedCornerShape(8.dp))
             .padding(8.dp)
     ) {
         AsyncImage(
