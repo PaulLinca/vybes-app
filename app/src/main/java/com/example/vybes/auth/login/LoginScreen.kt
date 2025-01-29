@@ -28,9 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.example.vybes.R
-import com.example.vybes.auth.register.RegisterScreen
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.theme.Blue
 import com.example.vybes.common.theme.ErrorRed
@@ -38,7 +36,6 @@ import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.logoStyle
-import com.example.vybes.post.feed.FeedScreen
 import kotlinx.serialization.Serializable
 
 @Serializable

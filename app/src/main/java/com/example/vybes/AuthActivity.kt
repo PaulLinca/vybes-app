@@ -21,7 +21,7 @@ class AuthActivity : ComponentActivity() {
 
         installSplashScreen()
 
-        if(SharedPreferencesManager.isLoggedIn()) {
+        if (SharedPreferencesManager.isLoggedIn()) {
             startMainActivity()
         }
 

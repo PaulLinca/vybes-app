@@ -1,6 +1,5 @@
 package com.example.vybes.network
 
-import android.util.Log
 import com.example.vybes.auth.AuthEvent
 import com.example.vybes.auth.AuthEventBus
 import com.example.vybes.auth.model.LoginResponse
@@ -23,11 +22,8 @@ object TokenAuthenticator : Authenticator {
     override fun authenticate(route: Route?, response: Response): Request? {
         return runBlocking {
             mutex.withLock {
-                Log.e("TokenAuthenticator", "getting refresh token")
                 val refreshToken = SharedPreferencesManager.getRefreshToken()
-                Log.e("TokenAuthenticator", "Refresh token" + refreshToken)
                 if (refreshToken.isNullOrEmpty()) {
-                    Log.e("TokenAuthenticator", "emitting event")
                     AuthEventBus.emit(AuthEvent.TokenExpired)
                     return@withLock null
                 }
@@ -40,7 +36,6 @@ object TokenAuthenticator : Authenticator {
                     }
 
                     val newTokenResponse = getUpdatedToken(refreshToken)
-                    Log.e("TokenAuthenticator", "response" + newTokenResponse)
                     if (newTokenResponse.isSuccessful) {
                         val newToken = newTokenResponse.body()?.jwt
                         val newRefreshToken = newTokenResponse.body()?.refreshToken
@@ -53,13 +48,11 @@ object TokenAuthenticator : Authenticator {
                                 .build()
                         }
                     }
-                    Log.e("TokenAuthenticator", "refresh failed - emitting event")
                     // refresh failed
                     SharedPreferencesManager.clearTokens()
                     AuthEventBus.emit(AuthEvent.TokenExpired)
                     null
                 } catch (e: Exception) {
-                    Log.e("TokenAuthenticator", "exception - emitting event")
                     // exception happened
                     SharedPreferencesManager.clearTokens()
                     AuthEventBus.emit(AuthEvent.TokenExpired)

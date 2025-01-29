@@ -5,8 +5,6 @@ import com.example.vybes.auth.model.LoginResponse
 import com.example.vybes.auth.model.RegisterResponse
 import com.example.vybes.network.VybesApiClient
 import retrofit2.Response
-import retrofit2.Retrofit
-import javax.inject.Inject
 
 class VybesAuthService(private val vybesApiClient: VybesApiClient) : AuthService {
 

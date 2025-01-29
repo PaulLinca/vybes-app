@@ -29,6 +29,7 @@ fun VybesTheme(
             val context = LocalContext.current
             dynamicDarkColorScheme(context)
         }
+
         else -> DarkColorScheme
     }
 
