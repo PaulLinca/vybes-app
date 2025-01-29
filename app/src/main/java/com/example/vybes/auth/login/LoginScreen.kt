@@ -47,8 +47,8 @@ object LoginScreen
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    navController: NavController,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    onLoginSuccess: () -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val isLoginInfoInvalid by viewModel.isLoginInfoInvalid.collectAsState()
@@ -56,9 +56,7 @@ fun LoginScreen(
 
     LaunchedEffect(isLoginSuccess) {
         if (isLoginSuccess) {
-            navController.navigate(FeedScreen) {
-                popUpTo(RegisterScreen) { inclusive = true } // Remove both screens
-            }
+            onLoginSuccess.invoke()
         }
     }
 

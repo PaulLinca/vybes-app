@@ -58,4 +58,41 @@ object SharedPreferencesManager {
     fun clearUserData() {
         sharedPreferences.edit().clear().apply()
     }
+
+    fun isLoggedIn(): Boolean {
+        return getUserId() != -1L &&
+                !getUsername().isNullOrEmpty() &&
+                !getJwt().isNullOrEmpty() &&
+                !getRefreshToken().isNullOrEmpty()
+    }
+
+    fun logout() {
+        clearUserData()
+    }
+
+    fun hasValidTokens(): Boolean {
+        return !getJwt().isNullOrEmpty() && !getRefreshToken().isNullOrEmpty()
+    }
+
+    fun clearTokens() {
+        sharedPreferences.edit()
+            .remove(JWT_KEY)
+            .remove(REFRESH_TOKEN)
+            .apply()
+    }
+
+    fun getCurrentUserData(): UserData? {
+        val userId = getUserId()
+        val username = getUsername()
+
+        return if (userId != -1L && !username.isNullOrEmpty()) {
+            UserData(userId, username)
+        } else null
+    }
 }
+
+// Data class to hold user information
+data class UserData(
+    val userId: Long,
+    val username: String
+)

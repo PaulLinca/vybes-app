@@ -25,7 +25,7 @@ class FeedViewModel @Inject constructor(
 
     private fun loadPosts() {
         viewModelScope.launch {
-            _vybes.value = postService.getAllVybes().body()!!
+            _vybes.value = postService.getAllVybes().body().orEmpty()
         }
     }
 
