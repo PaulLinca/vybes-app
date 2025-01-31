@@ -7,8 +7,10 @@ import com.example.vybes.feedback.service.FeedbackService
 import com.example.vybes.network.AuthInterceptor
 import com.example.vybes.network.TokenAuthenticator
 import com.example.vybes.network.VybesApiClient
+import com.example.vybes.network.ZonedDateTimeTypeAdapter
 import com.example.vybes.post.service.PostService
 import com.example.vybes.post.service.VybesPostService
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -27,7 +29,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit {
+    fun provideGson(): Gson {
+        return GsonBuilder()
+            .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeTypeAdapter())
+            .create()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(gson: Gson): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
@@ -37,10 +47,6 @@ object AppModule {
             .authenticator(TokenAuthenticator)
             .addInterceptor(loggingInterceptor)
             .build()
-
-        val gson = GsonBuilder()
-            .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeDeserializer())
-            .create()
 
         return Retrofit.Builder()
             .baseUrl("http://10.0.2.2:8080/")

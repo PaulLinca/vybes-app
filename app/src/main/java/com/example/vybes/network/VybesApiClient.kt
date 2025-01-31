@@ -8,6 +8,7 @@ import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.network.AddCommentRequest
 import com.example.vybes.post.model.network.LikeResponse
+import com.example.vybes.post.service.PostRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -31,8 +32,8 @@ interface VybesApiClient {
     @GET("api/vybes/findAll")
     suspend fun getAllPosts(): Response<List<Vybe>>
 
-    @GET("api/vybes/post")
-    suspend fun post(): Response<Vybe>
+    @POST("api/vybes/post")
+    suspend fun post(@Body postRequest: PostRequest): Response<Vybe>
 
     @GET("api/vybes/{vybeId}")
     suspend fun getPostById(@Path("vybeId") vybeId: Long): Response<Vybe>

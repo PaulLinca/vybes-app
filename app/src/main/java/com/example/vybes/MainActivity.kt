@@ -8,7 +8,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.example.vybes.add.AddPostScreen
 import com.example.vybes.add.SearchTrackScreen
+import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.auth.AuthEvent
 import com.example.vybes.auth.AuthEventBus
 import com.example.vybes.common.theme.VybesTheme
@@ -51,7 +54,18 @@ class MainActivity : ComponentActivity() {
                         FeedScreen(navController)
                     }
                     composable<SearchTrackScreen> {
-                        SearchTrackScreen()
+                        SearchTrackScreen(navController)
+                    }
+                    composable<TrackSearchResult> { backStackEntry ->
+                        val searchResult: TrackSearchResult = backStackEntry.toRoute()
+                        AddPostScreen(
+                            searchResult,
+                            onGoBack = { navController.popBackStack() },
+                            onSubmitSuccess = {
+                                navController.navigate(FeedScreen) {
+                                    popUpTo(0)
+                                }
+                            })
                     }
                     composable<ProfileScreen> {
                         ProfileScreen(navController)

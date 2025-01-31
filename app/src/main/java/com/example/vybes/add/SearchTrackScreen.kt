@@ -1,7 +1,9 @@
 package com.example.vybes.add
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.common.composables.MultilineTextField
@@ -36,6 +39,7 @@ object SearchTrackScreen
 
 @Composable
 fun SearchTrackScreen(
+    navController: NavController,
     viewModel: SearchTrackViewModel = hiltViewModel()
 ) {
     val searchQuery = viewModel.searchQuery
@@ -81,7 +85,7 @@ fun SearchTrackScreen(
             searchResults.isNotEmpty() -> {
                 LazyColumn {
                     items(searchResults) { track ->
-                        TrackItem(track = track)
+                        TrackItem(navController, track = track)
                     }
                 }
             }
@@ -90,9 +94,10 @@ fun SearchTrackScreen(
 }
 
 @Composable
-fun TrackItem(track: TrackSearchResult) {
+fun TrackItem(navController: NavController, track: TrackSearchResult) {
     Row(
         modifier = Modifier
+            .clickable { navController.navigate(track) }
             .fillMaxWidth()
             .padding(8.dp)
             .background(SpotifyDarkGrey, shape = RoundedCornerShape(8.dp))
