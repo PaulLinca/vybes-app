@@ -1,6 +1,5 @@
 package com.example.vybes.add
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,12 +16,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -55,11 +58,11 @@ fun AddPostScreen(
     onSubmitSuccess: () -> Unit,
     viewModel: AddPostViewModel = hiltViewModel()
 ) {
+    val isLoading by viewModel.isLoading.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { success ->
             if (success) {
-                Log.e("SDS", "NAVIGATIING")
                 onSubmitSuccess()
             }
         }
@@ -87,6 +90,7 @@ fun AddPostScreen(
 
         Button(
             onClick = { viewModel.submit(searchResult.id) },
+            enabled = !isLoading,
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
@@ -94,10 +98,18 @@ fun AddPostScreen(
             colors = ButtonDefaults.buttonColors(containerColor = SpotifyDarkGrey),
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
         ) {
-            Text(
-                text = stringResource(R.string.submit),
-                color = White
-            )
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = White,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.submit),
+                    color = White
+                )
+            }
         }
     }
 }
@@ -164,7 +176,6 @@ fun VybeCard(searchResult: TrackSearchResult, onClickCard: () -> Unit) {
                 )
             }
         }
-
     }
 }
 
