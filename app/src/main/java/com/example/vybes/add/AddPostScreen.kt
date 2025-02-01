@@ -8,7 +8,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +18,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -74,20 +78,25 @@ fun AddPostScreen(
                 style = songTitleStyle,
             )
         }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
         VybeCard(searchResult = searchResult) {}
-        Box(
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Button(
+            onClick = { viewModel.submit(searchResult.id) },
             modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .align(Alignment.CenterHorizontally)
-                .background(SpotifyDarkGrey)
-                .padding(horizontal = 20.dp, vertical = 8.dp)
-                .clickable(
-                    onClick = {
-                        viewModel.submit(searchResult.id)
-                    }),
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = SpotifyDarkGrey),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
         ) {
             Text(
-                text = stringResource(R.string.submit), color = White,
+                text = stringResource(R.string.submit),
+                color = White
             )
         }
     }
