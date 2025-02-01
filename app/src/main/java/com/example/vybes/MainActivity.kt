@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             AuthEventBus.authEvents.collect { event ->
                 when (event) {
-                    is AuthEvent.TokenExpired -> {
+                    is AuthEvent.TokenExpired, AuthEvent.TokenCleared -> {
                         startActivity(
                             Intent(this@MainActivity, AuthActivity::class.java)
                                 .apply {
