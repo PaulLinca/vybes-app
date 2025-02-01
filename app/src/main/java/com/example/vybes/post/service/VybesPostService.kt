@@ -24,9 +24,7 @@ class VybesPostService @Inject constructor(
     }
 
     override suspend fun postVybe(id: String): Response<Vybe> {
-        var s = PostRequest(id, ZonedDateTime.now())
-        Log.e("SDS", PostRequest(id, ZonedDateTime.now()).toString())
-        return vybesApiClient.post(s)
+        return vybesApiClient.post(PostRequest(id, ZonedDateTime.now()))
     }
 
     override suspend fun getAllLikesOnVybe(vybeId: Long): Response<List<LikeResponse>> {
