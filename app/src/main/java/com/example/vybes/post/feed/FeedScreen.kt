@@ -84,35 +84,7 @@ fun FeedScreen(
 
             TopBar(navController)
 
-            Box(
-                modifier = Modifier
-                    .clickable(onClick = { navController.navigate(SearchTrackScreen) })
-                    .fillMaxWidth()
-                    .height(90.dp)
-                    .border(1.dp, SpotifyLighterGrey, RoundedCornerShape(16.dp))
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(color = SpotifyDarkGrey)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .aspectRatio(1f)
-                            .background(Color.DarkGray),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "add icon",
-                            tint = SpotifyDarkGrey,
-                            modifier = Modifier.size(45.dp)
-                        )
-                    }
-                    Column(modifier = Modifier.fillMaxHeight().padding(vertical = 5.dp, horizontal = 2.dp), verticalArrangement = Arrangement.Bottom) {
-                        Text(text = "Share a vybe", color = Color.Gray, style = songTitleStyle)
-                    }
-                }
-            }
+            AddVybeButton(navController)
 
             Box(
                 modifier = Modifier
@@ -136,6 +108,39 @@ fun FeedScreen(
             backgroundColor = SpotifyDarkGrey,
             contentColor = White
         )
+    }
+}
+
+@Composable
+fun AddVybeButton(navController: NavController) {
+    Box(
+        modifier = Modifier
+            .clickable(onClick = { navController.navigate(SearchTrackScreen) })
+            .fillMaxWidth()
+            .height(90.dp)
+            .border(1.dp, SpotifyLighterGrey, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
+            .background(color = SpotifyDarkGrey)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .aspectRatio(1f)
+                    .background(Color.DarkGray),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "add icon",
+                    tint = SpotifyDarkGrey,
+                    modifier = Modifier.size(45.dp)
+                )
+            }
+            Column(modifier = Modifier.fillMaxHeight().padding(vertical = 5.dp, horizontal = 2.dp), verticalArrangement = Arrangement.Bottom) {
+                Text(text = "Share a vybe", color = Color.Gray, style = songTitleStyle)
+            }
+        }
     }
 }
 
