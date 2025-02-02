@@ -3,11 +3,14 @@ package com.example.vybes.post.feed
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,14 +18,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,8 +47,10 @@ import androidx.navigation.NavController
 import com.example.vybes.R
 import com.example.vybes.add.SearchTrackScreen
 import com.example.vybes.common.theme.SpotifyDarkGrey
+import com.example.vybes.common.theme.SpotifyLighterGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.logoStyle
+import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.feedback.FeedbackScreen
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.VybeScreen
@@ -70,11 +77,42 @@ fun FeedScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
+            .padding(horizontal = 10.dp)
             .pullRefresh(pullRefreshState)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
             TopBar(navController)
+
+            Box(
+                modifier = Modifier
+                    .clickable(onClick = { navController.navigate(SearchTrackScreen) })
+                    .fillMaxWidth()
+                    .height(90.dp)
+                    .border(1.dp, SpotifyLighterGrey, RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(color = SpotifyDarkGrey)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .aspectRatio(1f)
+                            .background(Color.DarkGray),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "add icon",
+                            tint = SpotifyDarkGrey,
+                            modifier = Modifier.size(45.dp)
+                        )
+                    }
+                    Column(modifier = Modifier.fillMaxHeight().padding(vertical = 5.dp, horizontal = 2.dp), verticalArrangement = Arrangement.Bottom) {
+                        Text(text = "Share a vybe", color = Color.Gray, style = songTitleStyle)
+                    }
+                }
+            }
 
             Box(
                 modifier = Modifier
@@ -98,21 +136,6 @@ fun FeedScreen(
             backgroundColor = SpotifyDarkGrey,
             contentColor = White
         )
-
-        Button(
-            onClick = { navController.navigate(SearchTrackScreen) },
-            modifier = Modifier
-                .size(80.dp)
-                .clip(CircleShape)
-                .border(4.dp, Color.White, CircleShape)
-                .align(Alignment.BottomCenter),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Black
-            ),
-            contentPadding = PaddingValues(0.dp)
-        ) {
-            // empty
-        }
     }
 }
 
@@ -124,8 +147,7 @@ private fun PopulatedFeedState(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp),
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         vybes.forEach { v ->
@@ -187,7 +209,7 @@ fun TopBar(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)
+            .padding(vertical = 10.dp)
     ) {
         IconButton(
             onClick = { navController.navigate(FeedbackScreen) },
