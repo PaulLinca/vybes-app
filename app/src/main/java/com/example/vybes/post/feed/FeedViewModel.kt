@@ -8,6 +8,7 @@ import com.example.vybes.post.service.PostService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,6 +20,9 @@ class FeedViewModel @Inject constructor(
     private val _vybes = MutableStateFlow<List<Vybe>>(emptyList())
     val vybes: StateFlow<List<Vybe>> = _vybes
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
     init {
         loadPosts()
     }
@@ -26,6 +30,17 @@ class FeedViewModel @Inject constructor(
     private fun loadPosts() {
         viewModelScope.launch {
             _vybes.value = postService.getAllVybes().body().orEmpty()
+        }
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            try {
+                _vybes.value = postService.getAllVybes().body().orEmpty()
+            } finally {
+                _isRefreshing.value = false
+            }
         }
     }
 
