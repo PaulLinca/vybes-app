@@ -103,7 +103,7 @@ class VybeViewModel @Inject constructor(
 
     fun addComment() {
         viewModelScope.launch {
-            val addedComment = postService.addComment(args.id, commentText)
+            val addedComment = postService.addComment(args.id, commentText.trim())
             _vybe.value?.let { v ->
                 _vybe.value = v.copy(
                     comments = v.comments + addedComment.body()!!

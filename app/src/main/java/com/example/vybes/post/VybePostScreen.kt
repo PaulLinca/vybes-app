@@ -269,7 +269,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel) {
                         }
                 )
                 Text(
-                    text = comment.timestamp.toString(),
+                    text = DateUtils.formatPostedDate(comment.timestamp),
                     textAlign = TextAlign.Start,
                     color = Color.LightGray,
                     style = MaterialTheme.typography.labelSmall,
