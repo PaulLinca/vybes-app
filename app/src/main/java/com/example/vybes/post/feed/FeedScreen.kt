@@ -84,8 +84,6 @@ fun FeedScreen(
 
             TopBar(navController)
 
-            AddVybeButton(navController)
-
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -108,39 +106,6 @@ fun FeedScreen(
             backgroundColor = SpotifyDarkGrey,
             contentColor = White
         )
-    }
-}
-
-@Composable
-fun AddVybeButton(navController: NavController) {
-    Box(
-        modifier = Modifier
-            .clickable(onClick = { navController.navigate(SearchTrackScreen) })
-            .fillMaxWidth()
-            .height(90.dp)
-            .border(1.dp, SpotifyLighterGrey, RoundedCornerShape(16.dp))
-            .clip(RoundedCornerShape(16.dp))
-            .background(color = SpotifyDarkGrey)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(1f)
-                    .background(Color.DarkGray),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "add icon",
-                    tint = SpotifyDarkGrey,
-                    modifier = Modifier.size(45.dp)
-                )
-            }
-            Column(modifier = Modifier.fillMaxHeight().padding(vertical = 5.dp, horizontal = 2.dp), verticalArrangement = Arrangement.Bottom) {
-                Text(text = "Share a vybe", color = Color.Gray, style = songTitleStyle)
-            }
-        }
     }
 }
 
@@ -217,15 +182,15 @@ fun TopBar(navController: NavController) {
             .padding(vertical = 10.dp)
     ) {
         IconButton(
-            onClick = { navController.navigate(FeedbackScreen) },
+            onClick = { navController.navigate(SearchTrackScreen) },
             modifier = Modifier
                 .size(30.dp)
                 .clip(CircleShape)
                 .align(Alignment.CenterStart)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.lightbulb),
-                contentDescription = "Feedback Button",
+                painter = painterResource(id = R.drawable.add_icon),
+                contentDescription = "Add New Vybe Button",
                 colorFilter = ColorFilter.tint(Color.White),
                 modifier = Modifier.fillMaxSize()
             )
@@ -249,6 +214,39 @@ fun TopBar(navController: NavController) {
                 colorFilter = ColorFilter.tint(Color.White),
                 modifier = Modifier.fillMaxSize()
             )
+        }
+    }
+}
+
+@Composable
+fun AddVybeButton(navController: NavController) {
+    Box(
+        modifier = Modifier
+            .clickable(onClick = { navController.navigate(SearchTrackScreen) })
+            .fillMaxWidth()
+            .height(90.dp)
+            .border(1.dp, SpotifyLighterGrey, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
+            .background(color = SpotifyDarkGrey)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .aspectRatio(1f)
+                    .background(Color.DarkGray),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "add icon",
+                    tint = SpotifyDarkGrey,
+                    modifier = Modifier.size(45.dp)
+                )
+            }
+            Column(modifier = Modifier.fillMaxHeight().padding(vertical = 5.dp, horizontal = 2.dp), verticalArrangement = Arrangement.Bottom) {
+                Text(text = "Share a vybe", color = Color.Gray, style = songTitleStyle)
+            }
         }
     }
 }
