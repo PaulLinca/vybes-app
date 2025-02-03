@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vybes.R
 import com.example.vybes.common.composables.MultilineTextField
+import com.example.vybes.common.composables.PasswordTextField
 import com.example.vybes.common.theme.Blue
 import com.example.vybes.common.theme.ErrorRed
 import com.example.vybes.common.theme.SpotifyDarkGrey
@@ -129,13 +130,12 @@ fun UsernameField(viewModel: LoginViewModel, isLoading: Boolean) {
 
 @Composable
 fun PasswordField(viewModel: LoginViewModel, isLoading: Boolean) {
-    MultilineTextField(
+    PasswordTextField(
         enabled = !isLoading,
         value = viewModel.passwordText,
         onValueChanged = { viewModel.updatePasswordText(it) },
         textStyle = artistsStyle,
         hintText = stringResource(R.string.password),
-        maxLines = 1,
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
