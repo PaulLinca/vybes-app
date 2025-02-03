@@ -3,7 +3,6 @@ package com.example.vybes.add
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -58,7 +57,7 @@ fun SearchTrackScreen(
             .fillMaxSize()
             .background(color = Color.Black)
     ) {
-        TopBarWithBackButton(onGoBack = { navController.popBackStack()}) {
+        TopBarWithBackButton(onGoBack = { navController.popBackStack() }) {
             androidx.compose.material3.Text(
                 text = stringResource(R.string.share_prompt),
                 color = White,
@@ -66,7 +65,10 @@ fun SearchTrackScreen(
                 style = songTitleStyle,
             )
         }
-        Column(Modifier.padding(16.dp).fillMaxWidth()) {
+        Column(
+            Modifier
+                .padding(16.dp)
+                .fillMaxWidth()) {
             MultilineTextField(
                 value = searchQuery,
                 onValueChanged = { viewModel.updateSearchQuery(it) },
@@ -85,7 +87,10 @@ fun SearchTrackScreen(
 
             when {
                 isLoading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        color = Color.White
+                    )
                 }
 
                 errorMessage != null -> {
