@@ -30,7 +30,7 @@ class SearchTrackViewModel @Inject constructor(
 
     fun updateSearchQuery(query: String) {
         searchQuery = query
-        if (query.length > 3) {
+        if (query.length >= 3) {
             performSearch(query)
         } else {
             searchResults = emptyList()
