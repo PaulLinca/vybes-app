@@ -20,6 +20,9 @@ class FeedViewModel @Inject constructor(
     private val _vybes = MutableStateFlow<List<Vybe>>(emptyList())
     val vybes: StateFlow<List<Vybe>> = _vybes
 
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading = _isLoading.asStateFlow()
+
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 
@@ -29,7 +32,11 @@ class FeedViewModel @Inject constructor(
 
     private fun loadPosts() {
         viewModelScope.launch {
-            _vybes.value = postService.getAllVybes().body().orEmpty()
+            try {
+                _vybes.value = postService.getAllVybes().body().orEmpty()
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 

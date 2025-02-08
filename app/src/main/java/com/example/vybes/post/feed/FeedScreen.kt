@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -89,11 +90,25 @@ fun FeedScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 val vybes by viewModel.vybes.collectAsState()
+                val isLoading by viewModel.isLoading.collectAsState()
 
-                if (vybes.isEmpty()) {
-                    EmptyFeedState()
-                } else {
-                    PopulatedFeedState(vybes, navController, viewModel)
+                when {
+                    isLoading -> {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            CircularProgressIndicator(color = White)
+                        }
+                    }
+
+                    vybes.isEmpty() -> {
+                        EmptyFeedState()
+                    }
+
+                    else -> {
+                        PopulatedFeedState(vybes, navController, viewModel)
+                    }
                 }
             }
         }
