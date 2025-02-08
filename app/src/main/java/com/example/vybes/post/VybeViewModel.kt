@@ -46,13 +46,10 @@ class VybeViewModel @Inject constructor(
             val response = postService.likeVybe(args.id)
             if (response.isSuccessful) {
                 _vybe.value?.let { v ->
-                    _vybe.value = v.copy(
-                        likes = v.likes + Like(response.body()!!.userId)
-                    )
+                    _vybe.value = v.copy(likes = v.likes + Like(response.body()!!.userId))
+                    _isLikedByCurrentUser.value = true
                 }
             }
-
-            _isLikedByCurrentUser.value = true
         }
     }
 
@@ -62,8 +59,8 @@ class VybeViewModel @Inject constructor(
             _vybe.value?.let { v ->
                 _vybe.value =
                     v.copy(likes = v.likes.filterNot { it.userId == removedLike.body()!!.userId })
+                _isLikedByCurrentUser.value = false
             }
-            _isLikedByCurrentUser.value = false
         }
     }
 
