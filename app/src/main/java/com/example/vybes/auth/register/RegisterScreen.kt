@@ -58,6 +58,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 object RegisterScreen
+
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel(),

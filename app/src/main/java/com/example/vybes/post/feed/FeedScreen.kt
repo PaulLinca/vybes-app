@@ -51,10 +51,9 @@ import com.example.vybes.common.theme.SpotifyLighterGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.logoStyle
 import com.example.vybes.common.theme.songTitleStyle
-import com.example.vybes.feedback.FeedbackScreen
+import com.example.vybes.post.model.User
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.VybeScreen
-import com.example.vybes.profile.ProfileScreen
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import kotlinx.serialization.Serializable
 
@@ -132,7 +131,8 @@ private fun PopulatedFeedState(
                         v.id,
                         isLikedByCurrentUser
                     )
-                }
+                },
+                navController
             )
         }
     }
@@ -202,7 +202,14 @@ fun TopBar(navController: NavController) {
             modifier = Modifier.align(Alignment.Center)
         )
         IconButton(
-            onClick = { navController.navigate(ProfileScreen) },
+            onClick = {
+                navController.navigate(
+                    User(
+                        userId = SharedPreferencesManager.getUserId(),
+                        username = SharedPreferencesManager.getUsername().orEmpty()
+                    )
+                )
+            },
             modifier = Modifier
                 .size(30.dp)
                 .clip(CircleShape)
@@ -244,7 +251,12 @@ fun AddVybeButton(navController: NavController) {
                     modifier = Modifier.size(45.dp)
                 )
             }
-            Column(modifier = Modifier.fillMaxHeight().padding(vertical = 5.dp, horizontal = 2.dp), verticalArrangement = Arrangement.Bottom) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(vertical = 5.dp, horizontal = 2.dp),
+                verticalArrangement = Arrangement.Bottom
+            ) {
                 Text(text = "Share a vybe", color = Color.Gray, style = songTitleStyle)
             }
         }

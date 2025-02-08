@@ -1,6 +1,5 @@
 package com.example.vybes.post
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
@@ -63,12 +63,13 @@ import java.util.stream.Collectors
 @Composable
 fun VybePostScreen(
     vybeViewModel: VybeViewModel = hiltViewModel(),
-    onGoBack: () -> Unit
+    onGoBack: () -> Unit,
+    navController: NavController
 ) {
     val vybe by vybeViewModel.vybe.collectAsState()
     val isLikedByUser by vybeViewModel.isLikedByCurrentUser.collectAsState()
     if (vybe != null) {
-        VybePostScreen(onGoBack, vybe!!, isLikedByUser, vybeViewModel)
+        VybePostScreen(onGoBack, vybe!!, isLikedByUser, vybeViewModel, navController)
     } else {
         CircularProgressIndicator(modifier = Modifier.size(20.dp))
     }
@@ -79,7 +80,8 @@ fun VybePostScreen(
     onGoBack: () -> Unit,
     vybe: Vybe,
     isLikedByUser: Boolean,
-    vybeViewModel: VybeViewModel
+    vybeViewModel: VybeViewModel,
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
@@ -122,7 +124,7 @@ fun VybePostScreen(
                 isLiked = isLikedByUser
             )
         }
-        CommentSection(vybe, vybeViewModel, Modifier.weight(1f))
+        CommentSection(vybe, vybeViewModel, Modifier.weight(1f), navController)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -220,37 +222,38 @@ fun SongBanner(vybe: Vybe?) {
 }
 
 @Composable
-fun CommentSection(vybe: Vybe, vybeViewModel: VybeViewModel, modifier: Modifier) {
+fun CommentSection(
+    vybe: Vybe,
+    vybeViewModel: VybeViewModel,
+    modifier: Modifier,
+    navController: NavController
+) {
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
     ) {
         vybe.comments.forEach { c ->
-            Comment(c, vybeViewModel)
+            Comment(c, vybeViewModel, navController)
         }
     }
 }
 
 @Composable
-fun Comment(comment: Comment, vybeViewModel: VybeViewModel) {
+fun Comment(comment: Comment, vybeViewModel: VybeViewModel, navController: NavController) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
     ) {
-        val context = LocalContext.current
-
         Column(Modifier.weight(1f)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 IconButton(
-                    onClick = {
-                        Toast.makeText(context, "Go to user profile", Toast.LENGTH_SHORT).show()
-                    },
+                    onClick = { navController.navigate(comment.user) },
                     modifier = Modifier
                         .size(25.dp)
                         .clip(CircleShape)
@@ -270,11 +273,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel) {
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .clickable {
-                            Toast
-                                .makeText(context, "Go to user profile", Toast.LENGTH_SHORT)
-                                .show()
-                        }
+                        .clickable { navController.navigate(comment.user) }
                 )
                 Text(
                     text = DateUtils.formatPostedDate(comment.timestamp),

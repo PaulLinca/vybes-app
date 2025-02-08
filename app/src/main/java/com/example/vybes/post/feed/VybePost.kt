@@ -2,7 +2,6 @@ package com.example.vybes.post.feed
 
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
@@ -51,6 +51,7 @@ import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.common.util.DateUtils
+import com.example.vybes.post.model.User
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import java.time.ZonedDateTime
@@ -59,13 +60,14 @@ import java.time.ZonedDateTime
 fun VybePost(
     vybe: Vybe,
     onClickCard: () -> Unit,
-    onLikeClicked: () -> Unit = {}
+    onLikeClicked: () -> Unit = {},
+    navController: NavController
 ) {
     val currentUserId = SharedPreferencesManager.getUserId()
     val isLikedByCurrentUser = vybe.likes.any { it.userId == currentUserId }
 
     Column(modifier = Modifier.padding(vertical = 5.dp)) {
-        TopBar(username = vybe.user.username, postedDate = vybe.postedDate)
+        TopBar(user = vybe.user, postedDate = vybe.postedDate, navController = navController)
         VybeCard(vybe, onClickCard)
         if (vybe.description.isNotBlank()) {
             Row(modifier = Modifier.padding(top = 5.dp)) {
@@ -89,13 +91,11 @@ fun VybePost(
 }
 
 @Composable
-fun TopBar(username: String, postedDate: ZonedDateTime) {
+fun TopBar(user: User, postedDate: ZonedDateTime, navController: NavController) {
     val context = LocalContext.current
     Row {
         IconButton(
-            onClick = {
-                Toast.makeText(context, "Go to user profile", Toast.LENGTH_SHORT).show()
-            },
+            onClick = { navController.navigate(user) },
             modifier = Modifier
                 .size(30.dp)
                 .clip(CircleShape)
@@ -115,7 +115,7 @@ fun TopBar(username: String, postedDate: ZonedDateTime) {
                 .align(Alignment.CenterVertically)
         ) {
             Text(
-                text = username,
+                text = user.username,
                 color = White,
                 style = MaterialTheme.typography.labelLarge
             )

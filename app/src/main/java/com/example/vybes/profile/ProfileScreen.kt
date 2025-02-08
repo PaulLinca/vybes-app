@@ -32,17 +32,15 @@ import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.feedback.FeedbackScreen
-import kotlinx.serialization.Serializable
-
-@Serializable
-object ProfileScreen
+import com.example.vybes.post.model.User
 
 @Composable
 fun ProfileScreen(
+    user: User,
     navController: NavController,
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
-    val username by profileViewModel.username.collectAsState()
+    val isCurrentUser = profileViewModel.isCurrentUser(user)
 
     Column(
         modifier = Modifier
@@ -69,7 +67,7 @@ fun ProfileScreen(
                     .fillMaxWidth()
             )
             Text(
-                text = username,
+                text = user.username,
                 color = White,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally),
@@ -80,33 +78,35 @@ fun ProfileScreen(
                     .size(30.dp)
                     .fillMaxWidth()
             )
-            Button(
-                onClick = { navController.navigate(FeedbackScreen)},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = SpotifyDarkGrey),
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.give_feedback),
-                    color = White
-                )
-            }
-            Button(
-                onClick = { profileViewModel.logout() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = SpotifyDarkGrey),
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.logout),
-                    color = ErrorRed
-                )
+            if (isCurrentUser) {
+                Button(
+                    onClick = { navController.navigate(FeedbackScreen) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = SpotifyDarkGrey),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.give_feedback),
+                        color = White
+                    )
+                }
+                Button(
+                    onClick = { profileViewModel.logout() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = SpotifyDarkGrey),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.logout),
+                        color = ErrorRed
+                    )
+                }
             }
         }
     }

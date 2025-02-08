@@ -18,6 +18,7 @@ import com.example.vybes.common.theme.VybesTheme
 import com.example.vybes.feedback.FeedbackScreen
 import com.example.vybes.post.VybePostScreen
 import com.example.vybes.post.feed.FeedScreen
+import com.example.vybes.post.model.User
 import com.example.vybes.post.model.VybeScreen
 import com.example.vybes.profile.ProfileScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -67,11 +68,12 @@ class MainActivity : ComponentActivity() {
                                 }
                             })
                     }
-                    composable<ProfileScreen> {
-                        ProfileScreen(navController)
+                    composable<User> { backStackEntry ->
+                        val user: User = backStackEntry.toRoute()
+                        ProfileScreen(user, navController)
                     }
                     composable<VybeScreen> {
-                        VybePostScreen(onGoBack = { navController.popBackStack() })
+                        VybePostScreen(onGoBack = { navController.popBackStack() }, navController = navController)
                     }
                     composable<FeedbackScreen> {
                         FeedbackScreen(onGoBack = { navController.popBackStack() })
