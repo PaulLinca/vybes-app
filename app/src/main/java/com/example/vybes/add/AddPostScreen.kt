@@ -22,8 +22,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -63,6 +61,7 @@ fun AddPostScreen(
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val description by viewModel.description.collectAsState()
+    val maxDescriptionChars = 150
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { success ->
@@ -94,7 +93,11 @@ fun AddPostScreen(
 
         MultilineTextField(
             value = description,
-            onValueChanged = { viewModel.onDescriptionChange(it) },
+            onValueChanged = {
+                if (it.length <= maxDescriptionChars) {
+                    viewModel.onDescriptionChange(it)
+                }
+            },
             hintText = "Add a description...",
             textStyle = artistsStyle,
             maxLines = 4,

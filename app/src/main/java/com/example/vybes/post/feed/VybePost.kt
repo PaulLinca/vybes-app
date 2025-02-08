@@ -67,7 +67,13 @@ fun VybePost(
         VybeCard(vybe, onClickCard)
         if (vybe.description.isNotBlank()) {
             Row(modifier = Modifier.padding(top = 5.dp)) {
-                Text(text = vybe.description, style = artistsStyle, color = Color.LightGray)
+                Text(
+                    text = vybe.description,
+                    style = artistsStyle,
+                    color = Color.LightGray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
         StatsBar(
