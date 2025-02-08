@@ -65,6 +65,11 @@ fun VybePost(
     Column(modifier = Modifier.padding(vertical = 5.dp)) {
         TopBar(username = vybe.user.username, postedDate = vybe.postedDate)
         VybeCard(vybe, onClickCard)
+        if (vybe.description.isNotBlank()) {
+            Row(modifier = Modifier.padding(top = 5.dp)) {
+                Text(text = vybe.description, style = artistsStyle, color = Color.LightGray)
+            }
+        }
         StatsBar(
             vybe = vybe,
             onClickComment = onClickCard,

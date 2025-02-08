@@ -101,19 +101,27 @@ fun VybePostScreen(
             )
         }
         SongBanner(vybe = vybe)
-        StatsBar(
-            vybe = vybe,
-            modifier = Modifier.padding(top = 8.dp, start = 8.dp, bottom = 8.dp),
-            onLikeClicked = {
-                if (isLikedByUser) {
-                    vybeViewModel.unlikeVybe()
-                } else {
-                    vybeViewModel.likeVybe()
-                }
-            },
-            iconSize = 23.dp,
-            isLiked = isLikedByUser
-        )
+        if (vybe.description.isNotBlank()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Text(text = vybe.description, style = artistsStyle, color = Color.LightGray)
+            }
+        }
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            StatsBar(
+                vybe = vybe,
+                modifier = Modifier.padding(top = 8.dp, start = 8.dp, bottom = 8.dp),
+                onLikeClicked = {
+                    if (isLikedByUser) {
+                        vybeViewModel.unlikeVybe()
+                    } else {
+                        vybeViewModel.likeVybe()
+                    }
+                },
+                iconSize = 23.dp,
+                isLiked = isLikedByUser
+            )
+        }
         CommentSection(vybe, vybeViewModel, Modifier.weight(1f))
         Row(
             verticalAlignment = Alignment.CenterVertically,

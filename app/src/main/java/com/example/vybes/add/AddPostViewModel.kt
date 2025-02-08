@@ -21,11 +21,18 @@ class AddPostViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
+    private val _description = MutableStateFlow("")
+    val description = _description.asStateFlow()
+
+    fun onDescriptionChange(newDescription: String) {
+        _description.value = newDescription
+    }
+
     fun submit(id: String) {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
-                postService.postVybe(id)
+                postService.postVybe(id, _description.value)
                 _navigationEvent.emit(true)
             } catch (e: Exception) {
                 // Handle error if needed

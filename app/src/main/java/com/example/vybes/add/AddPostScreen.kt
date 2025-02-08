@@ -22,6 +22,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,6 +46,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
 import com.example.vybes.add.model.network.TrackSearchResult
+import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.SpotifyLighterGrey
@@ -59,6 +62,7 @@ fun AddPostScreen(
     viewModel: AddPostViewModel = hiltViewModel()
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
+    val description by viewModel.description.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { success ->
@@ -85,6 +89,21 @@ fun AddPostScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         VybeCard(searchResult = searchResult) {}
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        MultilineTextField(
+            value = description,
+            onValueChanged = { viewModel.onDescriptionChange(it) },
+            hintText = "Add a description...",
+            textStyle = artistsStyle,
+            maxLines = 4,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.Black, shape = RoundedCornerShape(16.dp))
+                .border(1.dp, Color.Gray, RoundedCornerShape(16.dp))
+        )
 
         Spacer(modifier = Modifier.height(10.dp))
 

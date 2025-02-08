@@ -21,6 +21,7 @@ data class Vybe(
     val spotifyAlbumId: String,
     val imageUrl: String,
     val postedDate: ZonedDateTime,
+    val description: String,
     val user: User,
     val likes: List<Like> = mutableListOf(),
     val comments: List<Comment> = mutableListOf(),
