@@ -74,7 +74,12 @@ class VybeViewModel @Inject constructor(
                 val updatedComments = v.comments.map { comment ->
                     if (comment.id == commentId) {
                         comment.copy(
-                            likeIds = comment.likeIds + listOf(newLike.body()!!.userId)
+                            likes = comment.likes + listOf(
+                                Like(
+                                    userId = newLike.body()?.userId
+                                        ?: throw IllegalStateException("Like response is null")
+                                )
+                            )
                         )
                     } else {
                         comment
@@ -87,11 +92,11 @@ class VybeViewModel @Inject constructor(
 
     fun unlikeComment(commentId: Long) {
         viewModelScope.launch {
-            val removedLike = postService.unlikeComment(args.id, commentId)
+            postService.unlikeComment(args.id, commentId)
             _vybe.value?.let { v ->
                 val updatedComments = v.comments.map { comment ->
                     if (comment.id == commentId) {
-                        comment.copy(likeIds = comment.likeIds.filterNot { it == removedLike.body()!!.userId })
+                        comment.copy(likes = comment.likes.filterNot { it.userId == SharedPreferencesManager.getUserId() })
                     } else {
                         comment
                     }
@@ -126,7 +131,6 @@ class VybeViewModel @Inject constructor(
             val retrievedVybe = postService.getVybe(args.id)
 
             retrievedVybe.body().let { v ->
-                val context = getApplication<Application>().applicationContext
                 val currentUserId = SharedPreferencesManager.getUserId()
                 _isLikedByCurrentUser.value = v?.likes?.any { it.userId == currentUserId } == true
                 _vybe.value = v
