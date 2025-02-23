@@ -4,6 +4,8 @@ import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.auth.model.AuthRequest
 import com.example.vybes.auth.model.LoginResponse
 import com.example.vybes.auth.model.RegisterResponse
+import com.example.vybes.auth.model.UserResponse
+import com.example.vybes.auth.model.UsernameSetupRequest
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.network.AddCommentRequest
@@ -25,6 +27,9 @@ interface VybesApiClient {
 
     @POST("api/auth/login")
     suspend fun login(@Body loginRequest: AuthRequest): Response<LoginResponse>
+
+    @POST("api/user/setUsername")
+    suspend fun setupUsername(@Body loginRequest: UsernameSetupRequest): Response<UserResponse>
 
     @POST("api/auth/refresh")
     suspend fun refresh(@Header("Authorization") refreshToken: String): Response<LoginResponse>
