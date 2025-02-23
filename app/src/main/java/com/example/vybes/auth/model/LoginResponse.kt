@@ -5,5 +5,6 @@ data class LoginResponse(
     val email: String,
     val username: String,
     val jwt: String,
-    val refreshToken: String
+    val refreshToken: String,
+    val requiresUsernameSetup: Boolean
 )
