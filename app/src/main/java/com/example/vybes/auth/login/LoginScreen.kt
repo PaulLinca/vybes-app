@@ -46,15 +46,21 @@ object LoginScreen
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onRegisterClick: () -> Unit,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onUsernameSetupRequired: () -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val isLoginInfoInvalid by viewModel.isLoginInfoInvalid.collectAsState()
     val isLoginSuccess by viewModel.isLoginSuccess.collectAsState()
+    val requiresUsernameSetup by viewModel.requiresUsernameSetup.collectAsState()
 
-    LaunchedEffect(isLoginSuccess) {
+    LaunchedEffect(isLoginSuccess, requiresUsernameSetup) {
         if (isLoginSuccess) {
-            onLoginSuccess.invoke()
+            if (requiresUsernameSetup) {
+                onUsernameSetupRequired()
+            } else {
+                onLoginSuccess()
+            }
         }
     }
 

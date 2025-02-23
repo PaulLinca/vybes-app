@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.vybes.auth.login.LoginScreen
 import com.example.vybes.auth.register.RegisterScreen
+import com.example.vybes.auth.setup.SetupScreen
 import com.example.vybes.common.theme.VybesTheme
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,7 +40,12 @@ class AuthActivity : ComponentActivity() {
                     composable<LoginScreen> {
                         LoginScreen(
                             onLoginSuccess = { startMainActivity() },
-                            onRegisterClick = { navController.navigate(RegisterScreen) })
+                            onRegisterClick = { navController.navigate(RegisterScreen) },
+                            onUsernameSetupRequired = { navController.navigate(SetupScreen) })
+                    }
+                    composable<SetupScreen> {
+                        SetupScreen(
+                            onSetupSuccess = { startMainActivity() })
                     }
                 }
             }

@@ -5,5 +5,4 @@ import retrofit2.Response
 
 interface UserService {
     suspend fun setupUsername(username: String): Response<UserResponse>
-
 }

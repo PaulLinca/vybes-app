@@ -25,6 +25,9 @@ class LoginViewModel @Inject constructor(
     private val _isLoginSuccess = MutableStateFlow(false)
     val isLoginSuccess = _isLoginSuccess.asStateFlow()
 
+    private val _requiresUsernameSetup = MutableStateFlow(false)
+    val requiresUsernameSetup = _requiresUsernameSetup.asStateFlow()
+
     private var _emailText by mutableStateOf("")
     val emailText: String
         get() = _emailText
@@ -70,6 +73,7 @@ class LoginViewModel @Inject constructor(
                         loginResponse.refreshToken
                     )
 
+                    _requiresUsernameSetup.value = loginResponse.requiresUsernameSetup
                     _isLoginSuccess.value = true
                 } else {
                     _isLoginInfoInvalid.value = true

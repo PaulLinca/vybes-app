@@ -32,7 +32,7 @@ object SharedPreferencesManager {
     fun saveDataOnLogin(
         userId: Long,
         email: String,
-        username: String,
+        username: String?,
         jwt: String,
         refreshToken: String
     ) {
@@ -40,12 +40,20 @@ object SharedPreferencesManager {
         saveTokens(jwt, refreshToken)
     }
 
-    fun saveUserData(userId: Long, email: String, username: String) {
+    fun saveUserData(userId: Long, email: String, username: String?) {
         sharedPreferences.edit()
             .putLong(USER_ID_KEY, userId)
             .putString(EMAIL_KEY, email)
-            .putString(USERNAME_KEY, username)
             .apply()
+        saveUsername(username)
+    }
+
+    fun saveUsername(username: String?) {
+        username.let {
+            sharedPreferences.edit()
+                .putString(USERNAME_KEY, username)
+                .apply()
+        }
     }
 
     fun saveTokens(jwt: String, refreshToken: String) {
