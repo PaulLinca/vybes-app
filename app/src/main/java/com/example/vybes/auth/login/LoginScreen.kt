@@ -83,7 +83,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.size(20.dp))
         }
 
-        UsernameField(viewModel, isLoading)
+        EmailField(viewModel, isLoading)
         Spacer(modifier = Modifier.size(20.dp))
         PasswordField(viewModel, isLoading)
         Spacer(modifier = Modifier.size(20.dp))
@@ -112,13 +112,13 @@ fun LoginScreen(
 }
 
 @Composable
-fun UsernameField(viewModel: LoginViewModel, isLoading: Boolean) {
+fun EmailField(viewModel: LoginViewModel, isLoading: Boolean) {
     MultilineTextField(
         enabled = !isLoading,
-        value = viewModel.usernameText,
-        onValueChanged = { viewModel.updateUsernameText(it) },
+        value = viewModel.emailText,
+        onValueChanged = { viewModel.updateEmailText(it) },
         textStyle = artistsStyle,
-        hintText = stringResource(R.string.username),
+        hintText = stringResource(R.string.email),
         maxLines = 1,
         modifier = Modifier
             .fillMaxWidth()

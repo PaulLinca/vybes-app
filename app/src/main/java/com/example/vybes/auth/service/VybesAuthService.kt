@@ -8,15 +8,15 @@ import retrofit2.Response
 
 class VybesAuthService(private val vybesApiClient: VybesApiClient) : AuthService {
 
-    override suspend fun register(username: String, password: String): Response<RegisterResponse> {
+    override suspend fun register(email: String, password: String): Response<RegisterResponse> {
         return vybesApiClient.register(
-            AuthRequest(username = username, password = password)
+            AuthRequest(email = email, password = password)
         )
     }
 
-    override suspend fun login(username: String, password: String): Response<LoginResponse> {
+    override suspend fun login(email: String, password: String): Response<LoginResponse> {
         return vybesApiClient.login(
-            AuthRequest(username = username, password = password)
+            AuthRequest(email = email, password = password)
         )
     }
 

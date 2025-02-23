@@ -25,9 +25,9 @@ class LoginViewModel @Inject constructor(
     private val _isLoginSuccess = MutableStateFlow(false)
     val isLoginSuccess = _isLoginSuccess.asStateFlow()
 
-    private var _usernameText by mutableStateOf("")
-    val usernameText: String
-        get() = _usernameText
+    private var _emailText by mutableStateOf("")
+    val emailText: String
+        get() = _emailText
 
     private var _passwordText by mutableStateOf("")
     val passwordText: String
@@ -36,8 +36,8 @@ class LoginViewModel @Inject constructor(
     private val _isLoginInfoInvalid = MutableStateFlow(false)
     val isLoginInfoInvalid = _isLoginInfoInvalid.asStateFlow()
 
-    fun updateUsernameText(updatedText: String) {
-        _usernameText = updatedText
+    fun updateEmailText(updatedText: String) {
+        _emailText = updatedText
         _isLoginInfoInvalid.value = false
     }
 
@@ -47,7 +47,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun validateLoginInfo() {
-        _isLoginInfoInvalid.value = usernameText.isBlank() || passwordText.isBlank()
+        _isLoginInfoInvalid.value = emailText.isBlank() || passwordText.isBlank()
     }
 
     fun login() {
@@ -59,11 +59,12 @@ class LoginViewModel @Inject constructor(
 
             delay(1000)
             if (!_isLoginInfoInvalid.value) {
-                val response = authService.login(usernameText, passwordText)
+                val response = authService.login(emailText, passwordText)
                 if (response.isSuccessful && response.body() != null) {
                     val loginResponse = response.body()!!
                     SharedPreferencesManager.saveDataOnLogin(
                         loginResponse.userId,
+                        loginResponse.email,
                         loginResponse.username,
                         loginResponse.jwt,
                         loginResponse.refreshToken

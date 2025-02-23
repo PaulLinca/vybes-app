@@ -5,9 +5,9 @@ import com.example.vybes.auth.model.RegisterResponse
 import retrofit2.Response
 
 interface AuthService {
-    suspend fun register(username: String, password: String): Response<RegisterResponse>
+    suspend fun register(email: String, password: String): Response<RegisterResponse>
 
-    suspend fun login(username: String, password: String): Response<LoginResponse>
+    suspend fun login(email: String, password: String): Response<LoginResponse>
 
     suspend fun refresh(token: String): Response<LoginResponse>
 }

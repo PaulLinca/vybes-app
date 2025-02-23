@@ -22,12 +22,12 @@ class RegisterViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
-    private var _usernameText: String by mutableStateOf("")
-    val usernameText: String
-        get() = _usernameText
+    private var _emailText: String by mutableStateOf("")
+    val emailText: String
+        get() = _emailText
 
-    fun updateUsernameText(updatedText: String) {
-        _usernameText = updatedText
+    fun updateEmailText(updatedText: String) {
+        _emailText = updatedText
         _isRegisterInfoInvalid.value = false
     }
 
@@ -53,12 +53,12 @@ class RegisterViewModel @Inject constructor(
     val isRegisterInfoInvalid = _isRegisterInfoInvalid.asStateFlow()
 
     private fun validateRegisterInfo() {
-        val isUsernameValid = usernameText.isNotBlank()
+        val isEmailValid = emailText.isNotBlank()
         val isPasswordValid = passwordText.length >= MIN_PASSWORD_LENGTH
         val isRepeatPasswordValid = passwordText == repeatPasswordText
 
         _isRegisterInfoInvalid.value =
-            !isUsernameValid || !isPasswordValid || !isRepeatPasswordValid
+            !isEmailValid || !isPasswordValid || !isRepeatPasswordValid
     }
 
     fun register(onRegisterSuccess: () -> Unit) {
@@ -69,7 +69,7 @@ class RegisterViewModel @Inject constructor(
             validateRegisterInfo()
 
             if (!_isRegisterInfoInvalid.value) {
-                val response = authService.register(usernameText, passwordText)
+                val response = authService.register(emailText, passwordText)
                 if (response.isSuccessful && response.body() != null) {
                     _isLoading.value = false
                     onRegisterSuccess()

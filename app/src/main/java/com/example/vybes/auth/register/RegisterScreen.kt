@@ -96,10 +96,10 @@ fun RegisterScreen(
 
         MultilineTextField(
             enabled = !isLoading,
-            value = viewModel.usernameText,
-            onValueChanged = { viewModel.updateUsernameText(it) },
+            value = viewModel.emailText,
+            onValueChanged = { viewModel.updateEmailText(it) },
             textStyle = artistsStyle,
-            hintText = stringResource(R.string.username),
+            hintText = stringResource(R.string.email),
             maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()

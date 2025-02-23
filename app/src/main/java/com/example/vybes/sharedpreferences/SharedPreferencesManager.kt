@@ -9,6 +9,7 @@ object SharedPreferencesManager {
     private const val PREF_NAME = "MyEncryptedAppPreferences"
     private const val USER_ID_KEY = "USER_ID"
     private const val USERNAME_KEY = "USERNAME"
+    private const val EMAIL_KEY = "USERNAME"
     private const val JWT_KEY = "JWT"
     private const val REFRESH_TOKEN = "REFRESH_TOKEN"
 
@@ -28,14 +29,21 @@ object SharedPreferencesManager {
         )
     }
 
-    fun saveDataOnLogin(userId: Long, username: String, jwt: String, refreshToken: String) {
-        saveUserData(userId, username)
+    fun saveDataOnLogin(
+        userId: Long,
+        email: String,
+        username: String,
+        jwt: String,
+        refreshToken: String
+    ) {
+        saveUserData(userId, email, username)
         saveTokens(jwt, refreshToken)
     }
 
-    fun saveUserData(userId: Long, username: String) {
+    fun saveUserData(userId: Long, email: String, username: String) {
         sharedPreferences.edit()
             .putLong(USER_ID_KEY, userId)
+            .putString(EMAIL_KEY, email)
             .putString(USERNAME_KEY, username)
             .apply()
     }
@@ -51,6 +59,8 @@ object SharedPreferencesManager {
 
     fun getUsername(): String? = sharedPreferences.getString(USERNAME_KEY, null)
 
+    fun getEmail(): String? = sharedPreferences.getString(EMAIL_KEY, null)
+
     fun getJwt(): String? = sharedPreferences.getString(JWT_KEY, null)
 
     fun getRefreshToken(): String? = sharedPreferences.getString(REFRESH_TOKEN, null)
@@ -62,6 +72,7 @@ object SharedPreferencesManager {
     fun isLoggedIn(): Boolean {
         return getUserId() != -1L &&
                 !getUsername().isNullOrEmpty() &&
+                !getEmail().isNullOrEmpty() &&
                 !getJwt().isNullOrEmpty() &&
                 !getRefreshToken().isNullOrEmpty()
     }
