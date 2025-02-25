@@ -1,5 +1,6 @@
 package com.example.vybes.auth.register
 
+import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,6 +19,7 @@ class RegisterViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val MIN_PASSWORD_LENGTH = 8
+    private val EMAIL_REGEX = Patterns.EMAIL_ADDRESS
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
@@ -28,7 +30,6 @@ class RegisterViewModel @Inject constructor(
 
     fun updateEmailText(updatedText: String) {
         _emailText = updatedText
-        _isRegisterInfoInvalid.value = false
     }
 
     private var _passwordText: String by mutableStateOf("")
@@ -37,7 +38,6 @@ class RegisterViewModel @Inject constructor(
 
     fun updatePasswordText(updatedText: String) {
         _passwordText = updatedText
-        _isRegisterInfoInvalid.value = false
     }
 
     private var _repeatPasswordText: String by mutableStateOf("")
@@ -46,19 +46,48 @@ class RegisterViewModel @Inject constructor(
 
     fun updateRepeatPasswordText(updatedText: String) {
         _repeatPasswordText = updatedText
-        _isRegisterInfoInvalid.value = false
     }
 
     private val _isRegisterInfoInvalid = MutableStateFlow(false)
-    val isRegisterInfoInvalid = _isRegisterInfoInvalid.asStateFlow()
 
-    private fun validateRegisterInfo() {
-        val isEmailValid = emailText.isNotBlank()
-        val isPasswordValid = passwordText.length >= MIN_PASSWORD_LENGTH
-        val isRepeatPasswordValid = passwordText == repeatPasswordText
+    private val _emailError = MutableStateFlow<String?>(null)
+    val emailError = _emailError.asStateFlow()
 
-        _isRegisterInfoInvalid.value =
-            !isEmailValid || !isPasswordValid || !isRepeatPasswordValid
+    private val _passwordError = MutableStateFlow<String?>(null)
+    val passwordError = _passwordError.asStateFlow()
+
+    private val _repeatPasswordError = MutableStateFlow<String?>(null)
+    val repeatPasswordError = _repeatPasswordError.asStateFlow()
+
+    private fun validateRegisterInfo(): Boolean {
+        var isValid = true
+
+        if (emailText.isBlank()) {
+            _emailError.value = "Email cannot be empty"
+            isValid = false
+        } else if (!EMAIL_REGEX.matcher(emailText).matches()) {
+            _emailError.value = "Please enter a valid email address"
+            isValid = false
+        } else {
+            _emailError.value = null
+        }
+
+        if (passwordText.length < MIN_PASSWORD_LENGTH) {
+            _passwordError.value = "Password must be at least $MIN_PASSWORD_LENGTH characters"
+            isValid = false
+        } else {
+            _passwordError.value = null
+        }
+
+        if (passwordText != repeatPasswordText) {
+            _repeatPasswordError.value = "Passwords do not match"
+            isValid = false
+        } else {
+            _repeatPasswordError.value = null
+        }
+
+        _isRegisterInfoInvalid.value = !isValid
+        return isValid
     }
 
     fun register(onRegisterSuccess: () -> Unit) {
