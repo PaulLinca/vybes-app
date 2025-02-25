@@ -53,6 +53,7 @@ fun RegisterScreen(
     val emailError by viewModel.emailError.collectAsState()
     val passwordError by viewModel.passwordError.collectAsState()
     val repeatPasswordError by viewModel.repeatPasswordError.collectAsState()
+    val networkError by viewModel.networkError.collectAsState()
 
     Column(
         modifier = Modifier
@@ -69,6 +70,16 @@ fun RegisterScreen(
             fontSize = 50.sp
         )
         Spacer(modifier = Modifier.size(30.dp))
+
+        networkError?.let { error ->
+            Text(
+                text = error,
+                textAlign = TextAlign.Center,
+                color = ErrorRed,
+                style = artistsStyle
+            )
+            Spacer(modifier = Modifier.size(10.dp))
+        }
 
         emailError?.let { error ->
             Text(

@@ -59,6 +59,9 @@ class RegisterViewModel @Inject constructor(
     private val _repeatPasswordError = MutableStateFlow<String?>(null)
     val repeatPasswordError = _repeatPasswordError.asStateFlow()
 
+    private val _networkError = MutableStateFlow<String?>(null)
+    val networkError = _networkError.asStateFlow()
+
     private fun validateRegisterInfo(): Boolean {
         var isValid = true
 
@@ -92,6 +95,7 @@ class RegisterViewModel @Inject constructor(
 
     fun register(onRegisterSuccess: () -> Unit) {
         viewModelScope.launch {
+            _networkError.value = null
             _isRegisterInfoInvalid.value = false
             _isLoading.value = true
 
@@ -103,6 +107,7 @@ class RegisterViewModel @Inject constructor(
                     _isLoading.value = false
                     onRegisterSuccess()
                 } else {
+                    _networkError.value = "Registration failed unexpectedly"
                     _isRegisterInfoInvalid.value = true
                 }
             }
