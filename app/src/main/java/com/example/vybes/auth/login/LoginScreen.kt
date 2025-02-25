@@ -50,9 +50,12 @@ fun LoginScreen(
     onUsernameSetupRequired: () -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
-    val isLoginInfoInvalid by viewModel.isLoginInfoInvalid.collectAsState()
     val isLoginSuccess by viewModel.isLoginSuccess.collectAsState()
     val requiresUsernameSetup by viewModel.requiresUsernameSetup.collectAsState()
+
+    val emailError by viewModel.emailError.collectAsState()
+    val passwordError by viewModel.passwordError.collectAsState()
+    val networkError by viewModel.loginError.collectAsState()
 
     LaunchedEffect(isLoginSuccess, requiresUsernameSetup) {
         if (isLoginSuccess) {
@@ -79,14 +82,35 @@ fun LoginScreen(
             fontSize = 50.sp
         )
         Spacer(modifier = Modifier.size(30.dp))
-        if (isLoginInfoInvalid) {
+
+        networkError?.let { error ->
             Text(
-                text = stringResource(R.string.invalid_input),
+                text = error,
                 textAlign = TextAlign.Center,
                 color = ErrorRed,
                 style = artistsStyle
             )
-            Spacer(modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.size(10.dp))
+        }
+
+        emailError?.let { error ->
+            Text(
+                text = error,
+                textAlign = TextAlign.Center,
+                color = ErrorRed,
+                style = artistsStyle
+            )
+            Spacer(modifier = Modifier.size(10.dp))
+        }
+
+        passwordError?.let { error ->
+            Text(
+                text = error,
+                textAlign = TextAlign.Center,
+                color = ErrorRed,
+                style = artistsStyle
+            )
+            Spacer(modifier = Modifier.size(10.dp))
         }
 
         EmailField(viewModel, isLoading)
