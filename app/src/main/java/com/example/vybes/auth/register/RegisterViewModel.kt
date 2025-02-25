@@ -48,7 +48,6 @@ class RegisterViewModel @Inject constructor(
         _repeatPasswordText = updatedText
     }
 
-    private val _isRegisterInfoInvalid = MutableStateFlow(false)
 
     private val _emailError = MutableStateFlow<String?>(null)
     val emailError = _emailError.asStateFlow()
@@ -62,7 +61,26 @@ class RegisterViewModel @Inject constructor(
     private val _networkError = MutableStateFlow<String?>(null)
     val networkError = _networkError.asStateFlow()
 
-    private fun validateRegisterInfo(): Boolean {
+    fun register(onRegisterSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _networkError.value = null
+            _isLoading.value = true
+
+            if (isRegisterInfoValid()) {
+                val response = authService.register(emailText, passwordText)
+                if (response.isSuccessful && response.body() != null) {
+                    _isLoading.value = false
+                    onRegisterSuccess()
+                } else {
+                    _networkError.value = "Registration failed unexpectedly"
+                }
+            }
+            _isLoading.value = false
+        }
+    }
+
+
+    private fun isRegisterInfoValid(): Boolean {
         var isValid = true
 
         if (emailText.isBlank()) {
@@ -89,29 +107,6 @@ class RegisterViewModel @Inject constructor(
             _repeatPasswordError.value = null
         }
 
-        _isRegisterInfoInvalid.value = !isValid
         return isValid
-    }
-
-    fun register(onRegisterSuccess: () -> Unit) {
-        viewModelScope.launch {
-            _networkError.value = null
-            _isRegisterInfoInvalid.value = false
-            _isLoading.value = true
-
-            validateRegisterInfo()
-
-            if (!_isRegisterInfoInvalid.value) {
-                val response = authService.register(emailText, passwordText)
-                if (response.isSuccessful && response.body() != null) {
-                    _isLoading.value = false
-                    onRegisterSuccess()
-                } else {
-                    _networkError.value = "Registration failed unexpectedly"
-                    _isRegisterInfoInvalid.value = true
-                }
-            }
-            _isLoading.value = false
-        }
     }
 }
