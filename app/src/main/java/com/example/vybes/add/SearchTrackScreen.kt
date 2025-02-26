@@ -33,6 +33,7 @@ import com.example.vybes.R
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
+import com.example.vybes.common.theme.ErrorRed
 import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
@@ -96,7 +97,7 @@ fun SearchTrackScreen(
                 errorMessage != null -> {
                     Text(
                         text = errorMessage,
-                        color = Color.Red,
+                        color = ErrorRed,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                 }

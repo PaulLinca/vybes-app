@@ -29,7 +29,6 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -47,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.vybes.R
 import com.example.vybes.add.SearchTrackScreen
+import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.SpotifyLighterGrey
 import com.example.vybes.common.theme.White
@@ -196,27 +196,22 @@ fun TopBar(navController: NavController) {
             .fillMaxWidth()
             .padding(vertical = 10.dp)
     ) {
-        IconButton(
+        DebouncedIconButton(
             onClick = { navController.navigate(SearchTrackScreen) },
             modifier = Modifier
                 .size(30.dp)
                 .clip(CircleShape)
-                .align(Alignment.CenterStart)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.add_icon),
-                contentDescription = "Add New Vybe Button",
-                colorFilter = ColorFilter.tint(Color.White),
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+                .align(Alignment.CenterStart),
+            contentDescription = "Add New Vybe Button",
+            iconResId = R.drawable.add_icon
+        )
         Text(
             text = stringResource(R.string.app_name),
             color = White,
             style = logoStyle,
             modifier = Modifier.align(Alignment.Center)
         )
-        IconButton(
+        DebouncedIconButton(
             onClick = {
                 navController.navigate(
                     User(
@@ -228,15 +223,10 @@ fun TopBar(navController: NavController) {
             modifier = Modifier
                 .size(30.dp)
                 .clip(CircleShape)
-                .align(Alignment.CenterEnd)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.user),
-                contentDescription = "Profile Button",
-                colorFilter = ColorFilter.tint(Color.White),
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+                .align(Alignment.CenterEnd),
+            contentDescription = "Profile Button",
+            iconResId = R.drawable.user
+        )
     }
 }
 

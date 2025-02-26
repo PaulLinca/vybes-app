@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,10 +30,8 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -44,6 +41,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
+import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.IconTextButton
 import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.SpotifyLighterGrey
@@ -92,22 +90,16 @@ fun VybePost(
 
 @Composable
 fun TopBar(user: User, postedDate: ZonedDateTime, navController: NavController) {
-    val context = LocalContext.current
     Row {
-        IconButton(
+        DebouncedIconButton(
             onClick = { navController.navigate(user) },
             modifier = Modifier
                 .size(30.dp)
                 .clip(CircleShape)
-                .align(Alignment.CenterVertically)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.user),
-                contentDescription = "Go to user profile",
-                colorFilter = ColorFilter.tint(Color.Gray),
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+                .align(Alignment.CenterVertically),
+            contentDescription = "Go to user profile",
+            iconResId = R.drawable.user
+        )
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier

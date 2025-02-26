@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,10 +31,8 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,10 +42,10 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
+import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.Black
-import com.example.vybes.common.theme.ErrorRed
 import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
@@ -144,21 +141,16 @@ fun VybePostScreen(
                         1.dp, Color.White, RoundedCornerShape(25.dp)
                     )
             )
-            IconButton(
+            DebouncedIconButton(
                 onClick = {
                     vybeViewModel.addComment()
                 },
                 modifier = Modifier
                     .size(40.dp)
-                    .clip(CircleShape)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.send),
-                    contentDescription = "Send Button",
-                    colorFilter = ColorFilter.tint(White),
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+                    .clip(CircleShape),
+                contentDescription = "Send Button",
+                iconResId = R.drawable.send
+            )
         }
     }
 }
@@ -252,20 +244,15 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel, navController: NavCo
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                IconButton(
+                DebouncedIconButton(
                     onClick = { navController.navigate(comment.user) },
                     modifier = Modifier
                         .size(25.dp)
                         .clip(CircleShape)
-                        .align(Alignment.CenterVertically)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.user),
-                        contentDescription = "Go to user profile",
-                        colorFilter = ColorFilter.tint(White),
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                        .align(Alignment.CenterVertically),
+                    contentDescription = "Go to user profile",
+                    iconResId = R.drawable.user
+                )
                 Text(
                     text = comment.user.username,
                     textAlign = TextAlign.Start,
@@ -306,7 +293,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel, navController: NavCo
         ) {
             val isLikedByCurrentUser =
                 comment.likes.any { it.userId == SharedPreferencesManager.getUserId() }
-            IconButton(
+            DebouncedIconButton(
                 onClick = {
                     if (isLikedByCurrentUser) {
                         vybeViewModel.unlikeComment(comment.id)
@@ -316,15 +303,10 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel, navController: NavCo
                 },
                 modifier = Modifier
                     .size(20.dp)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                Image(
-                    painter = painterResource(id = if (isLikedByCurrentUser) R.drawable.heart_filled else R.drawable.heart),
-                    contentDescription = "Go to user profile",
-                    colorFilter = ColorFilter.tint(if (isLikedByCurrentUser) ErrorRed else White),
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+                    .align(Alignment.CenterHorizontally),
+                contentDescription = "Go to user profile",
+                iconResId = if (isLikedByCurrentUser) R.drawable.heart_filled else R.drawable.heart
+            )
             Text(
                 text = comment.likes.count().toString(),
                 textAlign = TextAlign.Start,
