@@ -5,10 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.vybes.auth.service.AuthService
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -24,8 +22,8 @@ class SetupViewModel @Inject constructor(
     private val _isSetupSuccess = MutableStateFlow(false)
     val isSetupSuccess = _isSetupSuccess.asStateFlow()
 
-    private val _isUsernameInvalid = MutableStateFlow(false)
-    val isUsernameInvalid = _isUsernameInvalid.asStateFlow()
+    private val _usernameError = MutableStateFlow<String?>(null)
+    val usernameError = _usernameError.asStateFlow()
 
     private var _usernameText by mutableStateOf("")
     val usernameText: String
@@ -35,18 +33,21 @@ class SetupViewModel @Inject constructor(
         _usernameText = updatedText
     }
 
-    private fun validateUsernameInfo() {
-        _isUsernameInvalid.value = usernameText.isBlank()
+    private fun isUsernameValid(): Boolean {
+        if (usernameText.isNotBlank()) {
+            return true
+        }
+
+        _usernameError.value = "Username can't be blank"
+        return false
     }
 
     fun login() {
         viewModelScope.launch {
             _isLoading.value = true
+            _usernameError.value = null
 
-            validateUsernameInfo()
-
-            delay(1000)
-            if (!_isUsernameInvalid.value) {
+            if (isUsernameValid()) {
                 val response = userService.setupUsername(usernameText)
                 if (response.isSuccessful && response.body() != null) {
                     val loginResponse = response.body()!!
@@ -54,10 +55,12 @@ class SetupViewModel @Inject constructor(
 
                     _isSetupSuccess.value = true
                 } else {
-                    _isUsernameInvalid.value = true
+                    _usernameError.value = "Username invalid"
                 }
             }
-            _isLoading.value = false
+
         }
+        _isLoading.value = false
     }
 }
+

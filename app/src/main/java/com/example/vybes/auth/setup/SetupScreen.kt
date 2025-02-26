@@ -23,11 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vybes.R
 import com.example.vybes.common.composables.MultilineTextField
+import com.example.vybes.common.theme.ErrorRed
 import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
@@ -46,6 +48,7 @@ fun SetupScreen(
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val isSetupSuccess by viewModel.isSetupSuccess.collectAsState()
+    val usernameError by viewModel.usernameError.collectAsState()
 
     LaunchedEffect(isSetupSuccess) {
         if (isSetupSuccess) {
@@ -78,6 +81,17 @@ fun SetupScreen(
             color = Color.LightGray,
             style = artistsStyle
         )
+
+        usernameError?.let { error ->
+            Spacer(modifier = Modifier.size(10.dp))
+            Text(
+                text = error,
+                textAlign = TextAlign.Center,
+                color = ErrorRed,
+                style = artistsStyle
+            )
+        }
+
         Spacer(modifier = Modifier.size(30.dp))
         MultilineTextField(
             enabled = !isLoading,
