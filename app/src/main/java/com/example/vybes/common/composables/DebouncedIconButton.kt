@@ -34,7 +34,7 @@ fun DebouncedIconButton(
                 onClick.invoke()
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    delay(300) // 300ms debounce time
+                    delay(300)
                     isEnabled = true
                 }
             }

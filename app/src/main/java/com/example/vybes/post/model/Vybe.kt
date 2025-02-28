@@ -24,7 +24,7 @@ data class Vybe(
     val description: String,
     val user: User,
     val likes: List<Like> = mutableListOf(),
-    val comments: List<Comment> = mutableListOf(),
+    val comments: List<Comment>? = mutableListOf(),
 )
 
 data class Artist(

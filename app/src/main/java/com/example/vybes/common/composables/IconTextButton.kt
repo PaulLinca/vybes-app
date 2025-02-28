@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +25,10 @@ import androidx.compose.ui.unit.dp
 import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun IconTextButton(
@@ -32,12 +40,25 @@ fun IconTextButton(
     reversed: Boolean = false,
     iconColor: Color = White
 ) {
+    var isEnabled by remember { mutableStateOf(true) }
+
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .background(SpotifyDarkGrey)
             .padding(horizontal = 10.dp, vertical = 3.dp)
-            .clickable(onClick = onClick),
+            .clickable(onClick = {
+                if (isEnabled) {
+                    isEnabled = false
+
+                    onClick.invoke()
+
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(300)
+                        isEnabled = true
+                    }
+                }
+            }),
         horizontalArrangement = Arrangement.spacedBy(5.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

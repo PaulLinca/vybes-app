@@ -225,7 +225,7 @@ fun CommentSection(
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
     ) {
-        vybe.comments.forEach { c ->
+        vybe.comments.orEmpty().forEach { c ->
             Comment(c, vybeViewModel, navController)
         }
     }
@@ -292,7 +292,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel, navController: NavCo
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val isLikedByCurrentUser =
-                comment.likes.any { it.userId == SharedPreferencesManager.getUserId() }
+                comment.likes.orEmpty().any { it.userId == SharedPreferencesManager.getUserId() }
             DebouncedIconButton(
                 onClick = {
                     if (isLikedByCurrentUser) {
@@ -308,7 +308,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel, navController: NavCo
                 iconResId = if (isLikedByCurrentUser) R.drawable.heart_filled else R.drawable.heart
             )
             Text(
-                text = comment.likes.count().toString(),
+                text = comment.likes.orEmpty().count().toString(),
                 textAlign = TextAlign.Start,
                 color = White,
                 fontSize = 10.sp,

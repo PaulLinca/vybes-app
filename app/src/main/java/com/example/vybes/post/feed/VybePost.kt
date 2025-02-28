@@ -153,7 +153,7 @@ fun StatsBar(
         IconTextButton(
             description = "Opening comments...",
             onClick = onClickComment,
-            text = vybe.comments.size.toString(),
+            text = vybe.comments.orEmpty().size.toString(),
             drawableId = R.drawable.comment,
             iconSize = iconSize
         )

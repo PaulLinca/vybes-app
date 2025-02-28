@@ -1,6 +1,7 @@
 package com.example.vybes.post
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -68,10 +69,10 @@ class VybeViewModel @Inject constructor(
         viewModelScope.launch {
             val newLike = postService.likeComment(args.id, commentId)
             _vybe.value?.let { v ->
-                val updatedComments = v.comments.map { comment ->
+                val updatedComments = v.comments.orEmpty().map { comment ->
                     if (comment.id == commentId) {
                         comment.copy(
-                            likes = comment.likes + listOf(
+                            likes = comment.likes.orEmpty() + listOf(
                                 Like(
                                     userId = newLike.body()?.userId
                                         ?: throw IllegalStateException("Like response is null")
@@ -91,9 +92,9 @@ class VybeViewModel @Inject constructor(
         viewModelScope.launch {
             postService.unlikeComment(args.id, commentId)
             _vybe.value?.let { v ->
-                val updatedComments = v.comments.map { comment ->
+                val updatedComments = v.comments.orEmpty().map { comment ->
                     if (comment.id == commentId) {
-                        comment.copy(likes = comment.likes.filterNot { it.userId == SharedPreferencesManager.getUserId() })
+                        comment.copy(likes = comment.likes.orEmpty().filterNot { it.userId == SharedPreferencesManager.getUserId() })
                     } else {
                         comment
                     }
@@ -108,7 +109,7 @@ class VybeViewModel @Inject constructor(
             val addedComment = postService.addComment(args.id, commentText.trim())
             _vybe.value?.let { v ->
                 _vybe.value = v.copy(
-                    comments = v.comments + addedComment.body()!!
+                    comments = v.comments.orEmpty() + addedComment.body()!!
                 )
             }
             clearText()
