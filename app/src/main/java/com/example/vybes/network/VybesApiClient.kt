@@ -31,6 +31,9 @@ interface VybesApiClient {
     @POST("api/user/setUsername")
     suspend fun setupUsername(@Body loginRequest: UsernameSetupRequest): Response<UserResponse>
 
+    @GET("api/user")
+    suspend fun getUser(@Query("username") username: String): Response<UserResponse>
+
     @POST("api/auth/refresh")
     suspend fun refresh(@Header("Authorization") refreshToken: String): Response<LoginResponse>
 

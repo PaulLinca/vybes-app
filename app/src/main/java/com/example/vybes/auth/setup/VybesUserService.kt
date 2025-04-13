@@ -11,4 +11,8 @@ class VybesUserService(private val vybesApiClient: VybesApiClient) : UserService
             UsernameSetupRequest(username)
         )
     }
+
+    override suspend fun getUser(username: String): Response<UserResponse> {
+        return vybesApiClient.getUser(username)
+    }
 }
