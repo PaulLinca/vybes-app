@@ -107,17 +107,19 @@ fun ProfileScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-
-                        userState?.favoriteArtists.orEmpty().forEach { artist ->
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(artist.imageUrl),
-                                    contentDescription = artist.name,
-                                    modifier = Modifier
-                                        .size(64.dp)
-                                        .clip(CircleShape)
-                                        .border(1.dp, TryoutGreen, CircleShape)
-                                )
+                        val artists = userState?.favoriteArtists.orEmpty()
+                        if (artists.isNotEmpty()) {
+                            artists.forEach { artist ->
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Image(
+                                        painter = rememberAsyncImagePainter(artist.imageUrl),
+                                        contentDescription = artist.name,
+                                        modifier = Modifier
+                                            .size(64.dp)
+                                            .clip(CircleShape)
+                                            .border(1.dp, TryoutGreen, CircleShape)
+                                    )
+                                }
                             }
                         }
                     }
@@ -149,17 +151,19 @@ fun ProfileScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-
-                        userState?.favoriteAlbums.orEmpty().forEach { artist ->
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(artist.imageUrl),
-                                    contentDescription = artist.name,
-                                    modifier = Modifier
-                                        .size(64.dp)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .border(1.dp, TryoutGreen, RoundedCornerShape(12.dp))
-                                )
+                        val albums = userState?.favoriteAlbums.orEmpty()
+                        if (albums.isNotEmpty()) {
+                            albums.forEach { album ->
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Image(
+                                        painter = rememberAsyncImagePainter(album.imageUrl),
+                                        contentDescription = album.name,
+                                        modifier = Modifier
+                                            .size(64.dp)
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .border(1.dp, TryoutGreen, RoundedCornerShape(12.dp))
+                                    )
+                                }
                             }
                         }
                     }
