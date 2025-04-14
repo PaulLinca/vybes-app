@@ -45,8 +45,10 @@ import com.example.vybes.R
 import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
+import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.Black
-import com.example.vybes.common.theme.SpotifyDarkGrey
+import com.example.vybes.common.theme.ElevatedBackgroundColor
+import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
@@ -136,9 +138,9 @@ fun VybePostScreen(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(25.dp))
                     .weight(1f)
-                    .background(Color.Black, shape = RoundedCornerShape(25.dp))
+                    .background(BackgroundColor, shape = RoundedCornerShape(25.dp))
                     .border(
-                        1.dp, Color.White, RoundedCornerShape(25.dp)
+                        1.dp, PrimaryTextColor, RoundedCornerShape(25.dp)
                     )
             )
             DebouncedIconButton(
@@ -169,7 +171,7 @@ fun SongBanner(vybe: Vybe?) {
         modifier = Modifier
             .fillMaxWidth()
             .height(250.dp)
-            .background(color = SpotifyDarkGrey)
+            .background(color = ElevatedBackgroundColor)
     ) {
         Box(
             modifier = Modifier
@@ -179,7 +181,7 @@ fun SongBanner(vybe: Vybe?) {
         )
         Box(
             modifier = Modifier
-                .background(Color.Black.copy(alpha = 0.6f))
+                .background(BackgroundColor.copy(alpha = 0.6f))
                 .fillMaxSize(),
         )
         Column(

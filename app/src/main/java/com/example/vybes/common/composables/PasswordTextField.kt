@@ -30,7 +30,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.vybes.R
-import com.example.vybes.common.theme.White
+import com.example.vybes.common.theme.AccentBorderColor
+import com.example.vybes.common.theme.BackgroundColor
+import com.example.vybes.common.theme.PrimaryTextColor
+import com.example.vybes.common.theme.VybesVeryLightGray
 
 @Composable
 fun PasswordTextField(
@@ -48,13 +51,13 @@ fun PasswordTextField(
         onValueChange = onValueChanged,
         enabled = enabled,
         visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-        textStyle = textStyle.copy(color = Color.White),
-        cursorBrush = SolidColor(Color.White),
+        textStyle = textStyle.copy(color = PrimaryTextColor),
+        cursorBrush = SolidColor(PrimaryTextColor),
         decorationBox = { innerTextField ->
             Box(
                 modifier = modifier
-                    .background(Color.Black, shape = RoundedCornerShape(20.dp))
-                    .border(1.dp, White, RoundedCornerShape(20.dp))
+                    .background(BackgroundColor, shape = RoundedCornerShape(20.dp))
+                    .border(1.dp, AccentBorderColor, RoundedCornerShape(20.dp))
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
@@ -79,7 +82,7 @@ fun PasswordTextField(
                         modifier = Modifier
                             .size(24.dp)
                             .clickable { passwordVisibility = !passwordVisibility },
-                        colorFilter = ColorFilter.tint(Color.White),
+                        colorFilter = ColorFilter.tint(VybesVeryLightGray),
                     )
                 }
             }

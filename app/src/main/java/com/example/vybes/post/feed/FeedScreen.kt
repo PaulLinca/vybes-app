@@ -47,8 +47,12 @@ import androidx.navigation.NavController
 import com.example.vybes.R
 import com.example.vybes.add.SearchTrackScreen
 import com.example.vybes.common.composables.DebouncedIconButton
-import com.example.vybes.common.theme.SpotifyDarkGrey
-import com.example.vybes.common.theme.SpotifyLighterGrey
+import com.example.vybes.common.theme.BackgroundColor
+import com.example.vybes.common.theme.ElevatedBackgroundColor
+import com.example.vybes.common.theme.IconColor
+import com.example.vybes.common.theme.PrimaryTextColor
+import com.example.vybes.common.theme.SubtleBorderColor
+import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.logoStyle
 import com.example.vybes.common.theme.songTitleStyle
@@ -76,7 +80,7 @@ fun FeedScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(BackgroundColor)
             .padding(horizontal = 10.dp)
             .pullRefresh(pullRefreshState)
     ) {
@@ -117,7 +121,7 @@ fun FeedScreen(
             refreshing = isRefreshing,
             state = pullRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
-            backgroundColor = SpotifyDarkGrey,
+            backgroundColor = VybesVeryLightGray,
             contentColor = White
         )
     }
@@ -169,20 +173,20 @@ private fun EmptyFeedState() {
             modifier = Modifier
                 .size(160.dp)
                 .padding(bottom = 16.dp),
-            colorFilter = ColorFilter.tint(Color.White)
+            colorFilter = ColorFilter.tint(IconColor)
         )
 
         Text(
             text = "It's quiet here...",
             style = MaterialTheme.typography.h6,
-            color = Color.White,
+            color = PrimaryTextColor,
             textAlign = TextAlign.Center
         )
 
         Text(
             text = "Share a vybe to add some music to the mix!",
             style = MaterialTheme.typography.body1,
-            color = Color.White.copy(alpha = 0.7f),
+            color = PrimaryTextColor.copy(alpha = 0.7f),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 8.dp)
         )
@@ -203,7 +207,7 @@ fun TopBar(navController: NavController) {
                 .clip(CircleShape)
                 .align(Alignment.CenterStart),
             contentDescription = "Add New Vybe Button",
-            iconResId = R.drawable.add_icon
+            iconResId = R.drawable.add_icon_square
         )
         Text(
             text = stringResource(R.string.app_name),
@@ -237,9 +241,9 @@ fun AddVybeButton(navController: NavController) {
             .clickable(onClick = { navController.navigate(SearchTrackScreen) })
             .fillMaxWidth()
             .height(90.dp)
-            .border(1.dp, SpotifyLighterGrey, RoundedCornerShape(16.dp))
+            .border(1.dp, SubtleBorderColor, RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))
-            .background(color = SpotifyDarkGrey)
+            .background(color = ElevatedBackgroundColor)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
@@ -252,7 +256,7 @@ fun AddVybeButton(navController: NavController) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "add icon",
-                    tint = SpotifyDarkGrey,
+                    tint = IconColor,
                     modifier = Modifier.size(45.dp)
                 )
             }

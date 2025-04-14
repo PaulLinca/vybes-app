@@ -73,7 +73,10 @@ class MainActivity : ComponentActivity() {
                         ProfileScreen(user, navController)
                     }
                     composable<VybeScreen> {
-                        VybePostScreen(onGoBack = { navController.popBackStack() }, navController = navController)
+                        VybePostScreen(
+                            onGoBack = { navController.popBackStack() },
+                            navController = navController
+                        )
                     }
                     composable<FeedbackScreen> {
                         FeedbackScreen(onGoBack = { navController.popBackStack() })

@@ -29,9 +29,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vybes.R
 import com.example.vybes.common.composables.MultilineTextField
+import com.example.vybes.common.theme.AccentBorderColor
+import com.example.vybes.common.theme.BackgroundColor
+import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.ErrorRed
-import com.example.vybes.common.theme.SpotifyDarkGrey
-import com.example.vybes.common.theme.White
+import com.example.vybes.common.theme.PrimaryTextColor
+import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.logoStyle
 import com.example.vybes.common.theme.songTitleStyle
@@ -58,27 +61,27 @@ fun SetupScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(BackgroundColor)
             .padding(horizontal = 50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
             text = "vybes",
-            color = White,
+            color = PrimaryTextColor,
             style = logoStyle,
             fontSize = 50.sp
         )
         Spacer(modifier = Modifier.size(30.dp))
         Text(
             text = stringResource(R.string.choose_a_username),
-            color = Color.White,
+            color = PrimaryTextColor,
             style = songTitleStyle
         )
         Spacer(modifier = Modifier.size(10.dp))
         Text(
             text = stringResource(R.string.username_setup_subtitle),
-            color = Color.LightGray,
+            color = SecondaryTextColor,
             style = artistsStyle
         )
 
@@ -103,8 +106,8 @@ fun SetupScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color.Black, shape = RoundedCornerShape(20.dp))
-                .border(1.dp, White, RoundedCornerShape(20.dp))
+                .background(BackgroundColor, shape = RoundedCornerShape(20.dp))
+                .border(1.dp, AccentBorderColor, RoundedCornerShape(20.dp))
         )
         Spacer(modifier = Modifier.size(30.dp))
         Button(
@@ -113,10 +116,10 @@ fun SetupScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(SpotifyDarkGrey),
+                .background(ElevatedBackgroundColor),
             colors = ButtonDefaults.buttonColors(
-                containerColor = SpotifyDarkGrey,
-                contentColor = Color.White,
+                containerColor = ElevatedBackgroundColor,
+                contentColor = PrimaryTextColor,
                 disabledContainerColor = Color.Gray,
                 disabledContentColor = Color.LightGray
             )
@@ -124,7 +127,7 @@ fun SetupScreen(
             if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp))
             } else {
-                Text(text = stringResource(R.string.continue_text))
+                Text(text = stringResource(R.string.continue_text), color = PrimaryTextColor)
             }
         }
     }

@@ -9,9 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import com.example.vybes.common.theme.IconColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -45,7 +45,7 @@ fun DebouncedIconButton(
         Image(
             painter = painterResource(id = iconResId),
             contentDescription = contentDescription,
-            colorFilter = ColorFilter.tint(Color.White),
+            colorFilter = ColorFilter.tint(IconColor),
             modifier = Modifier.fillMaxSize()
         )
     }

@@ -43,8 +43,9 @@ import coil.size.Size
 import com.example.vybes.R
 import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.IconTextButton
-import com.example.vybes.common.theme.SpotifyDarkGrey
-import com.example.vybes.common.theme.SpotifyLighterGrey
+import com.example.vybes.common.theme.BackgroundColor
+import com.example.vybes.common.theme.ElevatedBackgroundColor
+import com.example.vybes.common.theme.SubtleBorderColor
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
@@ -183,9 +184,9 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
             .clickable(onClick = onClickCard)
             .fillMaxWidth()
             .height(90.dp)
-            .border(1.dp, SpotifyLighterGrey, RoundedCornerShape(16.dp))
+            .border(1.dp, SubtleBorderColor, RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))
-            .background(color = SpotifyDarkGrey)
+            .background(color = ElevatedBackgroundColor)
     ) {
         Box(
             modifier = Modifier
@@ -195,7 +196,7 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
         )
         Box(
             modifier = Modifier
-                .background(Color.Black.copy(alpha = 0.6f))
+                .background(BackgroundColor.copy(alpha = 0.6f))
                 .fillMaxSize(),
         )
         Row(

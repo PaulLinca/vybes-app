@@ -2,19 +2,33 @@ package com.example.vybes.common.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
-
 val Black = Color(0xFF000000)
 val White = Color(0xFFFFFFFF)
 
-val SpotifyDarkGrey = Color(0xFF1a1b1e)
-val SpotifyLightGrey = Color(0xFF25262b)
-val SpotifyLighterGrey = Color(0xFF383a40)
+val VybesBlack = Color(0xFF121214)
+val VybesVeryDarkGray = Color(0xFF1a1a1e)
+val VybesDarkGray = Color(0xFF222327)
+val VybesLightGray = Color(0xFF82838b)
+val VybesVeryLightGray = Color(0xFFaaaab1)
+val VybesWhite = Color(0xFFfbfbfb)
+
+val TryoutGreen = Color(0xFFd3f864)
+val TryoutRed = Color(0xFFF86464)
+val TryoutBlue = Color(0xFF6489F8)
 
 val SuccessGreen = Color(0xFF4DFF56)
 val ErrorRed = Color(0xFFFF674D)
 val Blue = Color(0xFF4D8EFF)
 
-val TryoutGreen = Color(0xFFd3f864)
+val BackgroundColor = VybesBlack
+val ElevatedBackgroundColor = VybesDarkGray
+val SubtleBorderColor = Color(0xFF27282b)
+val AccentBorderColor = VybesVeryLightGray
+
+val PrimaryTextColor = VybesWhite
+val SecondaryTextColor = VybesVeryLightGray
+val HintTextColor = VybesLightGray
+
+val IconColor = VybesVeryLightGray
+
+

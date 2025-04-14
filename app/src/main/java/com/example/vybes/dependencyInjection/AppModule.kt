@@ -10,7 +10,6 @@ import com.example.vybes.network.AuthInterceptor
 import com.example.vybes.network.TokenAuthenticator
 import com.example.vybes.network.VybesApiClient
 import com.example.vybes.network.ZonedDateTimeTypeAdapter
-import com.example.vybes.post.model.User
 import com.example.vybes.post.service.PostService
 import com.example.vybes.post.service.VybesPostService
 import com.google.gson.Gson

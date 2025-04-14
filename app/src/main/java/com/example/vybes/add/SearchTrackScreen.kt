@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -33,9 +32,12 @@ import com.example.vybes.R
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
+import com.example.vybes.common.theme.AccentBorderColor
+import com.example.vybes.common.theme.BackgroundColor
+import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.ErrorRed
-import com.example.vybes.common.theme.SpotifyDarkGrey
-import com.example.vybes.common.theme.White
+import com.example.vybes.common.theme.PrimaryTextColor
+import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import kotlinx.serialization.Serializable
@@ -56,12 +58,12 @@ fun SearchTrackScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.Black)
+            .background(color = BackgroundColor)
     ) {
         TopBarWithBackButton(onGoBack = { navController.popBackStack() }) {
             androidx.compose.material3.Text(
                 text = stringResource(R.string.share_prompt),
-                color = White,
+                color = PrimaryTextColor,
                 textAlign = TextAlign.Center,
                 style = songTitleStyle,
             )
@@ -69,7 +71,8 @@ fun SearchTrackScreen(
         Column(
             Modifier
                 .padding(16.dp)
-                .fillMaxWidth()) {
+                .fillMaxWidth()
+        ) {
             MultilineTextField(
                 value = searchQuery,
                 onValueChanged = { viewModel.updateSearchQuery(it) },
@@ -79,8 +82,8 @@ fun SearchTrackScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color.Black, shape = RoundedCornerShape(16.dp))
-                    .border(1.dp, Color.White, RoundedCornerShape(16.dp))
+                    .background(BackgroundColor, shape = RoundedCornerShape(16.dp))
+                    .border(1.dp, AccentBorderColor, RoundedCornerShape(16.dp))
                     .padding(6.dp)
             )
 
@@ -90,7 +93,7 @@ fun SearchTrackScreen(
                 isLoading -> {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        color = Color.White
+                        color = PrimaryTextColor
                     )
                 }
 
@@ -121,7 +124,7 @@ fun TrackItem(navController: NavController, track: TrackSearchResult) {
             .clickable { navController.navigate(track) }
             .fillMaxWidth()
             .padding(8.dp)
-            .background(SpotifyDarkGrey, shape = RoundedCornerShape(8.dp))
+            .background(ElevatedBackgroundColor, shape = RoundedCornerShape(8.dp))
             .padding(8.dp)
     ) {
         AsyncImage(
@@ -133,8 +136,12 @@ fun TrackItem(navController: NavController, track: TrackSearchResult) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
-            Text(text = track.name, style = MaterialTheme.typography.h6, color = Color.White)
-            Text(text = track.artist, style = MaterialTheme.typography.body2, color = Color.Gray)
+            Text(text = track.name, style = MaterialTheme.typography.h6, color = PrimaryTextColor)
+            Text(
+                text = track.artist,
+                style = MaterialTheme.typography.body2,
+                color = SecondaryTextColor
+            )
         }
     }
 }

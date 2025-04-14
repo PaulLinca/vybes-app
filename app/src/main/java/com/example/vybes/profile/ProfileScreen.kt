@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -32,7 +31,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.vybes.R
 import com.example.vybes.common.composables.TopBarWithBackButton
-import com.example.vybes.common.theme.SpotifyDarkGrey
+import com.example.vybes.common.theme.BackgroundColor
+import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.TryoutGreen
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.songTitleStyle
@@ -40,9 +40,7 @@ import com.example.vybes.post.model.User
 
 @Composable
 fun ProfileScreen(
-    user: User,
-    navController: NavController,
-    profileViewModel: ProfileViewModel = hiltViewModel()
+    user: User, navController: NavController, profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
 
     LaunchedEffect(user.username) {
@@ -54,7 +52,7 @@ fun ProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(BackgroundColor)
     ) {
         TopBarWithBackButton(onGoBack = { navController.popBackStack() }) {}
         Column(
@@ -64,7 +62,7 @@ fun ProfileScreen(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.user),
-                contentDescription = "Icon",
+                contentDescription = "User avatar",
                 colorFilter = ColorFilter.tint(White),
                 modifier = Modifier
                     .size(64.dp)
@@ -78,8 +76,7 @@ fun ProfileScreen(
             Text(
                 text = user.username,
                 color = White,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally),
+                modifier = Modifier.align(Alignment.CenterHorizontally),
                 style = songTitleStyle,
             )
             Spacer(
@@ -92,14 +89,11 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .background(SpotifyDarkGrey, shape = RoundedCornerShape(12.dp))
+                    .background(ElevatedBackgroundColor, shape = RoundedCornerShape(12.dp))
                     .padding(16.dp)
             ) {
                 Column {
-                    Text(
-                        text = "Favourite artists",
-                        color = White
-                    )
+                    Text(text = "Favourite artists", color = White)
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -136,14 +130,11 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .background(SpotifyDarkGrey, shape = RoundedCornerShape(12.dp))
+                    .background(ElevatedBackgroundColor, shape = RoundedCornerShape(12.dp))
                     .padding(16.dp)
             ) {
                 Column {
-                    Text(
-                        text = "Favourite albums",
-                        color = White
-                    )
+                    Text(text = "Favourite albums", color = White)
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -178,7 +169,7 @@ fun ProfileScreen(
 //                        .fillMaxWidth()
 //                        .align(Alignment.CenterHorizontally),
 //                    shape = RoundedCornerShape(16.dp),
-//                    colors = ButtonDefaults.buttonColors(containerColor = SpotifyDarkGrey),
+//                    colors = ButtonDefaults.buttonColors(containerColor = ElevatedBackgroundColor),
 //                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
 //                ) {
 //                    Text(
@@ -192,7 +183,7 @@ fun ProfileScreen(
 //                        .fillMaxWidth()
 //                        .align(Alignment.CenterHorizontally),
 //                    shape = RoundedCornerShape(16.dp),
-//                    colors = ButtonDefaults.buttonColors(containerColor = SpotifyDarkGrey),
+//                    colors = ButtonDefaults.buttonColors(containerColor = ElevatedBackgroundColor),
 //                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
 //                ) {
 //                    Text(

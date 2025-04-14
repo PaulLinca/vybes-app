@@ -22,7 +22,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.vybes.common.theme.SpotifyDarkGrey
+import com.example.vybes.common.theme.ElevatedBackgroundColor
+import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import kotlinx.coroutines.CoroutineScope
@@ -45,7 +46,7 @@ fun IconTextButton(
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(SpotifyDarkGrey)
+            .background(ElevatedBackgroundColor)
             .padding(horizontal = 10.dp, vertical = 3.dp)
             .clickable(onClick = {
                 if (isEnabled) {
@@ -65,7 +66,7 @@ fun IconTextButton(
         if (reversed) {
             Text(
                 text = text,
-                color = White,
+                color = PrimaryTextColor,
                 style = artistsStyle,
             )
         }
@@ -79,7 +80,7 @@ fun IconTextButton(
         if (!reversed) {
             Text(
                 text = text,
-                color = White,
+                color = PrimaryTextColor,
                 style = artistsStyle,
             )
         }

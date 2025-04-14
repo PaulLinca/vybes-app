@@ -32,10 +32,12 @@ import com.example.vybes.R
 import com.example.vybes.auth.service.DummyAuthService
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.PasswordTextField
+import com.example.vybes.common.theme.AccentBorderColor
+import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.Blue
+import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.ErrorRed
-import com.example.vybes.common.theme.SpotifyDarkGrey
-import com.example.vybes.common.theme.White
+import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.logoStyle
 import kotlinx.serialization.Serializable
@@ -58,14 +60,14 @@ fun RegisterScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(BackgroundColor)
             .padding(horizontal = 50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
             text = stringResource(R.string.app_name),
-            color = White,
+            color = PrimaryTextColor,
             style = logoStyle,
             fontSize = 50.sp
         )
@@ -121,8 +123,8 @@ fun RegisterScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color.Black, shape = RoundedCornerShape(20.dp))
-                .border(1.dp, White, RoundedCornerShape(20.dp))
+                .background(BackgroundColor, shape = RoundedCornerShape(20.dp))
+                .border(1.dp, AccentBorderColor, RoundedCornerShape(20.dp))
         )
         Spacer(modifier = Modifier.size(20.dp))
 
@@ -135,8 +137,8 @@ fun RegisterScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color.Black, shape = RoundedCornerShape(20.dp))
-                .border(1.dp, White, RoundedCornerShape(20.dp))
+                .background(BackgroundColor, shape = RoundedCornerShape(20.dp))
+                .border(1.dp, AccentBorderColor, RoundedCornerShape(20.dp))
         )
         Spacer(modifier = Modifier.size(20.dp))
 
@@ -149,8 +151,8 @@ fun RegisterScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color.Black, shape = RoundedCornerShape(20.dp))
-                .border(1.dp, White, RoundedCornerShape(20.dp))
+                .background(BackgroundColor, shape = RoundedCornerShape(20.dp))
+                .border(1.dp, AccentBorderColor, RoundedCornerShape(20.dp))
         )
         Spacer(modifier = Modifier.size(20.dp))
 
@@ -162,10 +164,10 @@ fun RegisterScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .background(SpotifyDarkGrey),
+                .background(ElevatedBackgroundColor),
             colors = ButtonDefaults.buttonColors(
-                containerColor = SpotifyDarkGrey,
-                contentColor = Color.White,
+                containerColor = ElevatedBackgroundColor,
+                contentColor = PrimaryTextColor,
                 disabledContainerColor = Color.Gray,
                 disabledContentColor = Color.LightGray
             )
@@ -173,14 +175,14 @@ fun RegisterScreen(
             if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp))
             } else {
-                Text(text = stringResource(R.string.register))
+                Text(text = stringResource(R.string.register), color = PrimaryTextColor)
             }
         }
         Spacer(modifier = Modifier.size(20.dp))
 
         Text(
             text = stringResource(R.string.already_have_an_account),
-            color = Color.LightGray,
+            color = PrimaryTextColor,
             style = artistsStyle
         )
         Text(

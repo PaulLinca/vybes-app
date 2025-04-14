@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -46,9 +45,12 @@ import com.example.vybes.R
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
-import com.example.vybes.common.theme.SpotifyDarkGrey
-import com.example.vybes.common.theme.SpotifyLighterGrey
-import com.example.vybes.common.theme.White
+import com.example.vybes.common.theme.AccentBorderColor
+import com.example.vybes.common.theme.BackgroundColor
+import com.example.vybes.common.theme.ElevatedBackgroundColor
+import com.example.vybes.common.theme.PrimaryTextColor
+import com.example.vybes.common.theme.SubtleBorderColor
+import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 
@@ -74,12 +76,12 @@ fun AddPostScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(BackgroundColor)
     ) {
         TopBarWithBackButton(onGoBack = onGoBack) {
             Text(
                 text = stringResource(R.string.share_song),
-                color = White,
+                color = PrimaryTextColor,
                 textAlign = TextAlign.Center,
                 style = songTitleStyle,
             )
@@ -104,8 +106,8 @@ fun AddPostScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.Black, shape = RoundedCornerShape(16.dp))
-                .border(1.dp, Color.Gray, RoundedCornerShape(16.dp))
+                .background(BackgroundColor, shape = RoundedCornerShape(16.dp))
+                .border(1.dp, AccentBorderColor, RoundedCornerShape(16.dp))
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -117,19 +119,19 @@ fun AddPostScreen(
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
             shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = SpotifyDarkGrey),
+            colors = ButtonDefaults.buttonColors(containerColor = ElevatedBackgroundColor),
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
         ) {
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
-                    color = White,
+                    color = VybesVeryLightGray,
                     strokeWidth = 2.dp
                 )
             } else {
                 Text(
                     text = stringResource(R.string.submit),
-                    color = White
+                    color = PrimaryTextColor
                 )
             }
         }
@@ -150,9 +152,9 @@ fun VybeCard(searchResult: TrackSearchResult, onClickCard: () -> Unit) {
             .clickable(onClick = onClickCard)
             .fillMaxWidth()
             .height(90.dp)
-            .border(1.dp, SpotifyLighterGrey, RoundedCornerShape(16.dp))
+            .border(1.dp, SubtleBorderColor, RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))
-            .background(color = SpotifyDarkGrey)
+            .background(color = ElevatedBackgroundColor)
     ) {
         Box(
             modifier = Modifier
@@ -162,7 +164,7 @@ fun VybeCard(searchResult: TrackSearchResult, onClickCard: () -> Unit) {
         )
         Box(
             modifier = Modifier
-                .background(Color.Black.copy(alpha = 0.6f))
+                .background(BackgroundColor.copy(alpha = 0.6f))
                 .fillMaxSize(),
         )
         Row(

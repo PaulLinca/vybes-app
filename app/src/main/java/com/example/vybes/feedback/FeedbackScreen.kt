@@ -28,8 +28,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vybes.R
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
+import com.example.vybes.common.theme.BackgroundColor
+import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.ErrorRed
-import com.example.vybes.common.theme.SpotifyDarkGrey
 import com.example.vybes.common.theme.SuccessGreen
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
@@ -48,7 +49,7 @@ fun FeedbackScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(BackgroundColor)
     ) {
         TopBarWithBackButton(onGoBack = onGoBack) {
             Text(
@@ -110,7 +111,7 @@ fun FeedbackScreen(
                     .fillMaxWidth()
                     .height(150.dp)
                     .clip(RoundedCornerShape(25.dp))
-                    .background(Color.Black, shape = RoundedCornerShape(25.dp))
+                    .background(BackgroundColor, shape = RoundedCornerShape(25.dp))
                     .border(
                         1.dp, borderColor, RoundedCornerShape(25.dp)
                     )
@@ -123,7 +124,7 @@ fun FeedbackScreen(
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = SpotifyDarkGrey),
+                colors = ButtonDefaults.buttonColors(containerColor = ElevatedBackgroundColor),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
             ) {
                 Text(
