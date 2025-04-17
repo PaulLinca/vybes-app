@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -32,7 +34,10 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.vybes.R
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.BackgroundColor
+import com.example.vybes.common.theme.Blue
 import com.example.vybes.common.theme.ElevatedBackgroundColor
+import com.example.vybes.common.theme.PrimaryTextColor
+import com.example.vybes.common.theme.TryoutBlue
 import com.example.vybes.common.theme.TryoutGreen
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.songTitleStyle
@@ -54,7 +59,7 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(BackgroundColor)
     ) {
-        TopBarWithBackButton(onGoBack = { navController.popBackStack() }) {}
+        TopBarWithBackButton(onGoBack = { navController.popBackStack() })
         Column(
             modifier = Modifier
                 .padding(top = 40.dp)
@@ -115,6 +120,32 @@ fun ProfileScreen(
                                     )
                                 }
                             }
+                        } else {
+                            if (isCurrentUser) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = "You haven't set your favourite artists yet",
+                                        style = MaterialTheme.typography.body2,
+                                        color = PrimaryTextColor.copy(alpha = 0.7f),
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Text(
+                                        text = "Tap to edit",
+                                        style = MaterialTheme.typography.body2,
+                                        color = TryoutBlue,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            } else {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = user.username + " hasn't set their favourite artists",
+                                        style = MaterialTheme.typography.body2,
+                                        color = PrimaryTextColor.copy(alpha = 0.7f),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -153,6 +184,32 @@ fun ProfileScreen(
                                             .size(64.dp)
                                             .clip(RoundedCornerShape(12.dp))
                                             .border(1.dp, TryoutGreen, RoundedCornerShape(12.dp))
+                                    )
+                                }
+                            }
+                        } else {
+                            if (isCurrentUser) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = "You haven't set your favourite artists yet",
+                                        style = MaterialTheme.typography.body2,
+                                        color = PrimaryTextColor.copy(alpha = 0.7f),
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Text(
+                                        text = "Tap to edit",
+                                        style = MaterialTheme.typography.body2,
+                                        color = TryoutBlue,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            } else {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = user.username + " hasn't set their favourite albums",
+                                        style = MaterialTheme.typography.body2,
+                                        color = PrimaryTextColor.copy(alpha = 0.7f),
+                                        textAlign = TextAlign.Center
                                     )
                                 }
                             }

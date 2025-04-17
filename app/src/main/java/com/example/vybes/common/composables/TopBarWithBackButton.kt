@@ -15,7 +15,7 @@ import com.example.vybes.R
 @Composable
 fun TopBarWithBackButton(
     onGoBack: () -> Unit,
-    titleComposable: @Composable () -> Unit
+    titleComposable: @Composable () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
