@@ -1,5 +1,7 @@
 package com.example.vybes.network
 
+import com.example.vybes.add.model.network.AlbumSearchResult
+import com.example.vybes.add.model.network.ArtistSearchResult
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.auth.model.AuthRequest
 import com.example.vybes.auth.model.LoginResponse
@@ -86,8 +88,18 @@ interface VybesApiClient {
         @Path("commentId") commentId: Long
     ): Response<LikeResponse>
 
-    @GET("api/spotify/search")
-    suspend fun getSearchResults(
+    @GET("api/music/search/track")
+    suspend fun getTrackSearchResults(
         @Query("query") query: String
     ): Response<List<TrackSearchResult>>
+
+    @GET("api/music/search/artist")
+    suspend fun getArtistSearchResults(
+        @Query("query") query: String
+    ): Response<List<ArtistSearchResult>>
+
+    @GET("api/music/search/album")
+    suspend fun getAlbumSearchResults(
+        @Query("query") query: String
+    ): Response<List<AlbumSearchResult>>
 }

@@ -1,5 +1,7 @@
 package com.example.vybes.post.service
 
+import com.example.vybes.add.model.network.AlbumSearchResult
+import com.example.vybes.add.model.network.ArtistSearchResult
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
@@ -30,4 +32,6 @@ interface PostService {
     suspend fun deleteComment(vybeId: Long, commentId: Long): Response<Comment>
 
     suspend fun searchTrack(query: String): Response<List<TrackSearchResult>>
+    suspend fun searchArtist(query: String): Response<List<ArtistSearchResult>>
+    suspend fun searchAlbum(query: String): Response<List<AlbumSearchResult>>
 }

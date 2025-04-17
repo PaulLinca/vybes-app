@@ -1,5 +1,7 @@
 package com.example.vybes.post.service
 
+import com.example.vybes.add.model.network.AlbumSearchResult
+import com.example.vybes.add.model.network.ArtistSearchResult
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.network.VybesApiClient
 import com.example.vybes.post.model.Comment
@@ -64,6 +66,14 @@ class VybesPostService @Inject constructor(
     }
 
     override suspend fun searchTrack(query: String): Response<List<TrackSearchResult>> {
-        return vybesApiClient.getSearchResults(query)
+        return vybesApiClient.getTrackSearchResults(query)
+    }
+
+    override suspend fun searchArtist(query: String): Response<List<ArtistSearchResult>> {
+        return vybesApiClient.getArtistSearchResults(query)
+    }
+
+    override suspend fun searchAlbum(query: String): Response<List<AlbumSearchResult>> {
+        return vybesApiClient.getAlbumSearchResults(query)
     }
 }
