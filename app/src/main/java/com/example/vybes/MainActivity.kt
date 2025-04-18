@@ -21,6 +21,7 @@ import com.example.vybes.post.feed.FeedScreen
 import com.example.vybes.post.model.User
 import com.example.vybes.post.model.VybeScreen
 import com.example.vybes.profile.ProfileScreen
+import com.example.vybes.profile.favourites.EditFavouritesScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -71,6 +72,10 @@ class MainActivity : ComponentActivity() {
                     composable<User> { backStackEntry ->
                         val user: User = backStackEntry.toRoute()
                         ProfileScreen(user, navController)
+                    }
+                    composable<EditFavouritesScreen> { backStackEntry ->
+                        val user: User = backStackEntry.toRoute()
+                        EditFavouritesScreen(user, navController)
                     }
                     composable<VybeScreen> {
                         VybePostScreen(

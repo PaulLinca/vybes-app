@@ -19,16 +19,49 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val userService: UserService
 ) : ViewModel() {
+    // Original user state
     private val _user = MutableStateFlow<UserResponse?>(null)
     val user: StateFlow<UserResponse?> = _user
 
+    // New UI state for handling loading and errors
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
+
+    // UI state data class
+    data class UiState(
+        val isLoading: Boolean = false,
+        val error: String? = null
+    )
+
     fun loadUser(username: String) {
         viewModelScope.launch {
-            val response = userService.getUser(username)
-            if (response.isSuccessful) {
-                _user.value = response.body()
-            } else {
-                Log.e("ProfileViewModel", "Error fetching user: ${response.errorBody()?.string()}")
+            try {
+                // Set loading state
+                _uiState.value = UiState(isLoading = true)
+
+                val response = userService.getUser(username)
+                if (response.isSuccessful) {
+                    _user.value = response.body()
+                    // Clear loading and error state
+                    _uiState.value = UiState(isLoading = false)
+                } else {
+                    // Set error state
+                    _uiState.value = UiState(
+                        isLoading = false,
+                        error = "Failed to load user data. Error: ${response.code()}"
+                    )
+                    Log.e(
+                        "ProfileViewModel",
+                        "Error fetching user: ${response.errorBody()?.string()}"
+                    )
+                }
+            } catch (e: Exception) {
+                // Handle network exceptions
+                _uiState.value = UiState(
+                    isLoading = false,
+                    error = "Network error: ${e.message ?: "Unknown error"}"
+                )
+                Log.e("ProfileViewModel", "Exception fetching user", e)
             }
         }
     }

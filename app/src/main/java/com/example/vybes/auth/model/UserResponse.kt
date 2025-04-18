@@ -4,19 +4,24 @@ data class UserResponse(
     val userId: Long,
     val username: String,
     val email: String,
-    val favoriteArtists: Set<Artist>,
-    val favoriteAlbums: Set<Artist>
+    val favoriteArtists: List<Artist>,
+    val favoriteAlbums: List<Artist>
 )
 
 data class Artist(
     val spotifyId: String,
-    val name: String,
-    val imageUrl: String
-)
+    override val name: String,
+    override val imageUrl: String,
+) : MediaItem
 
 data class Album(
     val spotifyId: String,
-    val name: String,
-    val imageUrl: String,
-    val artist: String
-)
+    val artist: String,
+    override val name: String,
+    override val imageUrl: String
+) : MediaItem
+
+interface MediaItem {
+    val name: String
+    val imageUrl: String
+}
