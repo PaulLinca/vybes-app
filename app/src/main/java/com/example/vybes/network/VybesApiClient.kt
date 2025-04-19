@@ -6,6 +6,7 @@ import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.auth.model.AuthRequest
 import com.example.vybes.auth.model.LoginResponse
 import com.example.vybes.auth.model.RegisterResponse
+import com.example.vybes.auth.model.SetFavoritesRequest
 import com.example.vybes.auth.model.UserResponse
 import com.example.vybes.auth.model.UsernameSetupRequest
 import com.example.vybes.post.model.Comment
@@ -32,6 +33,9 @@ interface VybesApiClient {
 
     @POST("api/user/setUsername")
     suspend fun setupUsername(@Body loginRequest: UsernameSetupRequest): Response<UserResponse>
+
+    @POST("api/user/updateFavorites")
+    suspend fun setFavorites(@Body request: SetFavoritesRequest): Response<Void>
 
     @GET("api/user")
     suspend fun getUser(@Query("username") username: String): Response<UserResponse>

@@ -60,6 +60,9 @@ import com.example.vybes.common.theme.TryoutGreen
 import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
+import com.example.vybes.post.feed.FeedScreen
+import com.example.vybes.post.model.User
+import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import kotlinx.serialization.Serializable
 
 enum class FavoriteType {
@@ -87,6 +90,14 @@ fun EditFavouritesScreen(
             navController.popBackStack()
         }
     }
+    LaunchedEffect(uiState.saveSuccess) {
+        if (uiState.saveSuccess) {
+            editFavouritesViewModel.resetSaveSuccess()
+
+            navController.popBackStack(FeedScreen, false)
+            navController.navigate(User(1, SharedPreferencesManager.getUsername().orEmpty()))
+        }
+    }
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
@@ -109,7 +120,7 @@ fun EditFavouritesScreen(
         containerColor = BackgroundColor,
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { },
+                onClick = { editFavouritesViewModel.saveFavorites() },
                 containerColor = ElevatedBackgroundColor
             ) {
                 Icon(
@@ -137,7 +148,7 @@ fun EditFavouritesScreen(
                         item = item,
                         isSelected = selectedIndex == index,
                         onClick = { editFavouritesViewModel.selectFavoriteToReplace(index) },
-                        onDelete = {editFavouritesViewModel.deleteFavorite(index)}
+                        onDelete = { editFavouritesViewModel.deleteFavorite(index) }
                     )
                 }
             }

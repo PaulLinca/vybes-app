@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AlbumSearchResult(
-    val id: String,
     override val name: String,
     override val imageUrl: String,
     override val spotifyId: String

@@ -1,5 +1,6 @@
 package com.example.vybes.profile.favourites
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -154,46 +155,36 @@ class EditFavouritesViewModel @Inject constructor(
         _currentFavorites.value = updatedFavorites
     }
 
-//    fun saveFavorites() {
-//        viewModelScope.launch {
-//            try {
-//                _uiState.value = _uiState.value.copy(isLoading = true)
-//
-//                // Filter out empty placeholders
-//                val favoritesToSave = _currentFavorites.value.filter { it.id != EMPTY_ITEM_ID }
-//
-//                val username = SharedPreferencesManager.getUsername().orEmpty()
-//                val response = when (favoriteType) {
-//                    FavoriteType.ARTISTS -> userService.updateFavoriteArtists(
-//                        username,
-//                        favoritesToSave
-//                    )
-//
-//                    FavoriteType.ALBUMS -> userService.updateFavoriteAlbums(
-//                        username,
-//                        favoritesToSave
-//                    )
-//                }
-//
-//                if (response.isSuccessful) {
-//                    _uiState.value = _uiState.value.copy(
-//                        isLoading = false,
-//                        saveSuccess = true
-//                    )
-//                } else {
-//                    _uiState.value = _uiState.value.copy(
-//                        isLoading = false,
-//                        error = "Failed to save favorites"
-//                    )
-//                }
-//            } catch (e: Exception) {
-//                _uiState.value = _uiState.value.copy(
-//                    isLoading = false,
-//                    error = "Network error: ${e.message ?: "Unknown error"}"
-//                )
-//            }
-//        }
-//    }
+    fun saveFavorites() {
+        viewModelScope.launch {
+            try {
+                _uiState.value = _uiState.value.copy(isLoading = true)
+                Log.e("WTF", _currentFavorites.value.toString())
+                val favoritesToSave = _currentFavorites.value.filter { it.spotifyId != "" }
+                val response = when (favoriteType) {
+                    FavoriteType.ARTISTS -> userService.setFavoriteArtists(favoritesToSave)
+                    FavoriteType.ALBUMS -> userService.setFavoriteAlbums(favoritesToSave)
+                }
+
+                if (response.isSuccessful) {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        saveSuccess = true
+                    )
+                } else {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = "Failed to save favorites"
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Network error: ${e.message ?: "Unknown error"}"
+                )
+            }
+        }
+    }
 
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
@@ -210,9 +201,5 @@ class EditFavouritesViewModel @Inject constructor(
             override val imageUrl: String = ""
             override val isEmpty: Boolean = true
         }
-    }
-
-    companion object {
-        const val EMPTY_ITEM_ID = "empty_placeholder"
     }
 }
