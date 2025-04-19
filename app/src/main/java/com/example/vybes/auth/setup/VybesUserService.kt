@@ -20,7 +20,6 @@ class VybesUserService(private val vybesApiClient: VybesApiClient) : UserService
     }
 
     override suspend fun setFavoriteArtists(artists: List<MediaItem>): Response<Void> {
-        Log.e("WTF", artists.map { a -> a.spotifyId }.joinToString { ", " })
         return vybesApiClient.setFavorites(
             SetFavoritesRequest(
                 artistIds = artists.map { a -> a.spotifyId },
