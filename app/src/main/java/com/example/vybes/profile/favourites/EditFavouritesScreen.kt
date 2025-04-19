@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,9 +22,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -54,6 +57,7 @@ import com.example.vybes.common.theme.IconColor
 import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.SubtleBorderColor
 import com.example.vybes.common.theme.TryoutGreen
+import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import kotlinx.serialization.Serializable
@@ -86,7 +90,7 @@ fun EditFavouritesScreen(
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
-            // Show something on error
+            // TODO Show something on error
             editFavouritesViewModel.clearError()
         }
     }
@@ -132,7 +136,8 @@ fun EditFavouritesScreen(
                         type = favoriteType,
                         item = item,
                         isSelected = selectedIndex == index,
-                        onClick = { editFavouritesViewModel.selectFavoriteToReplace(index) }
+                        onClick = { editFavouritesViewModel.selectFavoriteToReplace(index) },
+                        onDelete = {editFavouritesViewModel.deleteFavorite(index)}
                     )
                 }
             }
@@ -208,40 +213,68 @@ fun FavoriteItem(
     type: FavoriteType,
     item: MediaItem,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onDelete: () -> Unit
 ) {
     val shape = if (type == FavoriteType.ARTISTS) CircleShape else RoundedCornerShape(12.dp)
+
     Box(
         modifier = Modifier
             .size(100.dp)
-            .clip(shape)
-            .border(
-                width = 2.dp,
-                color = if (isSelected) TryoutGreen else SubtleBorderColor,
-                shape = shape
-            )
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
     ) {
-        if (item.isEmpty) {
-            Image(
-                painter = painterResource(id = R.drawable.add_icon_transparent),
-                contentDescription = "Add favorite",
-                colorFilter = ColorFilter.tint(IconColor),
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = item.imageUrl,
-                    error = painterResource(id = R.drawable.add_icon_transparent_colored)
-                ),
-                contentDescription = item.name,
-                contentScale = ContentScale.Crop,
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(shape)
+                .border(
+                    width = 2.dp,
+                    color = if (isSelected) TryoutGreen else SubtleBorderColor,
+                    shape = shape
+                )
+                .clickable(onClick = onClick),
+            contentAlignment = Alignment.Center
+        ) {
+            if (item.isEmpty) {
+                Image(
+                    painter = painterResource(id = R.drawable.add_icon_transparent),
+                    contentDescription = "Add favorite",
+                    colorFilter = ColorFilter.tint(IconColor),
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = item.imageUrl,
+                        error = painterResource(id = R.drawable.add_icon_transparent_colored)
+                    ),
+                    contentDescription = item.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(shape)
+                )
+            }
+        }
+
+        if (!item.isEmpty) {
+            val offset = if (type == FavoriteType.ALBUMS) 12 else 0
+            IconButton(
+                onClick = onDelete,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .clip(shape)
-            )
+                    .size(24.dp)
+                    .align(Alignment.TopEnd)
+                    .offset(x = offset.dp, y = (-offset).dp)
+                    .background(Color.Black.copy(alpha = 0.7f), CircleShape)
+                    .border(1.dp, Color.White.copy(alpha = 0.5f), CircleShape)
+                    .padding(4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Remove favorite",
+                    tint = TryoutRed,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
     }
 }

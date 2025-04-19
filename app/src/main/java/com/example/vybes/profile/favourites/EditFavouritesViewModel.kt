@@ -148,6 +148,12 @@ class EditFavouritesViewModel @Inject constructor(
         }
     }
 
+    fun deleteFavorite(index: Int) {
+        val updatedFavorites = _currentFavorites.value.toMutableList()
+        updatedFavorites[index] = createEmptyMediaItem()
+        _currentFavorites.value = updatedFavorites
+    }
+
 //    fun saveFavorites() {
 //        viewModelScope.launch {
 //            try {
@@ -202,6 +208,7 @@ class EditFavouritesViewModel @Inject constructor(
             override val spotifyId: String = ""
             override val name: String = ""
             override val imageUrl: String = ""
+            override val isEmpty: Boolean = true
         }
     }
 

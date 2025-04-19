@@ -26,5 +26,5 @@ interface MediaItem {
     val name: String
     val imageUrl: String
     val isEmpty: Boolean
-        get() = false  // Default implementation returns false
+        get() = false
 }

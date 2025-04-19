@@ -32,6 +32,8 @@ interface PostService {
     suspend fun deleteComment(vybeId: Long, commentId: Long): Response<Comment>
 
     suspend fun searchTrack(query: String): Response<List<TrackSearchResult>>
+
     suspend fun searchArtist(query: String): Response<List<ArtistSearchResult>>
+
     suspend fun searchAlbum(query: String): Response<List<AlbumSearchResult>>
 }
