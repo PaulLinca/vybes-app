@@ -46,10 +46,8 @@ import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.BackgroundColor
-import com.example.vybes.common.theme.Black
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
-import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.common.util.DateUtils
@@ -85,12 +83,12 @@ fun VybePostScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Black)
+            .background(BackgroundColor)
     ) {
         TopBarWithBackButton(onGoBack = onGoBack) {
             Text(
                 text = vybe.user.username,
-                color = White,
+                color = PrimaryTextColor,
                 textAlign = TextAlign.Center,
                 style = songTitleStyle,
             )
@@ -199,7 +197,7 @@ fun SongBanner(vybe: Vybe?) {
             )
             Text(
                 text = vybe?.songName.orEmpty(),
-                color = White,
+                color = PrimaryTextColor,
                 textAlign = TextAlign.Center,
                 style = songTitleStyle,
             )
@@ -258,7 +256,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel, navController: NavCo
                 Text(
                     text = comment.user.username,
                     textAlign = TextAlign.Start,
-                    color = White,
+                    color = PrimaryTextColor,
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
@@ -282,7 +280,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel, navController: NavCo
                 Text(
                     text = comment.text,
                     textAlign = TextAlign.Start,
-                    color = White,
+                    color = PrimaryTextColor,
                     style = artistsStyle,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
@@ -312,7 +310,7 @@ fun Comment(comment: Comment, vybeViewModel: VybeViewModel, navController: NavCo
             Text(
                 text = comment.likes.orEmpty().count().toString(),
                 textAlign = TextAlign.Start,
-                color = White,
+                color = PrimaryTextColor,
                 fontSize = 10.sp,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

@@ -1,6 +1,5 @@
 package com.example.vybes.auth.setup
 
-import android.util.Log
 import com.example.vybes.auth.model.MediaItem
 import com.example.vybes.auth.model.SetFavoritesRequest
 import com.example.vybes.auth.model.UserResponse

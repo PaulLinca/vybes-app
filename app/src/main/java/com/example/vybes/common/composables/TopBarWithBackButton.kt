@@ -15,6 +15,7 @@ import com.example.vybes.R
 @Composable
 fun TopBarWithBackButton(
     onGoBack: () -> Unit,
+    rightButtonComposable: @Composable () -> Unit = {},
     titleComposable: @Composable () -> Unit = {}
 ) {
     Box(
@@ -36,6 +37,9 @@ fun TopBarWithBackButton(
             modifier = Modifier.align(Alignment.Center)
         ) {
             titleComposable()
+        }
+        Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+            rightButtonComposable()
         }
     }
 }
