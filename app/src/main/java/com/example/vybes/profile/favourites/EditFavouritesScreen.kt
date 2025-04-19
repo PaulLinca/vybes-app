@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -143,9 +142,10 @@ fun EditFavouritesScreen(
             MultilineTextField(
                 value = searchQuery,
                 onValueChanged = { editFavouritesViewModel.updateSearchQuery(it) },
-                hintText = "Search for " + (if (favoriteType == FavoriteType.ARTISTS) "artists" else "albums") + "...",
+                hintText = deriveHintText(selectedIndex, favoriteType),
                 textStyle = artistsStyle,
                 maxLines = 1,
+                enabled = selectedIndex != null,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
@@ -191,7 +191,6 @@ fun EditFavouritesScreen(
         }
     }
 
-    // Loading overlay
     if (uiState.isLoading) {
         Box(
             modifier = Modifier
@@ -235,7 +234,7 @@ fun FavoriteItem(
             Image(
                 painter = rememberAsyncImagePainter(
                     model = item.imageUrl,
-                    error = painterResource(id = R.drawable.user)
+                    error = painterResource(id = R.drawable.add_icon_transparent_colored)
                 ),
                 contentDescription = item.name,
                 contentScale = ContentScale.Crop,
@@ -260,7 +259,7 @@ fun SearchResultItem(
             .clip(RoundedCornerShape(8.dp))
             .background(ElevatedBackgroundColor)
             .clickable(onClick = onClick)
-            .padding(4.dp),
+            .padding(top = 4.dp, bottom = 4.dp, start = 4.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -282,13 +281,18 @@ fun SearchResultItem(
                 color = PrimaryTextColor,
                 style = MaterialTheme.typography.bodyLarge
             )
-
         }
 
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = "Select",
-            tint = TryoutGreen
+            tint = IconColor
         )
     }
 }
+
+private fun deriveHintText(
+    selectedIndex: Int?, favoriteType: FavoriteType
+) = if (selectedIndex == null) {
+    "Select a slot to add your favorite"
+} else "Search for " + (if (favoriteType == FavoriteType.ARTISTS) "artists" else "albums") + "..."

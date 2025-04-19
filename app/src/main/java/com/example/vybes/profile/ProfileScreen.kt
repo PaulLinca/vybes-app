@@ -8,7 +8,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -55,6 +54,7 @@ import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.TryoutBlue
 import com.example.vybes.common.theme.TryoutGreen
 import com.example.vybes.common.theme.TryoutRed
+import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.post.model.User
@@ -219,8 +219,8 @@ private fun <T : MediaItem> FavoriteSection(
 
             if (items.isNotEmpty()) {
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp)
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     items(items) { item ->
                         MediaItemThumbnail(
@@ -309,7 +309,7 @@ private fun LoadingIndicator() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator(color = TryoutGreen)
+        CircularProgressIndicator(color = VybesVeryLightGray)
     }
 }
 

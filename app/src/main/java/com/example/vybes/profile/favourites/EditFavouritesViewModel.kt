@@ -144,6 +144,7 @@ class EditFavouritesViewModel @Inject constructor(
             updatedFavorites[index] = newItem
             _currentFavorites.value = updatedFavorites
             _selectedIndex.value = null
+            updateSearchQuery("")
         }
     }
 
