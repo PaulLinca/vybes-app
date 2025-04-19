@@ -9,19 +9,22 @@ data class UserResponse(
 )
 
 data class Artist(
-    val spotifyId: String,
+    override val spotifyId: String,
     override val name: String,
     override val imageUrl: String,
 ) : MediaItem
 
 data class Album(
-    val spotifyId: String,
+    override val spotifyId: String,
     val artist: String,
     override val name: String,
     override val imageUrl: String
 ) : MediaItem
 
 interface MediaItem {
+    val spotifyId: String
     val name: String
     val imageUrl: String
+    val isEmpty: Boolean
+        get() = false  // Default implementation returns false
 }

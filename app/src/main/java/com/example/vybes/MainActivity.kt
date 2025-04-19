@@ -73,9 +73,8 @@ class MainActivity : ComponentActivity() {
                         val user: User = backStackEntry.toRoute()
                         ProfileScreen(user, navController)
                     }
-                    composable<EditFavouritesScreen> { backStackEntry ->
-                        val user: User = backStackEntry.toRoute()
-                        EditFavouritesScreen(user, navController)
+                    composable<EditFavouritesScreen> {
+                        EditFavouritesScreen(navController)
                     }
                     composable<VybeScreen> {
                         VybePostScreen(

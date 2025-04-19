@@ -58,6 +58,8 @@ import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.post.model.User
+import com.example.vybes.profile.favourites.EditFavouritesScreen
+import com.example.vybes.profile.favourites.FavoriteType
 
 @Composable
 fun ProfileScreen(
@@ -96,8 +98,20 @@ fun ProfileScreen(
                     user = user,
                     userState = userState,
                     isCurrentUser = isCurrentUser,
-                    onEditFavoriteArtists = { /* Navigate to edit screen */ },
-                    onEditFavoriteAlbums = { /* Navigate to edit screen */ }
+                    onEditFavoriteArtists = {
+                        navController.navigate(
+                            EditFavouritesScreen(
+                                FavoriteType.ARTISTS.name
+                            )
+                        )
+                    },
+                    onEditFavoriteAlbums = {
+                        navController.navigate(
+                            EditFavouritesScreen(
+                                FavoriteType.ALBUMS.name
+                            )
+                        )
+                    },
                 )
             }
         }
@@ -118,12 +132,10 @@ private fun ProfileContent(
             .fillMaxSize()
             .background(BackgroundColor)
     ) {
-        // Profile header
         ProfileHeader(username = user.username)
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        // Favorite artists section
         FavoriteSection(
             title = "Favourite artists",
             items = userState?.favoriteArtists.orEmpty(),
@@ -139,7 +151,6 @@ private fun ProfileContent(
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        // Favorite albums section
         FavoriteSection(
             title = "Favourite albums",
             items = userState?.favoriteAlbums.orEmpty(),
