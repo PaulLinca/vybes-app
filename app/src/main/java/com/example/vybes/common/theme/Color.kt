@@ -16,9 +16,9 @@ val TryoutGreen = Color(0xFFd3f864)
 val TryoutRed = Color(0xFFF86464)
 val TryoutBlue = Color(0xFF6489F8)
 
-val SuccessGreen = Color(0xFF4DFF56)
-val ErrorRed = Color(0xFFFF674D)
-val Blue = Color(0xFF4D8EFF)
+val SuccessGreen = TryoutGreen
+val ErrorRed = TryoutRed
+val LinkBlue = TryoutBlue
 
 val BackgroundColor = VybesBlack
 val ElevatedBackgroundColor = VybesDarkGray

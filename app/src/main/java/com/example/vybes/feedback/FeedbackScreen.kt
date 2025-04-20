@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,10 +27,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vybes.R
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
+import com.example.vybes.common.theme.AccentBorderColor
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
-import com.example.vybes.common.theme.ErrorRed
+import com.example.vybes.common.theme.PrimaryTextColor
+import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.SuccessGreen
+import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.disabledStyle
@@ -65,20 +67,20 @@ fun FeedbackScreen(
                 .fillMaxWidth()
         ) {
             val isSubmitted by feedbackViewModel.isSubmitted.collectAsState()
-            val textColor = if (isSubmitted) Color.DarkGray else White
+            val textColor = if (isSubmitted) SecondaryTextColor else PrimaryTextColor
             val fieldTextStyle = if (isSubmitted) disabledStyle else artistsStyle
 
             val isTextInvalid by feedbackViewModel.isTextInvalid.collectAsState()
-            val borderColor = if (isTextInvalid) ErrorRed else White
+            val borderColor = if (isTextInvalid) TryoutRed else AccentBorderColor
 
             val alertText by feedbackViewModel.alertText.collectAsState()
             val alertTextColor =
-                if (isSubmitted) SuccessGreen else if (isTextInvalid) ErrorRed else White
+                if (isSubmitted) SuccessGreen else if (isTextInvalid) TryoutRed else PrimaryTextColor
 
             Text(
                 text = stringResource(R.string.feedback_info_text),
                 textAlign = TextAlign.Center,
-                color = Color.LightGray,
+                color = SecondaryTextColor,
                 style = artistsStyle,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

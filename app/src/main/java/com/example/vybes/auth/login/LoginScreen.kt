@@ -33,7 +33,7 @@ import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.PasswordTextField
 import com.example.vybes.common.theme.AccentBorderColor
 import com.example.vybes.common.theme.BackgroundColor
-import com.example.vybes.common.theme.Blue
+import com.example.vybes.common.theme.LinkBlue
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.ErrorRed
 import com.example.vybes.common.theme.HintTextColor
@@ -131,7 +131,7 @@ fun LoginScreen(
         )
         Text(
             text = stringResource(R.string.register),
-            color = Blue,
+            color = LinkBlue,
             modifier = Modifier.clickable(
                 onClick = {
                     if (!isLoading) {
