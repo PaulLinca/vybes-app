@@ -47,6 +47,8 @@ import androidx.navigation.NavController
 import com.example.vybes.R
 import com.example.vybes.add.SearchTrackScreen
 import com.example.vybes.common.composables.DebouncedIconButton
+import com.example.vybes.common.composables.TopBarWithBackButton
+import com.example.vybes.common.composables.TopBarWithSideButtons
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.IconColor
@@ -195,43 +197,42 @@ private fun EmptyFeedState() {
 
 @Composable
 fun TopBar(navController: NavController) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp)
-    ) {
-        DebouncedIconButton(
-            onClick = { navController.navigate(SearchTrackScreen) },
-            modifier = Modifier
-                .size(30.dp)
-                .clip(CircleShape)
-                .align(Alignment.CenterStart),
-            contentDescription = "Add New Vybe Button",
-            iconResId = R.drawable.add_icon_square
-        )
-        Text(
-            text = stringResource(R.string.app_name),
-            color = White,
-            style = logoStyle,
-            modifier = Modifier.align(Alignment.Center)
-        )
-        DebouncedIconButton(
-            onClick = {
-                navController.navigate(
-                    User(
-                        userId = SharedPreferencesManager.getUserId(),
-                        username = SharedPreferencesManager.getUsername().orEmpty()
+    TopBarWithSideButtons(
+        leftButtonComposable = {
+            DebouncedIconButton(
+                onClick = { navController.navigate(SearchTrackScreen) },
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape),
+                contentDescription = "Add New Vybe Button",
+                iconResId = R.drawable.add_icon_square
+            )
+        },
+        centerComposable = {
+            Text(
+                text = stringResource(R.string.app_name),
+                color = White,
+                style = logoStyle
+            )
+        },
+        rightButtonComposable = {
+            DebouncedIconButton(
+                onClick = {
+                    navController.navigate(
+                        User(
+                            userId = SharedPreferencesManager.getUserId(),
+                            username = SharedPreferencesManager.getUsername().orEmpty()
+                        )
                     )
-                )
-            },
-            modifier = Modifier
-                .size(30.dp)
-                .clip(CircleShape)
-                .align(Alignment.CenterEnd),
-            contentDescription = "Profile Button",
-            iconResId = R.drawable.user
-        )
-    }
+                },
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape),
+                contentDescription = "Profile Button",
+                iconResId = R.drawable.user
+            )
+        }
+    )
 }
 
 @Composable

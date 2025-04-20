@@ -86,18 +86,23 @@ fun VybePostScreen(
             .background(BackgroundColor)
     ) {
         TopBarWithBackButton(onGoBack = onGoBack) {
-            Text(
-                text = vybe.user.username,
-                color = PrimaryTextColor,
-                textAlign = TextAlign.Center,
-                style = songTitleStyle,
-            )
-            Text(
-                text = DateUtils.formatPostedDate(vybe.postedDate),
-                color = Color.LightGray,
-                textAlign = TextAlign.Center,
-                style = artistsStyle,
-            )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = vybe.user.username,
+                    color = PrimaryTextColor,
+                    textAlign = TextAlign.Center,
+                    style = songTitleStyle,
+                )
+                Text(
+                    text = DateUtils.formatPostedDate(vybe.postedDate),
+                    color = Color.LightGray,
+                    textAlign = TextAlign.Center,
+                    style = artistsStyle,
+                )
+            }
         }
         SongBanner(vybe = vybe)
         if (vybe.description.isNotBlank()) {

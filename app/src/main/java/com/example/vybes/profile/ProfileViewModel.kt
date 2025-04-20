@@ -19,15 +19,12 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val userService: UserService
 ) : ViewModel() {
-    // Original user state
     private val _user = MutableStateFlow<UserResponse?>(null)
     val user: StateFlow<UserResponse?> = _user
 
-    // New UI state for handling loading and errors
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState
 
-    // UI state data class
     data class UiState(
         val isLoading: Boolean = false,
         val error: String? = null
