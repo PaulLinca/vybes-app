@@ -21,15 +21,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +49,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.vybes.R
 import com.example.vybes.auth.model.MediaItem
 import com.example.vybes.auth.model.UserResponse
+import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
@@ -57,6 +61,7 @@ import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.songTitleStyle
+import com.example.vybes.feedback.FeedbackScreen
 import com.example.vybes.post.model.User
 import com.example.vybes.profile.favourites.EditFavouritesScreen
 import com.example.vybes.profile.favourites.FavoriteType
@@ -67,6 +72,7 @@ fun ProfileScreen(
     navController: NavController,
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
+
     LaunchedEffect(key1 = user.username) {
         profileViewModel.loadUser(user.username)
     }
@@ -74,10 +80,33 @@ fun ProfileScreen(
     val userState by profileViewModel.user.collectAsState()
     val isCurrentUser = profileViewModel.isCurrentUser(user)
     val uiState = profileViewModel.uiState.collectAsState()
+    val showMenu = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
-            TopBarWithBackButton(onGoBack = { navController.popBackStack() })
+            TopBarWithBackButton(onGoBack = { navController.popBackStack() },
+                rightButtonComposable = {
+                    DebouncedIconButton(
+                        onClick = { showMenu.value = true },
+                        modifier = Modifier.size(35.dp),
+                        contentDescription = "Go back",
+                        iconResId = R.drawable.more
+                    )
+                    DropdownMenu(
+                        expanded = showMenu.value,
+                        onDismissRequest = { showMenu.value = false },
+                        modifier = Modifier.background(ElevatedBackgroundColor)
+                    ) {
+                        DropdownMenuItem(
+                            onClick = { navController.navigate(FeedbackScreen) },
+                            text = {
+                                Text("Send feedback", color = PrimaryTextColor)
+                            })
+                        DropdownMenuItem(onClick = { profileViewModel.logout() }, text = {
+                            Text("Logout", color = TryoutRed)
+                        })
+                    }
+                })
         },
         backgroundColor = BackgroundColor
     ) { paddingValues ->

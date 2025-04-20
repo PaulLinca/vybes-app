@@ -33,16 +33,13 @@ class ProfileViewModel @Inject constructor(
     fun loadUser(username: String) {
         viewModelScope.launch {
             try {
-                // Set loading state
                 _uiState.value = UiState(isLoading = true)
 
                 val response = userService.getUser(username)
                 if (response.isSuccessful) {
                     _user.value = response.body()
-                    // Clear loading and error state
                     _uiState.value = UiState(isLoading = false)
                 } else {
-                    // Set error state
                     _uiState.value = UiState(
                         isLoading = false,
                         error = "Failed to load user data. Error: ${response.code()}"
@@ -53,7 +50,6 @@ class ProfileViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                // Handle network exceptions
                 _uiState.value = UiState(
                     isLoading = false,
                     error = "Network error: ${e.message ?: "Unknown error"}"
