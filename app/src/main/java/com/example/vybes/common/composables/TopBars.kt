@@ -20,7 +20,7 @@ fun TopBarWithSideButtons(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp)
+            .padding(10.dp)
     ) {
         Box(
             modifier = Modifier.align(Alignment.CenterStart)
@@ -49,7 +49,6 @@ fun TopBarWithBackButton(
     titleComposable: @Composable () -> Unit = {}
 ) {
     TopBarWithSideButtons(
-        modifier = Modifier.padding(10.dp),
         leftButtonComposable = {
             DebouncedIconButton(
                 onClick = onGoBack,

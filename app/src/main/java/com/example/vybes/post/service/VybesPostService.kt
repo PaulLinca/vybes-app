@@ -8,6 +8,7 @@ import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.network.AddCommentRequest
 import com.example.vybes.post.model.network.LikeResponse
+import com.example.vybes.post.model.network.PageResponse
 import retrofit2.Response
 import java.time.ZonedDateTime
 import javax.inject.Inject
@@ -18,6 +19,15 @@ class VybesPostService @Inject constructor(
 
     override suspend fun getAllVybes(): Response<List<Vybe>> {
         return vybesApiClient.getAllPosts()
+    }
+
+    override suspend fun getVybesPaginated(
+        page: Int,
+        size: Int,
+        sort: String?,
+        direction: String?
+    ): Response<PageResponse<Vybe>> {
+        return vybesApiClient.getVybesPaginated(page, size, sort, direction)
     }
 
     override suspend fun getVybe(id: Long): Response<Vybe> {

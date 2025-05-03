@@ -2,28 +2,27 @@ package com.example.vybes.post.feed
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -31,12 +30,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,21 +47,19 @@ import androidx.navigation.NavController
 import com.example.vybes.R
 import com.example.vybes.add.SearchTrackScreen
 import com.example.vybes.common.composables.DebouncedIconButton
-import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.composables.TopBarWithSideButtons
 import com.example.vybes.common.theme.BackgroundColor
-import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.IconColor
 import com.example.vybes.common.theme.PrimaryTextColor
-import com.example.vybes.common.theme.SubtleBorderColor
+import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.logoStyle
-import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.post.model.User
-import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.VybeScreen
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -78,6 +76,30 @@ fun FeedScreen(
         refreshing = isRefreshing,
         onRefresh = { viewModel.refresh() }
     )
+    val errorState by viewModel.errorState.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val vybes by viewModel.vybes.collectAsState()
+    val isLoadingMore by viewModel.isLoadingMore.collectAsState()
+    val hasMoreContent by viewModel.hasMoreContent.collectAsState()
+
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+            .distinctUntilChanged { old, new ->
+                old.size == new.size && old.lastOrNull()?.index == new.lastOrNull()?.index
+            }
+            .collectLatest { visibleItems ->
+                if (!isLoading && !isLoadingMore && hasMoreContent) {
+                    val lastVisibleItemIndex = visibleItems.lastOrNull()?.index ?: 0
+                    val totalItems = vybes.size
+
+                    if (lastVisibleItemIndex >= totalItems - 3) {
+                        viewModel.loadMorePosts()
+                    }
+                }
+            }
+    }
 
     Box(
         modifier = Modifier
@@ -87,33 +109,66 @@ fun FeedScreen(
             .pullRefresh(pullRefreshState)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-
             TopBar(navController)
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                val vybes by viewModel.vybes.collectAsState()
-                val isLoading by viewModel.isLoading.collectAsState()
+            // Error state banner
+            errorState?.let { error ->
+                ErrorBanner(
+                    errorMessage = error,
+                    onDismiss = { viewModel.clearError() }
+                )
+            }
 
-                when {
-                    isLoading -> {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            CircularProgressIndicator(color = White)
+            when {
+                isLoading && vybes.isEmpty() -> {
+                    LoadingState()
+                }
+
+                vybes.isEmpty() -> {
+                    EmptyFeedState(navController)
+                }
+
+                else -> {
+                    LazyColumn(
+                        state = listState,
+                        contentPadding = PaddingValues(vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(vybes) { vybe ->
+                            val currentUserId = SharedPreferencesManager.getUserId()
+                            val isLikedByCurrentUser = vybe.likes.any { it.userId == currentUserId }
+
+                            VybePost(
+                                vybe = vybe,
+                                onClickCard = { navController.navigate(VybeScreen(vybe.id)) },
+                                onLikeClicked = {
+                                    viewModel.clickLikeButton(
+                                        vybe.id,
+                                        isLikedByCurrentUser
+                                    )
+                                },
+                                navController = navController
+                            )
                         }
-                    }
 
-                    vybes.isEmpty() -> {
-                        EmptyFeedState()
-                    }
-
-                    else -> {
-                        PopulatedFeedState(vybes, navController, viewModel)
+                        // Loading indicator at bottom when loading more items
+                        if (isLoadingMore) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        color = White,
+                                        modifier = Modifier.size(24.dp),
+                                        strokeWidth = 2.dp
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -130,37 +185,52 @@ fun FeedScreen(
 }
 
 @Composable
-private fun PopulatedFeedState(
-    vybes: List<Vybe>,
-    navController: NavController,
-    viewModel: FeedViewModel
-) {
-    Column(
+fun LoadingState() {
+    Box(
         modifier = Modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+            .fillMaxWidth()
+            .padding(vertical = 40.dp),
+        contentAlignment = Alignment.Center
     ) {
-        vybes.forEach { v ->
-            val currentUserId = SharedPreferencesManager.getUserId()
-            val isLikedByCurrentUser = v.likes.any { it.userId == currentUserId }
+        CircularProgressIndicator(color = White)
+    }
+}
 
-            VybePost(
-                vybe = v,
-                onClickCard = { navController.navigate(VybeScreen(v.id)) },
-                onLikeClicked = {
-                    viewModel.clickLikeButton(
-                        v.id,
-                        isLikedByCurrentUser
-                    )
-                },
-                navController
+@Composable
+fun ErrorBanner(errorMessage: String, onDismiss: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(TryoutRed)
+            .padding(12.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = errorMessage,
+                color = White,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.body2
+            )
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Dismiss",
+                tint = White,
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable { onDismiss() }
             )
         }
     }
 }
 
 @Composable
-private fun EmptyFeedState() {
+private fun EmptyFeedState(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -168,7 +238,7 @@ private fun EmptyFeedState() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(70.dp))
         Image(
             painter = painterResource(id = R.drawable.empty_feed_art),
             contentDescription = "Empty Feed",
@@ -190,7 +260,7 @@ private fun EmptyFeedState() {
             style = MaterialTheme.typography.body1,
             color = PrimaryTextColor.copy(alpha = 0.7f),
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
         )
     }
 }
@@ -202,8 +272,7 @@ fun TopBar(navController: NavController) {
             DebouncedIconButton(
                 onClick = { navController.navigate(SearchTrackScreen) },
                 modifier = Modifier
-                    .size(30.dp)
-                    .clip(CircleShape),
+                    .size(35.dp),
                 contentDescription = "Add New Vybe Button",
                 iconResId = R.drawable.add_icon_square
             )
@@ -233,42 +302,4 @@ fun TopBar(navController: NavController) {
             )
         }
     )
-}
-
-@Composable
-fun AddVybeButton(navController: NavController) {
-    Box(
-        modifier = Modifier
-            .clickable(onClick = { navController.navigate(SearchTrackScreen) })
-            .fillMaxWidth()
-            .height(90.dp)
-            .border(1.dp, SubtleBorderColor, RoundedCornerShape(16.dp))
-            .clip(RoundedCornerShape(16.dp))
-            .background(color = ElevatedBackgroundColor)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(1f)
-                    .background(Color.DarkGray),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "add icon",
-                    tint = IconColor,
-                    modifier = Modifier.size(45.dp)
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(vertical = 5.dp, horizontal = 2.dp),
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                Text(text = "Share a vybe", color = Color.Gray, style = songTitleStyle)
-            }
-        }
-    }
 }

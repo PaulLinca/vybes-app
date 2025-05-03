@@ -6,10 +6,13 @@ import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.network.LikeResponse
+import com.example.vybes.post.model.network.PageResponse
 import retrofit2.Response
 
 interface PostService {
     suspend fun getAllVybes(): Response<List<Vybe>>
+
+    suspend fun getVybesPaginated(page: Int, size: Int, sort: String? = "postedDate", direction: String? = "DESC"): Response<PageResponse<Vybe>>
 
     suspend fun getVybe(id: Long): Response<Vybe>
 

@@ -26,14 +26,41 @@ class FeedViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 
+    private val _errorState = MutableStateFlow<String?>(null)
+    val errorState = _errorState.asStateFlow()
+
+    private val _isLoadingMore = MutableStateFlow(false)
+    val isLoadingMore = _isLoadingMore.asStateFlow()
+
+    private val _hasMoreContent = MutableStateFlow(true)
+    val hasMoreContent = _hasMoreContent.asStateFlow()
+
+    private var currentPage = 0
+    private val pageSize = 10
+    private var totalPages = Int.MAX_VALUE
+
     init {
-        loadPosts()
+        loadInitialPosts()
     }
 
-    private fun loadPosts() {
+    private fun loadInitialPosts() {
         viewModelScope.launch {
+            _isLoading.value = true
+            _errorState.value = null
+            currentPage = 0
+
             try {
-                _vybes.value = postService.getAllVybes().body().orEmpty()
+                val response = postService.getVybesPaginated(page = 0, size = pageSize)
+                if (response.isSuccessful && response.body() != null) {
+                    val pageResponse = response.body()!!
+                    _vybes.value = pageResponse.content
+                    totalPages = pageResponse.totalPages
+                    _hasMoreContent.value = !pageResponse.last
+                } else {
+                    _errorState.value = "Failed to load posts: ${response.message()}"
+                }
+            } catch (e: Exception) {
+                _errorState.value = "Network error: ${e.localizedMessage ?: "Unknown error"}"
             } finally {
                 _isLoading.value = false
             }
@@ -43,10 +70,54 @@ class FeedViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _isRefreshing.value = true
+            _errorState.value = null
+            currentPage = 0
+
             try {
-                _vybes.value = postService.getAllVybes().body().orEmpty()
+                val response = postService.getVybesPaginated(page = 0, size = pageSize)
+                if (response.isSuccessful && response.body() != null) {
+                    val pageResponse = response.body()!!
+                    _vybes.value = pageResponse.content
+                    totalPages = pageResponse.totalPages
+                    _hasMoreContent.value = !pageResponse.last
+                } else {
+                    _errorState.value = "Failed to refresh: ${response.message()}"
+                }
+            } catch (e: Exception) {
+                _errorState.value = "Network error: ${e.localizedMessage ?: "Unknown error"}"
             } finally {
                 _isRefreshing.value = false
+            }
+        }
+    }
+
+    fun loadMorePosts() {
+        if (_isLoadingMore.value || !_hasMoreContent.value || currentPage >= totalPages - 1) return
+
+        viewModelScope.launch {
+            _isLoadingMore.value = true
+            try {
+                val nextPage = currentPage + 1
+                val response = postService.getVybesPaginated(page = nextPage, size = pageSize)
+
+                if (response.isSuccessful && response.body() != null) {
+                    val pageResponse = response.body()!!
+                    val newPosts = pageResponse.content
+
+                    if (newPosts.isNotEmpty()) {
+                        _vybes.value += newPosts
+                        currentPage = nextPage
+                        _hasMoreContent.value = !pageResponse.last
+                    } else {
+                        _hasMoreContent.value = false
+                    }
+                } else {
+                    _errorState.value = "Failed to load more posts"
+                }
+            } catch (e: Exception) {
+                _errorState.value = "Network error while loading more posts"
+            } finally {
+                _isLoadingMore.value = false
             }
         }
     }
@@ -61,22 +132,34 @@ class FeedViewModel @Inject constructor(
 
     private fun likeVybe(vybeId: Long) {
         viewModelScope.launch {
-            val response = postService.likeVybe(vybeId)
-            if (response.isSuccessful) {
-                updateVybeLikes(vybeId) { currentLikes ->
-                    currentLikes + Like(response.body()!!.userId)
+            try {
+                val response = postService.likeVybe(vybeId)
+                if (response.isSuccessful && response.body() != null) {
+                    updateVybeLikes(vybeId) { currentLikes ->
+                        currentLikes + Like(response.body()!!.userId)
+                    }
+                } else {
+                    _errorState.value = "Failed to like post"
                 }
+            } catch (e: Exception) {
+                _errorState.value = "Network error while liking post"
             }
         }
     }
 
     private fun unlikeVybe(vybeId: Long) {
         viewModelScope.launch {
-            val response = postService.unlikeVybe(vybeId)
-            if (response.isSuccessful) {
-                updateVybeLikes(vybeId) { currentLikes ->
-                    currentLikes.filter { it.userId != response.body()!!.userId }
+            try {
+                val response = postService.unlikeVybe(vybeId)
+                if (response.isSuccessful && response.body() != null) {
+                    updateVybeLikes(vybeId) { currentLikes ->
+                        currentLikes.filter { it.userId != response.body()!!.userId }
+                    }
+                } else {
+                    _errorState.value = "Failed to unlike post"
                 }
+            } catch (e: Exception) {
+                _errorState.value = "Network error while unliking post"
             }
         }
     }
@@ -89,5 +172,9 @@ class FeedViewModel @Inject constructor(
                 vybe
             }
         }
+    }
+
+    fun clearError() {
+        _errorState.value = null
     }
 }
