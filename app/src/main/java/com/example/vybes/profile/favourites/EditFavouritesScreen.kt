@@ -50,7 +50,6 @@ import com.example.vybes.R
 import com.example.vybes.auth.model.MediaItem
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
-import com.example.vybes.common.theme.AccentBorderColor
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.IconColor
@@ -162,12 +161,8 @@ fun EditFavouritesScreen(
                 textStyle = artistsStyle,
                 maxLines = 1,
                 enabled = selectedIndex != null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(BackgroundColor, shape = RoundedCornerShape(16.dp))
-                    .border(1.dp, AccentBorderColor, RoundedCornerShape(16.dp))
-                    .padding(6.dp)
+                contentAlignment = Alignment.CenterStart,
+                modifier = Modifier.fillMaxWidth().height(56.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))

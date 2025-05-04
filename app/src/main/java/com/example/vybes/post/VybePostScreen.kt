@@ -2,7 +2,6 @@ package com.example.vybes.post
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -313,11 +312,10 @@ fun CommentInputBar(
             onValueChanged = onTextChanged,
             hintText = "Add a comment...",
             textStyle = artistsStyle,
+            contentAlignment = Alignment.CenterStart,
+            weightModifier = Modifier.weight(1f),
             modifier = Modifier
-                .weight(1f)
-                .clip(RoundedCornerShape(25.dp))
-                .background(BackgroundColor, shape = RoundedCornerShape(25.dp))
-                .border(1.dp, PrimaryTextColor, RoundedCornerShape(25.dp))
+                .height(56.dp)
         )
 
         DebouncedIconButton(

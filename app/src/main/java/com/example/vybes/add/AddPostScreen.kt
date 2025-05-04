@@ -45,7 +45,6 @@ import com.example.vybes.R
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
-import com.example.vybes.common.theme.AccentBorderColor
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
@@ -103,11 +102,10 @@ fun AddPostScreen(
             hintText = "Add a description...",
             textStyle = artistsStyle,
             maxLines = 4,
+            contentAlignment = Alignment.CenterStart,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(BackgroundColor, shape = RoundedCornerShape(16.dp))
-                .border(1.dp, AccentBorderColor, RoundedCornerShape(16.dp))
+                .height(56.dp)
         )
 
         Spacer(modifier = Modifier.height(10.dp))

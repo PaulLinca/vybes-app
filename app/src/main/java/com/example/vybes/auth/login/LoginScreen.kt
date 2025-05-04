@@ -191,18 +191,15 @@ fun EmailField(
         textStyle = artistsStyle,
         hintText = stringResource(R.string.email),
         maxLines = 1,
-        contentAlignment = Alignment.CenterStart,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next
         ),
         keyboardActions = keyboardActions,
+        contentAlignment = Alignment.CenterStart,
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(BackgroundColor, shape = RoundedCornerShape(20.dp))
-            .border(1.dp, AccentBorderColor, RoundedCornerShape(20.dp))
             .focusRequester(focusRequester)
     )
 

@@ -25,6 +25,7 @@ import com.example.vybes.common.theme.PrimaryTextColor
 @Composable
 fun MultilineTextField(
     modifier: Modifier = Modifier,
+    weightModifier: Modifier = Modifier,
     enabled: Boolean = true,
     value: String,
     onValueChanged: (String) -> Unit,
@@ -40,7 +41,7 @@ fun MultilineTextField(
         value = value,
         onValueChange = onValueChanged,
         textStyle = textStyle,
-        modifier = Modifier,
+        modifier = weightModifier,
         maxLines = maxLines,
         cursorBrush = SolidColor(PrimaryTextColor),
         keyboardOptions = keyboardOptions,
@@ -50,7 +51,7 @@ fun MultilineTextField(
                 modifier = modifier
                     .background(BackgroundColor, shape = RoundedCornerShape(20.dp))
                     .border(1.dp, AccentBorderColor, RoundedCornerShape(20.dp))
-                    .padding(15.dp),
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 contentAlignment = contentAlignment
             ) {
                 if (value.isEmpty()) {
