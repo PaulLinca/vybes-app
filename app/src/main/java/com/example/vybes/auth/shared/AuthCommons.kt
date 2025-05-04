@@ -43,7 +43,7 @@ import com.example.vybes.common.theme.VybesLightGray
 import com.example.vybes.common.theme.artistsStyle
 
 @Composable
-fun ErrorMessages(
+fun AuthErrorMessages(
     networkError: String?,
     emailError: String?,
     passwordError: String?,
@@ -78,7 +78,36 @@ fun ErrorMessages(
 }
 
 @Composable
-private fun ErrorText(text: String) {
+fun SingleErrorMessage(
+    errorMessage: String?
+) {
+    val hasError =
+        listOfNotNull(errorMessage).isNotEmpty()
+
+    AnimatedVisibility(
+        visible = hasError,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically()
+    ) {
+        Card(
+            colors = CardDefaults.cardColors(containerColor = TryoutRed),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                errorMessage?.let { ErrorText(it) }
+            }
+        }
+    }
+}
+
+@Composable
+fun ErrorText(text: String) {
     Text(
         text = text,
         textAlign = TextAlign.Center,

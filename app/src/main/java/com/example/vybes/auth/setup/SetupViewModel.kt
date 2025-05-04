@@ -31,6 +31,7 @@ class SetupViewModel @Inject constructor(
 
     fun updateUsernameText(updatedText: String) {
         _usernameText = updatedText
+        _usernameError.value = null
     }
 
     private fun isUsernameValid(): Boolean {
@@ -50,6 +51,8 @@ class SetupViewModel @Inject constructor(
             if (isUsernameValid()) {
                 val response = userService.setupUsername(usernameText)
                 if (response.isSuccessful && response.body() != null) {
+                    _usernameError.value = null
+
                     val loginResponse = response.body()!!
                     SharedPreferencesManager.saveUsername(loginResponse.username)
 

@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vybes.R
 import com.example.vybes.auth.shared.AuthButton
-import com.example.vybes.auth.shared.ErrorMessages
+import com.example.vybes.auth.shared.AuthErrorMessages
 import com.example.vybes.auth.shared.LoadingOverlay
 import com.example.vybes.auth.shared.RegistrationSection
 import com.example.vybes.common.composables.MultilineTextField
@@ -121,7 +121,7 @@ fun RegisterScreen(
                 )
             }
 
-            ErrorMessages(
+            AuthErrorMessages(
                 networkError = networkError,
                 emailError = emailError,
                 passwordError = passwordError,
