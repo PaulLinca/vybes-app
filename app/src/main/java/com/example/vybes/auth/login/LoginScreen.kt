@@ -1,45 +1,76 @@
 package com.example.vybes.auth.login
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vybes.R
+import com.example.vybes.auth.shared.AuthButton
+import com.example.vybes.auth.shared.ErrorMessages
+import com.example.vybes.auth.shared.LoadingOverlay
+import com.example.vybes.auth.shared.RegistrationSection
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.PasswordTextField
 import com.example.vybes.common.theme.AccentBorderColor
 import com.example.vybes.common.theme.BackgroundColor
-import com.example.vybes.common.theme.LinkBlue
 import com.example.vybes.common.theme.ElevatedBackgroundColor
-import com.example.vybes.common.theme.ErrorRed
 import com.example.vybes.common.theme.HintTextColor
+import com.example.vybes.common.theme.LinkBlue
 import com.example.vybes.common.theme.PrimaryTextColor
+import com.example.vybes.common.theme.TryoutRed
+import com.example.vybes.common.theme.VybesLightGray
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.logoStyle
+import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -70,82 +101,108 @@ fun LoginScreen(
         }
     }
 
-    Column(
+    val focusManager = LocalFocusManager.current
+    val passwordFocusRequester = remember { FocusRequester() }
+
+    val emailKeyboardActions = KeyboardActions(
+        onNext = { passwordFocusRequester.requestFocus() }
+    )
+
+    val passwordKeyboardActions = KeyboardActions(
+        onDone = {
+            focusManager.clearFocus()
+            if (!isLoading) viewModel.login()
+        }
+    )
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(BackgroundColor)
-            .padding(horizontal = 50.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+            .systemBarsPadding()
     ) {
-        Text(
-            text = "vybes",
-            color = PrimaryTextColor,
-            style = logoStyle,
-            fontSize = 50.sp
-        )
-        Spacer(modifier = Modifier.size(30.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
+                .imePadding()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn() + expandVertically(),
+                modifier = Modifier.padding(bottom = 30.dp)
+            ) {
+                Text(
+                    text = "vybes",
+                    color = PrimaryTextColor,
+                    style = logoStyle,
+                    fontSize = 50.sp
+                )
+            }
 
-        networkError?.let { error ->
-            Text(
-                text = error,
-                textAlign = TextAlign.Center,
-                color = ErrorRed,
-                style = artistsStyle
+            ErrorMessages(
+                networkError = networkError,
+                emailError = emailError,
+                passwordError = passwordError
             )
-            Spacer(modifier = Modifier.size(10.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                EmailField(
+                    viewModel = viewModel,
+                    isLoading = isLoading,
+                    keyboardActions = emailKeyboardActions
+                )
+
+                Spacer(modifier = Modifier.size(20.dp))
+
+                PasswordField(
+                    viewModel = viewModel,
+                    isLoading = isLoading,
+                    keyboardActions = passwordKeyboardActions,
+                    focusRequester = passwordFocusRequester
+                )
+
+                Spacer(modifier = Modifier.size(24.dp))
+
+                AuthButton(
+                    isLoading = isLoading,
+                    onClick = { viewModel.login() },
+                    text = stringResource(R.string.login)
+                )
+            }
+
+            // Set initial focus with a slight delay to ensure composition is complete
+            LaunchedEffect(Unit) {
+                delay(300)
+            }
+
+            RegistrationSection(
+                isLoading = isLoading,
+                onRegisterClick = onRegisterClick
+            )
         }
 
-        emailError?.let { error ->
-            Text(
-                text = error,
-                textAlign = TextAlign.Center,
-                color = ErrorRed,
-                style = artistsStyle
-            )
-            Spacer(modifier = Modifier.size(10.dp))
+        if (isLoading) {
+            LoadingOverlay()
         }
-
-        passwordError?.let { error ->
-            Text(
-                text = error,
-                textAlign = TextAlign.Center,
-                color = ErrorRed,
-                style = artistsStyle
-            )
-            Spacer(modifier = Modifier.size(10.dp))
-        }
-
-        EmailField(viewModel, isLoading)
-        Spacer(modifier = Modifier.size(20.dp))
-        PasswordField(viewModel, isLoading)
-        Spacer(modifier = Modifier.size(20.dp))
-
-        LoginButton(viewModel, isLoading)
-
-        Spacer(modifier = Modifier.size(20.dp))
-        Text(
-            text = stringResource(R.string.need_an_account),
-            color = HintTextColor,
-            style = artistsStyle
-        )
-        Text(
-            text = stringResource(R.string.register),
-            color = LinkBlue,
-            modifier = Modifier.clickable(
-                onClick = {
-                    if (!isLoading) {
-                        onRegisterClick()
-                    }
-                }
-            ),
-            style = artistsStyle
-        )
     }
 }
 
 @Composable
-fun EmailField(viewModel: LoginViewModel, isLoading: Boolean) {
+fun EmailField(
+    viewModel: LoginViewModel,
+    isLoading: Boolean,
+    keyboardActions: KeyboardActions
+) {
+    val focusRequester = remember { FocusRequester() }
+
     MultilineTextField(
         enabled = !isLoading,
         value = viewModel.emailText,
@@ -153,27 +210,50 @@ fun EmailField(viewModel: LoginViewModel, isLoading: Boolean) {
         textStyle = artistsStyle,
         hintText = stringResource(R.string.email),
         maxLines = 1,
+        contentAlignment = Alignment.CenterStart,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Next
+        ),
+        keyboardActions = keyboardActions,
         modifier = Modifier
             .fillMaxWidth()
+            .height(56.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(BackgroundColor, shape = RoundedCornerShape(20.dp))
             .border(1.dp, AccentBorderColor, RoundedCornerShape(20.dp))
+            .focusRequester(focusRequester)
     )
+
+
+    LaunchedEffect(Unit) {
+        delay(300)
+        focusRequester.requestFocus()
+    }
 }
 
 @Composable
-fun PasswordField(viewModel: LoginViewModel, isLoading: Boolean) {
+fun PasswordField(
+    viewModel: LoginViewModel,
+    isLoading: Boolean,
+    keyboardActions: KeyboardActions,
+    focusRequester: FocusRequester
+) {
     PasswordTextField(
         enabled = !isLoading,
         value = viewModel.passwordText,
         onValueChanged = { viewModel.updatePasswordText(it) },
         textStyle = artistsStyle,
         hintText = stringResource(R.string.password),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = keyboardActions,
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(BackgroundColor, shape = RoundedCornerShape(20.dp))
-            .border(1.dp, AccentBorderColor, RoundedCornerShape(20.dp))
+            .height(56.dp)
+            .focusRequester(focusRequester)
     )
 }
 
@@ -184,19 +264,38 @@ fun LoginButton(viewModel: LoginViewModel, isLoading: Boolean) {
         onClick = { viewModel.login() },
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(ElevatedBackgroundColor),
+            .height(56.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = ElevatedBackgroundColor,
             contentColor = PrimaryTextColor,
             disabledContainerColor = Color.Gray,
             disabledContentColor = Color.LightGray
+        ),
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 4.dp
         )
     ) {
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.size(20.dp))
-        } else {
-            Text(text = stringResource(R.string.login), color = PrimaryTextColor)
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = PrimaryTextColor,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.login),
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    ),
+                    color = PrimaryTextColor
+                )
+            }
         }
     }
 }

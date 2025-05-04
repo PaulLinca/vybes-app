@@ -9,8 +9,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.vybes.auth.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.Response
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,95 +24,161 @@ class RegisterViewModel @Inject constructor(
     private val authService: AuthService
 ) : ViewModel() {
 
-    private val MIN_PASSWORD_LENGTH = 8
-    private val EMAIL_REGEX = Patterns.EMAIL_ADDRESS
+    data class RegisterUiState(
+        val isLoading: Boolean = false,
+        val email: String = "",
+        val password: String = "",
+        val repeatPassword: String = "",
+        val emailError: String? = null,
+        val passwordError: String? = null,
+        val repeatPasswordError: String? = null,
+        val networkError: String? = null,
+        val isRegisterSuccess: Boolean = false
+    )
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
+    private val _uiState = MutableStateFlow(RegisterUiState())
 
-    private var _emailText: String by mutableStateOf("")
-    val emailText: String
-        get() = _emailText
+    val isLoading = _uiState.map { it.isLoading }.distinctUntilChanged().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), false
+    )
+
+    val emailError = _uiState.map { it.emailError }.distinctUntilChanged().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), null
+    )
+
+    val passwordError = _uiState.map { it.passwordError }.distinctUntilChanged().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), null
+    )
+
+    val repeatPasswordError = _uiState.map { it.repeatPasswordError }.distinctUntilChanged().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), null
+    )
+
+    val networkError = _uiState.map { it.networkError }.distinctUntilChanged().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), null
+    )
+
+    val isRegisterSuccess = _uiState.map { it.isRegisterSuccess }.distinctUntilChanged().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), false
+    )
+
+    var emailText by mutableStateOf(_uiState.value.email)
+        private set
+
+    var passwordText by mutableStateOf(_uiState.value.password)
+        private set
+
+    var repeatPasswordText by mutableStateOf(_uiState.value.repeatPassword)
+        private set
 
     fun updateEmailText(updatedText: String) {
-        _emailText = updatedText
+        emailText = updatedText
+        _uiState.update {
+            it.copy(
+                email = updatedText,
+                emailError = null,
+                networkError = null
+            )
+        }
     }
-
-    private var _passwordText: String by mutableStateOf("")
-    val passwordText: String
-        get() = _passwordText
 
     fun updatePasswordText(updatedText: String) {
-        _passwordText = updatedText
+        passwordText = updatedText
+        _uiState.update {
+            it.copy(
+                password = updatedText,
+                passwordError = null,
+                networkError = null
+            )
+        }
     }
-
-    private var _repeatPasswordText: String by mutableStateOf("")
-    val repeatPasswordText: String
-        get() = _repeatPasswordText
 
     fun updateRepeatPasswordText(updatedText: String) {
-        _repeatPasswordText = updatedText
+        repeatPasswordText = updatedText
+        _uiState.update {
+            it.copy(
+                repeatPassword = updatedText,
+                repeatPasswordError = null,
+                networkError = null
+            )
+        }
     }
 
+    fun register() {
+        if (!validateInputs()) return
 
-    private val _emailError = MutableStateFlow<String?>(null)
-    val emailError = _emailError.asStateFlow()
-
-    private val _passwordError = MutableStateFlow<String?>(null)
-    val passwordError = _passwordError.asStateFlow()
-
-    private val _repeatPasswordError = MutableStateFlow<String?>(null)
-    val repeatPasswordError = _repeatPasswordError.asStateFlow()
-
-    private val _networkError = MutableStateFlow<String?>(null)
-    val networkError = _networkError.asStateFlow()
-
-    fun register(onRegisterSuccess: () -> Unit) {
         viewModelScope.launch {
-            _networkError.value = null
-            _isLoading.value = true
+            _uiState.update { it.copy(isLoading = true, networkError = null) }
 
-            if (isRegisterInfoValid()) {
-                val response = authService.register(emailText, passwordText)
-                if (response.isSuccessful && response.body() != null) {
-                    _isLoading.value = false
-                    onRegisterSuccess()
-                } else {
-                    _networkError.value = "Registration failed unexpectedly"
+            try {
+                val result = safeApiCall { authService.register(emailText, passwordText) }
+
+                when (result) {
+                    is Resource.Success -> {
+                        _uiState.update { it.copy(isRegisterSuccess = true) }
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.update {
+                            it.copy(networkError = result.message ?: "Registration failed unexpectedly")
+                        }
+                    }
                 }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(networkError = e.localizedMessage ?: "Unexpected error occurred")
+                }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
             }
-            _isLoading.value = false
         }
     }
 
-
-    private fun isRegisterInfoValid(): Boolean {
-        var isValid = true
-
-        if (emailText.isBlank()) {
-            _emailError.value = "Email cannot be empty"
-            isValid = false
-        } else if (!EMAIL_REGEX.matcher(emailText).matches()) {
-            _emailError.value = "Please enter a valid email address"
-            isValid = false
-        } else {
-            _emailError.value = null
+    private fun validateInputs(): Boolean {
+        val emailError = when {
+            emailText.isBlank() -> "Email cannot be empty"
+            !Patterns.EMAIL_ADDRESS.matcher(emailText).matches() -> "Please enter a valid email address"
+            else -> null
         }
 
-        if (passwordText.length < MIN_PASSWORD_LENGTH) {
-            _passwordError.value = "Password must be at least $MIN_PASSWORD_LENGTH characters"
-            isValid = false
-        } else {
-            _passwordError.value = null
+        val passwordError = when {
+            passwordText.length < 8 -> "Password must be at least 8 characters"
+            else -> null
         }
 
-        if (passwordText != repeatPasswordText) {
-            _repeatPasswordError.value = "Passwords do not match"
-            isValid = false
-        } else {
-            _repeatPasswordError.value = null
+        val repeatPasswordError = when {
+            passwordText != repeatPasswordText -> "Passwords do not match"
+            else -> null
         }
 
-        return isValid
+        _uiState.update {
+            it.copy(
+                emailError = emailError,
+                passwordError = passwordError,
+                repeatPasswordError = repeatPasswordError
+            )
+        }
+
+        return emailError == null && passwordError == null && repeatPasswordError == null
+    }
+
+    sealed class Resource<out T> {
+        data class Success<T>(val data: T) : Resource<T>()
+        data class Error(val errorCode: Int? = null, val message: String? = null) : Resource<Nothing>()
+    }
+
+    private suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): Resource<T> {
+        return try {
+            val response = apiCall()
+            if (response.isSuccessful && response.body() != null) {
+                Resource.Success(response.body()!!)
+            } else {
+                Resource.Error(response.code(), response.message())
+            }
+        } catch (e: IOException) {
+            Resource.Error(message = "Network error. Please check your connection")
+        } catch (e: Exception) {
+            Resource.Error(message = e.localizedMessage)
+        }
     }
 }

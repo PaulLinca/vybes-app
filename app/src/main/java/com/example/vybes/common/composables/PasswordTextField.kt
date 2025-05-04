@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
@@ -42,7 +47,10 @@ fun PasswordTextField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     textStyle: TextStyle = TextStyle(),
-    hintText: String = ""
+    hintText: String = "",
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    focusRequester: FocusRequester = remember { FocusRequester() }
 ) {
     var passwordVisibility by remember { mutableStateOf(false) }
 
@@ -53,9 +61,15 @@ fun PasswordTextField(
         visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
         textStyle = textStyle.copy(color = PrimaryTextColor),
         cursorBrush = SolidColor(PrimaryTextColor),
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
+        modifier = modifier
+            .focusRequester(focusRequester)
+            .focusTarget(),
+        singleLine = true,
         decorationBox = { innerTextField ->
             Box(
-                modifier = modifier
+                modifier = Modifier
                     .background(BackgroundColor, shape = RoundedCornerShape(20.dp))
                     .border(1.dp, AccentBorderColor, RoundedCornerShape(20.dp))
                     .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -86,7 +100,6 @@ fun PasswordTextField(
                     )
                 }
             }
-        },
-        singleLine = true
+        }
     )
 }
