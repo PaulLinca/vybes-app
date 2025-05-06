@@ -411,7 +411,7 @@ fun CommentItem(
 
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
-                        text = DateUtils.formatPostedDate(comment.timestamp),
+                        text = DateUtils.formatPostedDate(comment.postedDate),
                         textAlign = TextAlign.Start,
                         color = Color.LightGray,
                         style = MaterialTheme.typography.labelSmall,

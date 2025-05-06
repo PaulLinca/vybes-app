@@ -31,7 +31,7 @@ class VybesPostService @Inject constructor(
     }
 
     override suspend fun getVybe(id: Long): Response<Vybe> {
-        return vybesApiClient.getPostById(id)
+        return vybesApiClient.getVybeById(id)
     }
 
     override suspend fun postVybe(id: String, description: String): Response<Vybe> {
@@ -39,15 +39,15 @@ class VybesPostService @Inject constructor(
     }
 
     override suspend fun getAllLikesOnVybe(vybeId: Long): Response<List<LikeResponse>> {
-        return vybesApiClient.getLikesByVybeId(vybeId)
+        return vybesApiClient.getLikesByPostId(vybeId)
     }
 
     override suspend fun likeVybe(vybeId: Long): Response<LikeResponse> {
-        return vybesApiClient.likeVybe(vybeId)
+        return vybesApiClient.likePost(vybeId)
     }
 
     override suspend fun unlikeVybe(vybeId: Long): Response<LikeResponse> {
-        return vybesApiClient.unlikeVybe(vybeId)
+        return vybesApiClient.unlikePost(vybeId)
     }
 
     override suspend fun likeComment(vybeId: Long, commentId: Long): Response<LikeResponse> {
@@ -70,7 +70,7 @@ class VybesPostService @Inject constructor(
     }
 
     override suspend fun getAllComments(vybeId: Long): Response<List<Comment>> {
-        return vybesApiClient.getCommentsByVybeId(
+        return vybesApiClient.getCommentsByPostId(
             vybeId
         )
     }

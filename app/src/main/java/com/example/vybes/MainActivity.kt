@@ -11,6 +11,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.vybes.add.AddPostScreen
 import com.example.vybes.add.SearchTrackScreen
+import com.example.vybes.add.model.network.ArtistSearchResult
+import com.example.vybes.add.model.network.ArtistSearchResultNavType
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.auth.AuthEvent
 import com.example.vybes.auth.AuthEventBus
@@ -24,6 +26,7 @@ import com.example.vybes.profile.ProfileScreen
 import com.example.vybes.profile.favourites.EditFavouritesScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import kotlin.reflect.typeOf
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -58,7 +61,8 @@ class MainActivity : ComponentActivity() {
                     composable<SearchTrackScreen> {
                         SearchTrackScreen(navController)
                     }
-                    composable<TrackSearchResult> { backStackEntry ->
+                    composable<TrackSearchResult>(typeMap = mapOf(typeOf<List<ArtistSearchResult>>() to ArtistSearchResultNavType))
+                    { backStackEntry ->
                         val searchResult: TrackSearchResult = backStackEntry.toRoute()
                         AddPostScreen(
                             searchResult,

@@ -21,7 +21,7 @@ class VybesUserService(private val vybesApiClient: VybesApiClient) : UserService
     override suspend fun setFavoriteArtists(artists: List<MediaItem>): Response<Void> {
         return vybesApiClient.setFavorites(
             SetFavoritesRequest(
-                artistIds = artists.map { a -> a.spotifyId },
+                artistIds = artists.map { a -> a.spotifyId.orEmpty() },
                 albumIds = null
             )
         )
@@ -31,7 +31,7 @@ class VybesUserService(private val vybesApiClient: VybesApiClient) : UserService
         return vybesApiClient.setFavorites(
             SetFavoritesRequest(
                 artistIds = null,
-                albumIds = albums.map { a -> a.spotifyId }
+                albumIds = albums.map { a -> a.spotifyId.orEmpty() }
             )
         )
     }

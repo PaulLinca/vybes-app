@@ -22,9 +22,9 @@ data class Album(
 ) : MediaItem
 
 interface MediaItem {
-    val spotifyId: String
+    val spotifyId: String?
     val name: String
-    val imageUrl: String
+    val imageUrl: String?
     val isEmpty: Boolean
         get() = false
 }

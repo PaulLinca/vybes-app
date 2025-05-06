@@ -190,7 +190,7 @@ fun VybeCard(searchResult: TrackSearchResult, onClickCard: () -> Unit) {
                     maxLines = 3
                 )
                 Text(
-                    text = searchResult.artist,
+                    text = searchResult.artists.joinToString(", ") { it.name },
                     modifier = Modifier.padding(top = 3.dp, bottom = 7.dp),
                     style = artistsStyle,
                     maxLines = 1,

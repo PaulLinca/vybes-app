@@ -134,7 +134,7 @@ fun TrackItem(navController: NavController, track: TrackSearchResult) {
         Column {
             Text(text = track.name, style = MaterialTheme.typography.h6, color = PrimaryTextColor)
             Text(
-                text = track.artist,
+                text = track.artists.joinToString(", ") { it.name },
                 style = MaterialTheme.typography.body2,
                 color = SecondaryTextColor
             )

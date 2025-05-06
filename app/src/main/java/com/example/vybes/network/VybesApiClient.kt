@@ -44,10 +44,10 @@ interface VybesApiClient {
     @POST("api/auth/refresh")
     suspend fun refresh(@Header("Authorization") refreshToken: String): Response<LoginResponse>
 
-    @GET("api/vybes/findAll")
+    @GET("api/feed/all")
     suspend fun getAllPosts(): Response<List<Vybe>>
 
-    @GET("api/vybes")
+    @GET("api/feed")
     suspend fun getVybesPaginated(
         @Query("page") page: Int,
         @Query("size") size: Int,
@@ -59,45 +59,45 @@ interface VybesApiClient {
     suspend fun post(@Body postRequest: PostRequest): Response<Vybe>
 
     @GET("api/vybes/{vybeId}")
-    suspend fun getPostById(@Path("vybeId") vybeId: Long): Response<Vybe>
+    suspend fun getVybeById(@Path("vybeId") vybeId: Long): Response<Vybe>
 
-    @POST("api/vybes/{vybeId}/likes")
-    suspend fun likeVybe(@Path("vybeId") vybeId: Long): Response<LikeResponse>
+    @POST("api/posts/{postId}/likes")
+    suspend fun likePost(@Path("postId") postId: Long): Response<LikeResponse>
 
-    @DELETE("api/vybes/{vybeId}/likes")
-    suspend fun unlikeVybe(@Path("vybeId") vybeId: Long): Response<LikeResponse>
+    @DELETE("api/posts/{postId}/likes")
+    suspend fun unlikePost(@Path("postId") postId: Long): Response<LikeResponse>
 
-    @GET("api/vybes/{vybeId}/comments")
-    suspend fun getLikesByVybeId(
-        @Path("vybeId") vybeId: Long
+    @GET("api/posts/{postId}/comments")
+    suspend fun getLikesByPostId(
+        @Path("postId") postId: Long
     ): Response<List<LikeResponse>>
 
-    @GET("api/vybes/{vybeId}/comments")
-    suspend fun getCommentsByVybeId(
-        @Path("vybeId") vybeId: Long
+    @GET("api/posts/{postId}/comments")
+    suspend fun getCommentsByPostId(
+        @Path("postId") postId: Long
     ): Response<List<Comment>>
 
-    @POST("api/vybes/{vybeId}/comments")
+    @POST("api/posts/{postId}/comments")
     suspend fun addComment(
-        @Path("vybeId") vybeId: Long,
+        @Path("postId") postId: Long,
         @Body addCommentRequest: AddCommentRequest
     ): Response<Comment>
 
-    @DELETE("api/vybes/{vybeId}/comments/{commentId}")
+    @DELETE("api/posts/{postId}/comments/{commentId}")
     suspend fun deleteComment(
-        @Path("vybeId") vybeId: Long,
+        @Path("postId") postId: Long,
         @Path("commentId") commentId: Long,
     ): Response<Comment>
 
-    @POST("api/vybes/{vybeId}/comments/{commentId}/likes")
+    @POST("api/posts/{postId}/comments/{commentId}/likes")
     suspend fun likeComment(
-        @Path("vybeId") vybeId: Long,
+        @Path("postId") postId: Long,
         @Path("commentId") commentId: Long,
     ): Response<LikeResponse>
 
-    @DELETE("api/vybes/{vybeId}/comments/{commentId}/likes")
+    @DELETE("api/posts/{postId}/comments/{commentId}/likes")
     suspend fun unlikeComment(
-        @Path("vybeId") vybeId: Long,
+        @Path("postId") postId: Long,
         @Path("commentId") commentId: Long
     ): Response<LikeResponse>
 
