@@ -162,7 +162,9 @@ fun EditFavouritesScreen(
                 maxLines = 1,
                 enabled = selectedIndex != null,
                 contentAlignment = Alignment.CenterStart,
-                modifier = Modifier.fillMaxWidth().height(56.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))

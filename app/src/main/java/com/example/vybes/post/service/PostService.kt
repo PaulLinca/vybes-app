@@ -12,7 +12,12 @@ import retrofit2.Response
 interface PostService {
     suspend fun getAllVybes(): Response<List<Vybe>>
 
-    suspend fun getVybesPaginated(page: Int, size: Int, sort: String? = "postedDate", direction: String? = "DESC"): Response<PageResponse<Vybe>>
+    suspend fun getVybesPaginated(
+        page: Int,
+        size: Int,
+        sort: String? = "postedDate",
+        direction: String? = "DESC"
+    ): Response<PageResponse<Vybe>>
 
     suspend fun getVybe(id: Long): Response<Vybe>
 

@@ -1,10 +1,8 @@
 package com.example.vybes.add
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.vybes.R
 import kotlinx.serialization.Serializable
 
 @Serializable

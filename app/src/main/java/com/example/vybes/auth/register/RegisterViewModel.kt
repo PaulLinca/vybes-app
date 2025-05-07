@@ -50,9 +50,10 @@ class RegisterViewModel @Inject constructor(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
     )
 
-    val repeatPasswordError = _uiState.map { it.repeatPasswordError }.distinctUntilChanged().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
+    val repeatPasswordError =
+        _uiState.map { it.repeatPasswordError }.distinctUntilChanged().stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000), null
+        )
 
     val networkError = _uiState.map { it.networkError }.distinctUntilChanged().stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
@@ -120,7 +121,9 @@ class RegisterViewModel @Inject constructor(
 
                     is Resource.Error -> {
                         _uiState.update {
-                            it.copy(networkError = result.message ?: "Registration failed unexpectedly")
+                            it.copy(
+                                networkError = result.message ?: "Registration failed unexpectedly"
+                            )
                         }
                     }
                 }
@@ -137,7 +140,9 @@ class RegisterViewModel @Inject constructor(
     private fun validateInputs(): Boolean {
         val emailError = when {
             emailText.isBlank() -> "Email cannot be empty"
-            !Patterns.EMAIL_ADDRESS.matcher(emailText).matches() -> "Please enter a valid email address"
+            !Patterns.EMAIL_ADDRESS.matcher(emailText)
+                .matches() -> "Please enter a valid email address"
+
             else -> null
         }
 
@@ -164,7 +169,8 @@ class RegisterViewModel @Inject constructor(
 
     sealed class Resource<out T> {
         data class Success<T>(val data: T) : Resource<T>()
-        data class Error(val errorCode: Int? = null, val message: String? = null) : Resource<Nothing>()
+        data class Error(val errorCode: Int? = null, val message: String? = null) :
+            Resource<Nothing>()
     }
 
     private suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): Resource<T> {

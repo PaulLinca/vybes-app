@@ -47,7 +47,6 @@ import com.example.vybes.auth.shared.SingleErrorMessage
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.theme.AccentBorderColor
 import com.example.vybes.common.theme.BackgroundColor
-import com.example.vybes.common.theme.ErrorRed
 import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.artistsStyle

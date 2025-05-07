@@ -15,7 +15,6 @@ import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -49,7 +48,12 @@ class VybeViewModel @Inject constructor(
     val isLikedByCurrentUser = _isLikedByCurrentUser.asStateFlow()
     val vybe = _vybe.asStateFlow()
 
-    val uiState = combine(_vybe, _isLikedByCurrentUser, _isLoading, _errorMessage) { vybe, isLiked, isLoading, error ->
+    val uiState = combine(
+        _vybe,
+        _isLikedByCurrentUser,
+        _isLoading,
+        _errorMessage
+    ) { vybe, isLiked, isLoading, error ->
         when {
             vybe != null && isLoading -> VybeUiState.LoadingCall(vybe, isLiked)
             isLoading -> VybeUiState.Loading
@@ -103,7 +107,8 @@ class VybeViewModel @Inject constructor(
                 postService.unlikeVybe(args.id)
             }.onSuccess { removedLike ->
                 _vybe.value?.let { v ->
-                    _vybe.value = v.copy(likes = v.likes.filterNot { it.userId == removedLike.userId })
+                    _vybe.value =
+                        v.copy(likes = v.likes.filterNot { it.userId == removedLike.userId })
                     _isLikedByCurrentUser.value = false
                 }
             }.onFailure { error ->
@@ -148,7 +153,8 @@ class VybeViewModel @Inject constructor(
                     val updatedComments = v.comments.orEmpty().map { comment ->
                         if (comment.id == commentId) {
                             comment.copy(
-                                likes = comment.likes.orEmpty().filterNot { it.userId == currentUserId }
+                                likes = comment.likes.orEmpty()
+                                    .filterNot { it.userId == currentUserId }
                             )
                         } else {
                             comment
