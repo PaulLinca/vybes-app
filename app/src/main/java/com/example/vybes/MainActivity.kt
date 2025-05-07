@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.vybes.add.AddPostScreen
+import com.example.vybes.add.SearchAlbumScreen
 import com.example.vybes.add.SearchTrackScreen
 import com.example.vybes.add.model.network.ArtistSearchResult
 import com.example.vybes.add.model.network.ArtistSearchResultNavType
@@ -60,6 +61,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<SearchTrackScreen> {
                         SearchTrackScreen(navController)
+                    }
+                    composable<SearchAlbumScreen> {
+                        SearchAlbumScreen(navController)
                     }
                     composable<TrackSearchResult>(typeMap = mapOf(typeOf<List<ArtistSearchResult>>() to ArtistSearchResultNavType))
                     { backStackEntry ->

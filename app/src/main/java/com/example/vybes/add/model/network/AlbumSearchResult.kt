@@ -7,5 +7,9 @@ import kotlinx.serialization.Serializable
 data class AlbumSearchResult(
     override val name: String,
     override val imageUrl: String,
-    override val spotifyId: String
-) : MediaItem
+    override val spotifyId: String,
+    override val artists: List<ArtistSearchResult>
+) : MediaItem, SearchResultItem {
+    override val id: String
+        get() = spotifyId
+}

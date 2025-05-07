@@ -1,23 +1,23 @@
 package com.example.vybes.add
 
 import androidx.lifecycle.viewModelScope
-import com.example.vybes.add.model.network.TrackSearchResult
+import com.example.vybes.add.model.network.AlbumSearchResult
 import com.example.vybes.post.service.VybesPostService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchTrackViewModel @Inject constructor(
+class SearchAlbumViewModel @Inject constructor(
     private val vybesPostService: VybesPostService
-) : GenericSearchViewModel<TrackSearchResult>(vybesPostService) {
+) : GenericSearchViewModel<AlbumSearchResult>(vybesPostService) {
 
     override fun performSearch(query: String) {
         viewModelScope.launch {
             updateLoadingState(true)
             updateErrorState(null)
             try {
-                val response = vybesPostService.searchTrack(query)
+                val response = vybesPostService.searchAlbum(query)
                 if (response.isSuccessful) {
                     updateResults(response.body().orEmpty())
                 } else {

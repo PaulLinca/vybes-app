@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
@@ -33,6 +35,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,17 +45,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.vybes.R
+import com.example.vybes.add.SearchAlbumScreen
 import com.example.vybes.add.SearchTrackScreen
 import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.TopBarWithSideButtons
 import com.example.vybes.common.theme.BackgroundColor
+import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.IconColor
 import com.example.vybes.common.theme.PrimaryTextColor
+import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.White
@@ -84,6 +94,8 @@ fun FeedScreen(
 
     val listState = rememberLazyListState()
 
+    var showOptionsDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo }
             .distinctUntilChanged { old, new ->
@@ -101,6 +113,56 @@ fun FeedScreen(
             }
     }
 
+    if (showOptionsDialog) {
+        Dialog(
+            onDismissRequest = { showOptionsDialog = false }
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+                backgroundColor = BackgroundColor
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "New Post",
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        color = PrimaryTextColor,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        OptionButton(
+                            icon = R.drawable.music_note,
+                            text = "Song",
+                            onClick = {
+                                navController.navigate(SearchTrackScreen)
+                                showOptionsDialog = false
+                            }
+                        )
+                        OptionButton(
+                            icon = R.drawable.album,
+                            text = "Album review",
+                            onClick = {
+                                navController.navigate(SearchAlbumScreen)
+                                showOptionsDialog = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -109,9 +171,11 @@ fun FeedScreen(
             .pullRefresh(pullRefreshState)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            TopBar(navController)
+            TopBar(
+                navController = navController,
+                onShowOptionsDialogChange = { showOptionsDialog = it }
+            )
 
-            // Error state banner
             errorState?.let { error ->
                 ErrorBanner(
                     errorMessage = error,
@@ -125,7 +189,7 @@ fun FeedScreen(
                 }
 
                 vybes.isEmpty() -> {
-                    EmptyFeedState(navController)
+                    EmptyFeedState()
                 }
 
                 else -> {
@@ -230,7 +294,7 @@ fun ErrorBanner(errorMessage: String, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun EmptyFeedState(navController: NavController) {
+private fun EmptyFeedState() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -266,14 +330,17 @@ private fun EmptyFeedState(navController: NavController) {
 }
 
 @Composable
-fun TopBar(navController: NavController) {
+fun TopBar(
+    navController: NavController,
+    onShowOptionsDialogChange: (Boolean) -> Unit
+) {
     TopBarWithSideButtons(
         leftButtonComposable = {
             DebouncedIconButton(
-                onClick = { navController.navigate(SearchTrackScreen) },
+                onClick = { onShowOptionsDialogChange(true) },
                 modifier = Modifier
                     .size(35.dp),
-                contentDescription = "Add New Vybe Button",
+                contentDescription = "Add New Post Button",
                 iconResId = R.drawable.add_icon_square
             )
         },
@@ -302,4 +369,44 @@ fun TopBar(navController: NavController) {
             )
         }
     )
+}
+
+@Composable
+fun OptionButton(
+    icon: Int,
+    text: String,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .width(100.dp)
+            .clickable(onClick = onClick)
+            .padding(8.dp)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(80.dp)
+                .background(
+                    color = ElevatedBackgroundColor,
+                    shape = RoundedCornerShape(8.dp)
+                )
+        ) {
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = text,
+                tint = IconColor,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+
+        Text(
+            text = text,
+            style = MaterialTheme.typography.body2,
+            textAlign = TextAlign.Center,
+            color = SecondaryTextColor,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+    }
 }
