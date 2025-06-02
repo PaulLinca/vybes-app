@@ -20,6 +20,7 @@
     <string name="feedback">Feedback</string>
     <string name="give_feedback">Give feedback</string>
     <string name="share_song">Share a song</string>
+    <string name="review_album">Review album</string>
     <string name="share_prompt">What do you want to share?</string>
     <string name="listen_on">Listen on</string>
 </resources>

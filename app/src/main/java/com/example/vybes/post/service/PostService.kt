@@ -3,6 +3,7 @@ package com.example.vybes.post.service
 import com.example.vybes.add.model.network.AlbumSearchResult
 import com.example.vybes.add.model.network.ArtistSearchResult
 import com.example.vybes.add.model.network.TrackSearchResult
+import com.example.vybes.auth.model.Album
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.network.LikeResponse
@@ -44,4 +45,6 @@ interface PostService {
     suspend fun searchArtist(query: String): Response<List<ArtistSearchResult>>
 
     suspend fun searchAlbum(query: String): Response<List<AlbumSearchResult>>
+
+    suspend fun getAlbum(id: String): Response<Album>
 }

@@ -233,6 +233,5 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
                 )
             }
         }
-
     }
 }

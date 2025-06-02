@@ -17,6 +17,6 @@ fun SearchAlbumScreen(
         navController = navController,
         viewModel = viewModel,
         hint = "Search albums...",
-        onItemClick = { album -> navController.navigate("album/${album.id}") }
+        onItemClick = { album -> navController.navigate(AddAlbumReviewScreen(album.spotifyId)) }
     )
 }

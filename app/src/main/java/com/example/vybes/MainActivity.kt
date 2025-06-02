@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.vybes.add.AddAlbumReviewScreen
 import com.example.vybes.add.AddPostScreen
 import com.example.vybes.add.SearchAlbumScreen
 import com.example.vybes.add.SearchTrackScreen
@@ -70,6 +71,15 @@ class MainActivity : ComponentActivity() {
                         val searchResult: TrackSearchResult = backStackEntry.toRoute()
                         AddPostScreen(
                             searchResult,
+                            onGoBack = { navController.popBackStack() },
+                            onSubmitSuccess = {
+                                navController.navigate(FeedScreen) {
+                                    popUpTo(0)
+                                }
+                            })
+                    }
+                    composable<AddAlbumReviewScreen> {
+                        AddAlbumReviewScreen(
                             onGoBack = { navController.popBackStack() },
                             onSubmitSuccess = {
                                 navController.navigate(FeedScreen) {
