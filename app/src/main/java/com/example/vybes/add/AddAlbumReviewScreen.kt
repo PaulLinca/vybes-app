@@ -38,6 +38,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -73,12 +75,16 @@ import com.example.vybes.common.theme.IconColor
 import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.SubtleBorderColor
+import com.example.vybes.common.theme.TryoutBlue
 import com.example.vybes.common.theme.TryoutGreen
+import com.example.vybes.common.theme.TryoutOrange
 import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.TryoutYellow
+import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import kotlinx.serialization.Serializable
+import kotlin.math.roundToInt
 
 @Serializable
 data class AddAlbumReviewScreen(val spotifyId: String) {
@@ -300,19 +306,25 @@ fun AlbumRatingSection(
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        Slider(
-            value = rating.toFloat(),
-            onValueChange = { onRatingChanged(it.toInt()) },
-            valueRange = 0f..10f,
-            steps = 9,
-            modifier = Modifier.fillMaxWidth()
-        )
 
         Text(
-            text = if (rating == 0) "No rating" else "Rating: $rating/10",
+            text = "Rating: $rating/10",
             style = MaterialTheme.typography.bodyMedium,
             color = PrimaryTextColor,
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier.padding(top = 8.dp).align(Alignment.CenterHorizontally)
+        )
+
+        Slider(
+            value = rating.toFloat(),
+            onValueChange = { onRatingChanged(it.roundToInt()) },
+            valueRange = 0f..10f,
+            steps = 9,
+            modifier = Modifier.fillMaxWidth(),
+            colors = SliderDefaults.colors(
+                thumbColor = TryoutBlue,
+                activeTrackColor = TryoutBlue,
+                activeTickColor = TryoutBlue
+            )
         )
     }
 }

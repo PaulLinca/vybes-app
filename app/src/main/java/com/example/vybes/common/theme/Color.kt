@@ -12,11 +12,11 @@ val VybesLightGray = Color(0xFF82838b)
 val VybesVeryLightGray = Color(0xFFaaaab1)
 val VybesWhite = Color(0xFFfbfbfb)
 
-val TryoutGreen = Color(0xFFAEF864)
 val TryoutRed = Color(0xFFF86464)
 val TryoutOrange = Color(0xFFF8A464)
-val TryoutBlue = Color(0xFF6489F8)
 val TryoutYellow = Color(0xFFF8DF64)
+val TryoutBlue = Color(0xFF6489F8)
+val TryoutGreen = Color(0xFFAEF864)
 
 val SuccessGreen = TryoutGreen
 val ErrorRed = TryoutRed

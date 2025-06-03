@@ -80,7 +80,7 @@ class AddAlbumViewModel @Inject constructor(
     }
 
     fun updateAlbumRating(rating: Int) {
-        _albumRating = rating.coerceIn(1, 10)
+        _albumRating = rating.coerceIn(0, 10)
     }
 
     fun updateTrackRating(trackId: String, rating: TrackRating) {
