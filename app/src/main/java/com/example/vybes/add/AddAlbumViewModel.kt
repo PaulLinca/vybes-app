@@ -2,14 +2,20 @@ package com.example.vybes.add
 
 import android.app.Application
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.vybes.auth.model.Album
-import com.example.vybes.post.model.Vybe
-import com.example.vybes.post.model.VybeScreen
+import com.example.vybes.common.theme.TryoutBlue
+import com.example.vybes.common.theme.TryoutGreen
+import com.example.vybes.common.theme.TryoutOrange
+import com.example.vybes.common.theme.TryoutRed
+import com.example.vybes.common.theme.TryoutYellow
 import com.example.vybes.post.service.PostService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,8 +47,14 @@ class AddAlbumViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     private val _errorMessage = MutableStateFlow<String?>(null)
     private var _descriptionText: String by mutableStateOf("")
+    private var _albumRating: Int by mutableStateOf(0)
+    private val _trackRatings = mutableStateMapOf<String, TrackRating>()
+    private val _favoriteTrackIds = mutableStateListOf<String>()
 
     val descriptionText: String get() = _descriptionText
+    val albumRating: Int get() = _albumRating
+    val trackRatings: Map<String, TrackRating> get() = _trackRatings.toMap()
+    val favoriteTrackIds: List<String> get() = _favoriteTrackIds.toList()
     val album = _album.asStateFlow()
 
     val uiState = combine(
@@ -65,6 +77,22 @@ class AddAlbumViewModel @Inject constructor(
 
     fun updateText(updatedText: String) {
         _descriptionText = updatedText
+    }
+
+    fun updateAlbumRating(rating: Int) {
+        _albumRating = rating.coerceIn(1, 10)
+    }
+
+    fun updateTrackRating(trackId: String, rating: TrackRating) {
+        _trackRatings[trackId] = rating
+    }
+
+    fun toggleFavoriteTrack(trackId: String) {
+        if (_favoriteTrackIds.contains(trackId)) {
+            _favoriteTrackIds.remove(trackId)
+        } else if (_favoriteTrackIds.size < 3) {
+            _favoriteTrackIds.add(trackId)
+        }
     }
 
     private fun loadAlbum() {
@@ -94,4 +122,12 @@ class AddAlbumViewModel @Inject constructor(
             Result.failure(e)
         }
     }
+}
+
+enum class TrackRating(val displayName: String, val color: Color) {
+    AWFUL("Awful", TryoutRed),
+    MEH("Meh", TryoutOrange),
+    OKAY("Okay", TryoutYellow),
+    GREAT("Great", TryoutBlue),
+    AMAZING("Amazing", TryoutGreen)
 }

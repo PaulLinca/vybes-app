@@ -16,7 +16,7 @@ data class Artist(
 
 data class Album(
     override val spotifyId: String,
-    val artist: List<Artist>,
+    val artists: List<Artist>,
     val tracks: List<Track>,
     override val name: String,
     override val imageUrl: String,
@@ -27,7 +27,6 @@ data class Track(
     val spotifyId: String,
     val name: String
 )
-
 
 interface MediaItem {
     val spotifyId: String?
