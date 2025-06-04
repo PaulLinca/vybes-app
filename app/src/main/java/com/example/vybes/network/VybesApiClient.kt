@@ -13,6 +13,7 @@ import com.example.vybes.auth.model.UsernameSetupRequest
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.network.AddCommentRequest
+import com.example.vybes.post.model.network.CreateAlbumReviewRequest
 import com.example.vybes.post.model.network.LikeResponse
 import com.example.vybes.post.model.network.PageResponse
 import com.example.vybes.post.service.PostRequest
@@ -58,6 +59,9 @@ interface VybesApiClient {
 
     @POST("api/vybes/post")
     suspend fun post(@Body postRequest: PostRequest): Response<Vybe>
+
+    @POST("api/album-reviews/post")
+    suspend fun postAlbumReview(@Body postRequest: CreateAlbumReviewRequest): Response<Void>
 
     @GET("api/vybes/{vybeId}")
     suspend fun getVybeById(@Path("vybeId") vybeId: Long): Response<Vybe>

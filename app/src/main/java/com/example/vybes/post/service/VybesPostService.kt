@@ -8,6 +8,7 @@ import com.example.vybes.network.VybesApiClient
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.network.AddCommentRequest
+import com.example.vybes.post.model.network.CreateAlbumReviewRequest
 import com.example.vybes.post.model.network.LikeResponse
 import com.example.vybes.post.model.network.PageResponse
 import retrofit2.Response
@@ -37,6 +38,10 @@ class VybesPostService @Inject constructor(
 
     override suspend fun postVybe(id: String, description: String): Response<Vybe> {
         return vybesApiClient.post(PostRequest(id, ZonedDateTime.now(), description))
+    }
+
+    override suspend fun postAlbumReview(request: CreateAlbumReviewRequest): Response<Void> {
+        return vybesApiClient.postAlbumReview(request)
     }
 
     override suspend fun getAllLikesOnVybe(vybeId: Long): Response<List<LikeResponse>> {

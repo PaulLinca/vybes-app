@@ -6,6 +6,7 @@ import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.auth.model.Album
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
+import com.example.vybes.post.model.network.CreateAlbumReviewRequest
 import com.example.vybes.post.model.network.LikeResponse
 import com.example.vybes.post.model.network.PageResponse
 import retrofit2.Response
@@ -23,6 +24,8 @@ interface PostService {
     suspend fun getVybe(id: Long): Response<Vybe>
 
     suspend fun postVybe(id: String, description: String): Response<Vybe>
+
+    suspend fun postAlbumReview(request: CreateAlbumReviewRequest): Response<Void>
 
     suspend fun getAllLikesOnVybe(vybeId: Long): Response<List<LikeResponse>>
 

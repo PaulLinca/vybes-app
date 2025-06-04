@@ -83,6 +83,7 @@ import com.example.vybes.common.theme.TryoutYellow
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
+import com.example.vybes.post.model.network.TrackRating
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
@@ -93,6 +94,7 @@ data class AddAlbumReviewScreen(val spotifyId: String) {
             savedStateHandle.toRoute<AddAlbumReviewScreen>()
     }
 }
+
 @Composable
 fun AddAlbumReviewScreen(
     onGoBack: () -> Unit,
@@ -242,9 +244,7 @@ fun AddAlbumReviewScreen(
 
                 item {
                     Button(
-                        onClick = {
-                            onSubmitSuccess()
-                        },
+                        onClick = { viewModel.submit { onSubmitSuccess() } },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
@@ -287,6 +287,7 @@ fun AddAlbumReviewScreen(
                 }
             }
         }
+
         else -> {
         }
     }
@@ -311,7 +312,9 @@ fun AlbumRatingSection(
             text = "Rating: $rating/10",
             style = MaterialTheme.typography.bodyMedium,
             color = PrimaryTextColor,
-            modifier = Modifier.padding(top = 8.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .align(Alignment.CenterHorizontally)
         )
 
         Slider(
@@ -379,7 +382,9 @@ fun TrackRatingItem(
                     text = track.name,
                     style = songTitleStyle,
                     color = PrimaryTextColor,
-                    modifier = Modifier.weight(1f).padding(start = 8.dp, end = 8.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 8.dp, end = 8.dp)
                 )
 
                 IconButton(
