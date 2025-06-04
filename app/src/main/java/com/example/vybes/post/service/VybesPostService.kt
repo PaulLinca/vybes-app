@@ -6,6 +6,7 @@ import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.auth.model.Album
 import com.example.vybes.network.VybesApiClient
 import com.example.vybes.post.model.Comment
+import com.example.vybes.post.model.Post
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.network.AddCommentRequest
 import com.example.vybes.post.model.network.CreateAlbumReviewRequest
@@ -23,13 +24,13 @@ class VybesPostService @Inject constructor(
         return vybesApiClient.getAllPosts()
     }
 
-    override suspend fun getVybesPaginated(
+    override suspend fun getPostsPaginated(
         page: Int,
         size: Int,
         sort: String?,
         direction: String?
-    ): Response<PageResponse<Vybe>> {
-        return vybesApiClient.getVybesPaginated(page, size, sort, direction)
+    ): Response<PageResponse<Post>> {
+        return vybesApiClient.getPostsPaginated(page, size, sort, direction)
     }
 
     override suspend fun getVybe(id: Long): Response<Vybe> {

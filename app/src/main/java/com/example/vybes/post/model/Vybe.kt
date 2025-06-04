@@ -14,18 +14,18 @@ data class VybeScreen(val id: Long) {
 }
 
 data class Vybe(
-    val id: Long,
+    override val id: Long,
     val songName: String,
     val spotifyTrackId: String,
     val spotifyArtists: List<Artist>,
     val spotifyAlbumId: String,
     val imageUrl: String,
-    val postedDate: ZonedDateTime,
     val description: String,
-    val user: User,
-    val likes: List<Like> = mutableListOf(),
-    val comments: List<Comment>? = mutableListOf(),
-)
+    override val user: User,
+    override val postedDate: ZonedDateTime,
+    override val likes: List<Like> = mutableListOf(),
+    override val comments: List<Comment>? = mutableListOf(),
+) : Post
 
 data class Artist(
     val spotifyId: String,

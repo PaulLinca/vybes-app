@@ -3,6 +3,7 @@ package com.example.vybes.post.feed
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vybes.post.model.Like
+import com.example.vybes.post.model.Post
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.service.PostService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,8 +18,8 @@ class FeedViewModel @Inject constructor(
     private val postService: PostService
 ) : ViewModel() {
 
-    private val _vybes = MutableStateFlow<List<Vybe>>(emptyList())
-    val vybes: StateFlow<List<Vybe>> = _vybes
+    private val _posts = MutableStateFlow<List<Post>>(emptyList())
+    val posts: StateFlow<List<Post>> = _posts
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
@@ -50,10 +51,10 @@ class FeedViewModel @Inject constructor(
             currentPage = 0
 
             try {
-                val response = postService.getVybesPaginated(page = 0, size = pageSize)
+                val response = postService.getPostsPaginated(page = 0, size = pageSize)
                 if (response.isSuccessful && response.body() != null) {
                     val pageResponse = response.body()!!
-                    _vybes.value = pageResponse.content
+                    _posts.value = pageResponse.content
                     totalPages = pageResponse.totalPages
                     _hasMoreContent.value = !pageResponse.last
                 } else {
@@ -74,10 +75,10 @@ class FeedViewModel @Inject constructor(
             currentPage = 0
 
             try {
-                val response = postService.getVybesPaginated(page = 0, size = pageSize)
+                val response = postService.getPostsPaginated(page = 0, size = pageSize)
                 if (response.isSuccessful && response.body() != null) {
                     val pageResponse = response.body()!!
-                    _vybes.value = pageResponse.content
+                    _posts.value = pageResponse.content
                     totalPages = pageResponse.totalPages
                     _hasMoreContent.value = !pageResponse.last
                 } else {
@@ -98,14 +99,14 @@ class FeedViewModel @Inject constructor(
             _isLoadingMore.value = true
             try {
                 val nextPage = currentPage + 1
-                val response = postService.getVybesPaginated(page = nextPage, size = pageSize)
+                val response = postService.getPostsPaginated(page = nextPage, size = pageSize)
 
                 if (response.isSuccessful && response.body() != null) {
                     val pageResponse = response.body()!!
                     val newPosts = pageResponse.content
 
                     if (newPosts.isNotEmpty()) {
-                        _vybes.value += newPosts
+                        _posts.value += newPosts
                         currentPage = nextPage
                         _hasMoreContent.value = !pageResponse.last
                     } else {
@@ -165,11 +166,11 @@ class FeedViewModel @Inject constructor(
     }
 
     private fun updateVybeLikes(vybeId: Long, update: (List<Like>) -> List<Like>) {
-        _vybes.value = _vybes.value.map { vybe ->
-            if (vybe.id == vybeId) {
-                vybe.copy(likes = update(vybe.likes))
+        _posts.value = _posts.value.map { post ->
+            if (post is Vybe && post.id == vybeId) {
+                post.copy(likes = update(post.likes))
             } else {
-                vybe
+                post
             }
         }
     }

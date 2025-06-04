@@ -65,7 +65,9 @@ import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.logoStyle
+import com.example.vybes.post.model.AlbumReview
 import com.example.vybes.post.model.User
+import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.VybeScreen
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import kotlinx.coroutines.flow.collectLatest
@@ -88,7 +90,8 @@ fun FeedScreen(
     )
     val errorState by viewModel.errorState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    val vybes by viewModel.vybes.collectAsState()
+    val posts by viewModel.posts.collectAsState()
+
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val hasMoreContent by viewModel.hasMoreContent.collectAsState()
 
@@ -104,7 +107,7 @@ fun FeedScreen(
             .collectLatest { visibleItems ->
                 if (!isLoading && !isLoadingMore && hasMoreContent) {
                     val lastVisibleItemIndex = visibleItems.lastOrNull()?.index ?: 0
-                    val totalItems = vybes.size
+                    val totalItems = posts.size
 
                     if (lastVisibleItemIndex >= totalItems - 3) {
                         viewModel.loadMorePosts()
@@ -184,11 +187,11 @@ fun FeedScreen(
             }
 
             when {
-                isLoading && vybes.isEmpty() -> {
+                isLoading && posts.isEmpty() -> {
                     LoadingState()
                 }
 
-                vybes.isEmpty() -> {
+                posts.isEmpty() -> {
                     EmptyFeedState()
                 }
 
@@ -199,21 +202,32 @@ fun FeedScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        items(vybes) { vybe ->
-                            val currentUserId = SharedPreferencesManager.getUserId()
-                            val isLikedByCurrentUser = vybe.likes.any { it.userId == currentUserId }
+                        items(posts) { post ->
+                            when (post) {
+                                is Vybe -> {
+                                    val currentUserId = SharedPreferencesManager.getUserId()
+                                    val isLikedByCurrentUser = post.likes.any { it.userId == currentUserId }
 
-                            VybePost(
-                                vybe = vybe,
-                                onClickCard = { navController.navigate(VybeScreen(vybe.id)) },
-                                onLikeClicked = {
-                                    viewModel.clickLikeButton(
-                                        vybe.id,
-                                        isLikedByCurrentUser
+                                    VybePost(
+                                        vybe = post,
+                                        onClickCard = { navController.navigate(VybeScreen(post.id)) },
+                                        onLikeClicked = {
+                                            viewModel.clickLikeButton(
+                                                post.id,
+                                                isLikedByCurrentUser
+                                            )
+                                        },
+                                        navController = navController
                                     )
-                                },
-                                navController = navController
-                            )
+                                }
+
+                                is AlbumReview -> {
+                                    AlbumReviewPost(
+                                        albumReview = post,
+                                        onClick = { navController.navigate("album_review/${post.id}") }
+                                    )
+                                }
+                            }
                         }
 
                         // Loading indicator at bottom when loading more items
@@ -246,6 +260,12 @@ fun FeedScreen(
             contentColor = White
         )
     }
+}
+
+@Composable
+fun AlbumReviewPost(albumReview: AlbumReview, onClick: () -> Unit) {
+    Text(text = albumReview.albumName, color = PrimaryTextColor)
+
 }
 
 @Composable

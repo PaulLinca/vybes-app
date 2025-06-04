@@ -11,6 +11,7 @@ import com.example.vybes.auth.model.SetFavoritesRequest
 import com.example.vybes.auth.model.UserResponse
 import com.example.vybes.auth.model.UsernameSetupRequest
 import com.example.vybes.post.model.Comment
+import com.example.vybes.post.model.Post
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.network.AddCommentRequest
 import com.example.vybes.post.model.network.CreateAlbumReviewRequest
@@ -50,12 +51,12 @@ interface VybesApiClient {
     suspend fun getAllPosts(): Response<List<Vybe>>
 
     @GET("api/feed")
-    suspend fun getVybesPaginated(
+    suspend fun getPostsPaginated(
         @Query("page") page: Int,
         @Query("size") size: Int,
         @Query("sort") sort: String? = "createdAt",
         @Query("direction") direction: String? = "DESC"
-    ): Response<PageResponse<Vybe>>
+    ): Response<PageResponse<Post>>
 
     @POST("api/vybes/post")
     suspend fun post(@Body postRequest: PostRequest): Response<Vybe>

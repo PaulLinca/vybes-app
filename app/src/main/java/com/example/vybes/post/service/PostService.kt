@@ -5,6 +5,7 @@ import com.example.vybes.add.model.network.ArtistSearchResult
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.auth.model.Album
 import com.example.vybes.post.model.Comment
+import com.example.vybes.post.model.Post
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.network.CreateAlbumReviewRequest
 import com.example.vybes.post.model.network.LikeResponse
@@ -14,12 +15,12 @@ import retrofit2.Response
 interface PostService {
     suspend fun getAllVybes(): Response<List<Vybe>>
 
-    suspend fun getVybesPaginated(
+    suspend fun getPostsPaginated(
         page: Int,
         size: Int,
         sort: String? = "postedDate",
         direction: String? = "DESC"
-    ): Response<PageResponse<Vybe>>
+    ): Response<PageResponse<Post>>
 
     suspend fun getVybe(id: Long): Response<Vybe>
 

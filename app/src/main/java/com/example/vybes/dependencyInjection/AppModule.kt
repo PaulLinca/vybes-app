@@ -7,9 +7,11 @@ import com.example.vybes.auth.setup.VybesUserService
 import com.example.vybes.feedback.service.DummyFeedbackService
 import com.example.vybes.feedback.service.FeedbackService
 import com.example.vybes.network.AuthInterceptor
+import com.example.vybes.network.PostDeserializer
 import com.example.vybes.network.TokenAuthenticator
 import com.example.vybes.network.VybesApiClient
 import com.example.vybes.network.ZonedDateTimeTypeAdapter
+import com.example.vybes.post.model.Post
 import com.example.vybes.post.service.PostService
 import com.example.vybes.post.service.VybesPostService
 import com.google.gson.Gson
@@ -34,6 +36,7 @@ object AppModule {
     fun provideGson(): Gson {
         return GsonBuilder()
             .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeTypeAdapter())
+            .registerTypeAdapter(Post::class.java, PostDeserializer())
             .create()
     }
 
