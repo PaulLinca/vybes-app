@@ -206,8 +206,7 @@ fun FeedScreen(
                             when (post) {
                                 is Vybe -> {
                                     val currentUserId = SharedPreferencesManager.getUserId()
-                                    val isLikedByCurrentUser = post.likes.any { it.userId == currentUserId }
-
+                                    val isLikedByCurrentUser = post.likes?.any { it.userId == currentUserId } == true
                                     VybePost(
                                         vybe = post,
                                         onClickCard = { navController.navigate(VybeScreen(post.id)) },
@@ -222,9 +221,18 @@ fun FeedScreen(
                                 }
 
                                 is AlbumReview -> {
+                                    val currentUserId = SharedPreferencesManager.getUserId()
+                                    val isLikedByCurrentUser = post.likes?.any { it.userId == currentUserId } == true
                                     AlbumReviewPost(
                                         albumReview = post,
-                                        onClick = { navController.navigate("album_review/${post.id}") }
+                                        onClickCard = { navController.navigate(VybeScreen(post.id)) },
+                                        onLikeClicked = {
+                                            viewModel.clickLikeButton(
+                                                post.id,
+                                                isLikedByCurrentUser
+                                            )
+                                        },
+                                        navController = navController
                                     )
                                 }
                             }
@@ -260,12 +268,6 @@ fun FeedScreen(
             contentColor = White
         )
     }
-}
-
-@Composable
-fun AlbumReviewPost(albumReview: AlbumReview, onClick: () -> Unit) {
-    Text(text = albumReview.albumName, color = PrimaryTextColor)
-
 }
 
 @Composable

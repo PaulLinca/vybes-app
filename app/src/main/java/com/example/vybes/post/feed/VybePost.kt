@@ -2,6 +2,7 @@ package com.example.vybes.post.feed
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,8 +20,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,9 +40,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -45,11 +54,21 @@ import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.IconTextButton
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
+import com.example.vybes.common.theme.PrimaryTextColor
+import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.SubtleBorderColor
+import com.example.vybes.common.theme.TryoutBlue
+import com.example.vybes.common.theme.TryoutDarkGreen
+import com.example.vybes.common.theme.TryoutGreen
+import com.example.vybes.common.theme.TryoutOrange
+import com.example.vybes.common.theme.TryoutRed
+import com.example.vybes.common.theme.TryoutYellow
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.common.util.DateUtils
+import com.example.vybes.post.model.AlbumReview
+import com.example.vybes.post.model.Post
 import com.example.vybes.post.model.User
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
@@ -80,7 +99,7 @@ fun VybePost(
             }
         }
         StatsBar(
-            vybe = vybe,
+            post = vybe,
             onClickComment = onClickCard,
             onLikeClicked = onLikeClicked,
             modifier = Modifier.padding(top = 5.dp),
@@ -123,18 +142,19 @@ fun TopBar(user: User, postedDate: ZonedDateTime, navController: NavController) 
 
 @Composable
 fun StatsBar(
-    vybe: Vybe,
+    post: Post,
     onClickComment: () -> Unit = {},
     onLikeClicked: () -> Unit = {},
     modifier: Modifier,
     iconSize: Dp = 20.dp,
     isLiked: Boolean = false
 ) {
+    val type = if (post.type.equals("VYBE")) "track" else "album"
     val context = LocalContext.current
     val onClickSpotify = {
         val urlIntent = Intent(
             Intent.ACTION_VIEW,
-            Uri.parse("https://open.spotify.com/track/${vybe.spotifyTrackId}")
+            Uri.parse("https://open.spotify.com/${type}/${post.spotifyId}")
         )
         context.startActivity(urlIntent)
     }
@@ -146,7 +166,7 @@ fun StatsBar(
         IconTextButton(
             description = "Like this vybe",
             onClick = onLikeClicked,
-            text = vybe.likes.size.toString(),
+            text = post.likes?.size.toString(),
             drawableId = if (isLiked) R.drawable.thumb_up_filled else R.drawable.thumb_up,
             iconSize = iconSize,
             iconColor = White
@@ -154,7 +174,7 @@ fun StatsBar(
         IconTextButton(
             description = "Opening comments...",
             onClick = onClickComment,
-            text = vybe.comments.orEmpty().size.toString(),
+            text = post.comments.orEmpty().size.toString(),
             drawableId = R.drawable.comment,
             iconSize = iconSize
         )
@@ -233,5 +253,201 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun AlbumReviewPost(
+    albumReview: AlbumReview,
+    onClickCard: () -> Unit,
+    onLikeClicked: () -> Unit = {},
+    navController: NavController
+) {
+    val currentUserId = SharedPreferencesManager.getUserId()
+    val isLikedByCurrentUser = albumReview.likes?.any { it.userId == currentUserId } == true
+
+    Column(modifier = Modifier.padding(vertical = 5.dp)) {
+        TopBar(
+            user = albumReview.user,
+            postedDate = albumReview.postedDate,
+            navController = navController
+        )
+        AlbumReviewCard(albumReview, onClickCard)
+        StatsBar(
+            post = albumReview,
+            onClickComment = onClickCard,
+            onLikeClicked = onLikeClicked,
+            modifier = Modifier.padding(top = 5.dp),
+            isLiked = isLikedByCurrentUser
+        )
+    }
+}
+@Composable
+fun AlbumReviewCard(
+    albumReview: AlbumReview,
+    onClickCard: () -> Unit
+) {
+    val painter = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(albumReview.imageUrl)
+            .size(Size.ORIGINAL)
+            .build(),
+        contentScale = ContentScale.FillWidth,
+    )
+
+    val favoriteTrackReviews = albumReview.trackReviews.filter { it.isFavorite }.take(3)
+
+    Card(
+        modifier = Modifier
+            .clickable(onClick = onClickCard)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, SubtleBorderColor),
+        colors = CardDefaults.cardColors(containerColor = ElevatedBackgroundColor)
+    ) {
+        Box {
+            Box(
+                modifier = Modifier
+                    .blur(5.dp)
+                    .paint(painter, contentScale = ContentScale.FillWidth)
+                    .matchParentSize(),
+            )
+            Box(
+                modifier = Modifier
+                    .background(BackgroundColor.copy(alpha = 0.7f))
+                    .matchParentSize(),
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)
+            ) {
+                // Header row with album info and score
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    // Album cover
+                    Image(
+                        painter = painter,
+                        contentDescription = "Album cover",
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    // Album info
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        // Album type indicator
+                        Text(
+                            text = "ALBUM REVIEW",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = PrimaryTextColor.copy(alpha = 0.7f),
+                            letterSpacing = 1.2.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = albumReview.albumName,
+                            style = songTitleStyle,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        Text(
+                            text = albumReview.artists.joinToString(", ") { it.name },
+                            style = artistsStyle,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+
+                        Text(
+                            text = albumReview.releaseDate.year.toString(),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = SecondaryTextColor,
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
+
+                    albumReview.score?.let { score ->
+                        ScoreBadge(score = score)
+                    }
+                }
+
+                albumReview.description?.let { description ->
+                    if (description.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = description,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = PrimaryTextColor.copy(alpha = 0.8f),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            lineHeight = 16.sp
+                        )
+                    }
+                }
+
+                if (favoriteTrackReviews.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = "Favorite tracks",
+                            tint = TryoutYellow,
+                            modifier = Modifier.size(14.dp)
+                        )
+
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        Text(
+                            text = "Favorites: ${favoriteTrackReviews.joinToString(", ") { it.name }}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = PrimaryTextColor.copy(alpha = 0.9f),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ScoreBadge(score: Int) {
+    val backgroundColor = when {
+        score >= 8 -> TryoutDarkGreen
+        score >= 6 -> TryoutBlue
+        score >= 4 -> TryoutOrange
+        else -> TryoutRed
+    }
+
+    Box(
+        modifier = Modifier
+            .background(
+                backgroundColor,
+                RoundedCornerShape(12.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "$score/10",
+            style = MaterialTheme.typography.labelMedium,
+            color = PrimaryTextColor,
+            fontWeight = FontWeight.Bold
+        )
     }
 }

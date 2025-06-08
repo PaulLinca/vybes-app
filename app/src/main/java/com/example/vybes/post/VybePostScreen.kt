@@ -259,7 +259,7 @@ fun VybePostContent(
 
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 StatsBar(
-                    vybe = vybe,
+                    post = vybe,
                     modifier = Modifier.padding(top = 8.dp, start = 8.dp, bottom = 8.dp),
                     onLikeClicked = {
                         if (isLikedByUser) onUnlikeVybe() else onLikeVybe()

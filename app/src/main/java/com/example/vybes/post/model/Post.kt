@@ -6,6 +6,8 @@ sealed interface Post {
     val id: Long
     val user: User
     val postedDate: ZonedDateTime
-    val likes: List<Like>
+    val spotifyId: String
+    val likes: List<Like>?
     val comments: List<Comment>?
+    val type: String
 }

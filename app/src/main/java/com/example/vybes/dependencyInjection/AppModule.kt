@@ -7,6 +7,7 @@ import com.example.vybes.auth.setup.VybesUserService
 import com.example.vybes.feedback.service.DummyFeedbackService
 import com.example.vybes.feedback.service.FeedbackService
 import com.example.vybes.network.AuthInterceptor
+import com.example.vybes.network.LocalDateTypeAdapter
 import com.example.vybes.network.PostDeserializer
 import com.example.vybes.network.TokenAuthenticator
 import com.example.vybes.network.VybesApiClient
@@ -24,6 +25,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import javax.inject.Singleton
 
@@ -36,6 +38,7 @@ object AppModule {
     fun provideGson(): Gson {
         return GsonBuilder()
             .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeTypeAdapter())
+            .registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter())
             .registerTypeAdapter(Post::class.java, PostDeserializer())
             .create()
     }

@@ -17,6 +17,7 @@ val TryoutOrange = Color(0xFFF8A464)
 val TryoutYellow = Color(0xFFF8DF64)
 val TryoutBlue = Color(0xFF6489F8)
 val TryoutGreen = Color(0xFFAEF864)
+val TryoutDarkGreen = Color(0xFF88D544)
 
 val SuccessGreen = TryoutGreen
 val ErrorRed = TryoutRed
