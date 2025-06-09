@@ -1,7 +1,9 @@
 package com.example.vybes.post.feed
 
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,7 +14,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +21,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -31,12 +31,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -46,6 +54,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.palette.graphics.Palette
+import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
@@ -191,65 +201,148 @@ fun StatsBar(
 
 @Composable
 fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
+    val context = LocalContext.current
     val painter = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(LocalContext.current)
+        model = ImageRequest.Builder(context)
             .data(vybe.imageUrl)
             .size(Size.ORIGINAL)
             .build(),
-        contentScale = ContentScale.FillWidth,
+        contentScale = ContentScale.Crop,
     )
 
-    Box(
+    // Extract colors from album art using Palette API
+    var dominantColor by remember { mutableStateOf(Color.Black) }
+    var vibrantColor by remember { mutableStateOf(Color.Gray) }
+
+    LaunchedEffect(vybe.imageUrl) {
+        val loader = ImageLoader(context)
+        val request = ImageRequest.Builder(context)
+            .data(vybe.imageUrl)
+            .allowHardware(false)
+            .build()
+
+        val drawable = loader.execute(request).drawable
+        if (drawable is BitmapDrawable) {
+            val palette = Palette.from(drawable.bitmap).generate()
+            dominantColor = Color(palette.getDominantColor(Color.Black.toArgb()))
+            vibrantColor = Color(palette.getVibrantColor(Color.Gray.toArgb()))
+        }
+    }
+
+    Card(
         modifier = Modifier
             .clickable(onClick = onClickCard)
             .fillMaxWidth()
-            .height(90.dp)
-            .border(1.dp, SubtleBorderColor, RoundedCornerShape(16.dp))
-            .clip(RoundedCornerShape(16.dp))
-            .background(color = ElevatedBackgroundColor)
+            .height(120.dp),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, dominantColor.copy(alpha = 0.3f)),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
-        Box(
-            modifier = Modifier
-                .blur(5.dp)
-                .paint(painter, contentScale = ContentScale.FillWidth)
-                .fillMaxSize(),
-        )
-        Box(
-            modifier = Modifier
-                .background(BackgroundColor.copy(alpha = 0.6f))
-                .fillMaxSize(),
-        )
         Row(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            dominantColor.copy(alpha = 0.9f),
+                            vibrantColor.copy(alpha = 0.7f),
+                            dominantColor.copy(alpha = 0.5f)
+                        )
+                    )
+                )
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painter,
-                contentDescription = "Button",
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(0.dp)
-                    .aspectRatio(1f)
-            )
-            Spacer(modifier = Modifier.width(2.dp))
+            Box(
+                modifier = Modifier.size(88.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(88.dp)
+                        .background(
+                            Color.Black,
+                            CircleShape
+                        )
+                        .border(2.dp, Color(0xFF333333), CircleShape)
+                ) {
+                    repeat(4) { index ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding((12 + index * 8).dp)
+                                .border(
+                                    0.5.dp,
+                                    Color.White.copy(alpha = 0.1f),
+                                    CircleShape
+                                )
+                        )
+                    }
+                }
+
+                Image(
+                    painter = painter,
+                    contentDescription = "Album cover",
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .border(1.dp, Color.White.copy(alpha = 0.3f), CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .background(Color.Black, CircleShape)
+                        .border(1.dp, Color(0xFF444444), CircleShape)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(20.dp))
+
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
-                verticalArrangement = Arrangement.Bottom
+                    .weight(1f)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.Center
             ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(TryoutRed, CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "NOW PLAYING",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.7f),
+                        letterSpacing = 1.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
                     text = vybe.songName,
-                    style = songTitleStyle,
-                    maxLines = 3
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    ),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
+
                 Text(
                     text = vybe.spotifyArtists.joinToString(", ") { it.name },
-                    modifier = Modifier.padding(top = 3.dp, bottom = 7.dp),
-                    style = artistsStyle,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.White.copy(alpha = 0.8f)
+                    ),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
             }
         }
