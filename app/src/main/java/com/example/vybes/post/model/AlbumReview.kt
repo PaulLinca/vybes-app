@@ -8,7 +8,6 @@ data class AlbumReview(
     override val id: Long,
     val albumName: String,
     override val spotifyId: String,
-    val spotifyAlbumId: String,
     val score: Int?,
     val imageUrl: String?,
     val description: String?,

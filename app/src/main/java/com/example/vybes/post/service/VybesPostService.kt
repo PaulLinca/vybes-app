@@ -49,12 +49,12 @@ class VybesPostService @Inject constructor(
         return vybesApiClient.getLikesByPostId(vybeId)
     }
 
-    override suspend fun likeVybe(vybeId: Long): Response<LikeResponse> {
-        return vybesApiClient.likePost(vybeId)
+    override suspend fun likePost(postId: Long): Response<LikeResponse> {
+        return vybesApiClient.likePost(postId)
     }
 
-    override suspend fun unlikeVybe(vybeId: Long): Response<LikeResponse> {
-        return vybesApiClient.unlikePost(vybeId)
+    override suspend fun unlikePost(postId: Long): Response<LikeResponse> {
+        return vybesApiClient.unlikePost(postId)
     }
 
     override suspend fun likeComment(vybeId: Long, commentId: Long): Response<LikeResponse> {

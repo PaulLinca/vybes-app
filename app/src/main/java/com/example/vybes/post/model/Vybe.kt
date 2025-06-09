@@ -23,7 +23,7 @@ data class Vybe(
     val description: String,
     override val user: User,
     override val postedDate: ZonedDateTime,
-    override val likes: List<Like> = mutableListOf(),
+    override val likes: List<Like>? = mutableListOf(),
     override val comments: List<Comment>? = mutableListOf(),
     override val type: String
 ) : Post

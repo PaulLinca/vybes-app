@@ -69,7 +69,6 @@ import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.SubtleBorderColor
 import com.example.vybes.common.theme.TryoutBlue
 import com.example.vybes.common.theme.TryoutDarkGreen
-import com.example.vybes.common.theme.TryoutGreen
 import com.example.vybes.common.theme.TryoutOrange
 import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.TryoutYellow
@@ -93,7 +92,7 @@ fun VybePost(
     navController: NavController
 ) {
     val currentUserId = SharedPreferencesManager.getUserId()
-    val isLikedByCurrentUser = vybe.likes.any { it.userId == currentUserId }
+    val isLikedByCurrentUser = vybe.likes.orEmpty().any { it.userId == currentUserId }
 
     Column(modifier = Modifier.padding(vertical = 5.dp)) {
         TopBar(user = vybe.user, postedDate = vybe.postedDate, navController = navController)

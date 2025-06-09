@@ -87,10 +87,10 @@ class VybeViewModel @Inject constructor(
         viewModelScope.launch {
             safeApiCall {
                 _isLoading.value = true
-                postService.likeVybe(args.id)
+                postService.likePost(args.id)
             }.onSuccess { like ->
                 _vybe.value?.let { v ->
-                    _vybe.value = v.copy(likes = v.likes + Like(like.userId))
+                    _vybe.value = v.copy(likes = v.likes.orEmpty() + Like(like.userId))
                     _isLikedByCurrentUser.value = true
                 }
             }.onFailure { error ->
@@ -104,11 +104,11 @@ class VybeViewModel @Inject constructor(
         viewModelScope.launch {
             safeApiCall {
                 _isLoading.value = true
-                postService.unlikeVybe(args.id)
+                postService.unlikePost(args.id)
             }.onSuccess { removedLike ->
                 _vybe.value?.let { v ->
                     _vybe.value =
-                        v.copy(likes = v.likes.filterNot { it.userId == removedLike.userId })
+                        v.copy(likes = v.likes.orEmpty().filterNot { it.userId == removedLike.userId })
                     _isLikedByCurrentUser.value = false
                 }
             }.onFailure { error ->
@@ -197,7 +197,7 @@ class VybeViewModel @Inject constructor(
             _errorMessage.value = null
 
             safeApiCall { postService.getVybe(args.id) }.onSuccess { v ->
-                _isLikedByCurrentUser.value = v.likes.any { it.userId == currentUserId }
+                _isLikedByCurrentUser.value = v.likes.orEmpty().any { it.userId == currentUserId }
                 _vybe.value = v
             }.onFailure { error ->
                 _errorMessage.value = "Failed to load vybe: ${error.localizedMessage}"

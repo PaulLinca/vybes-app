@@ -1,7 +1,9 @@
 package com.example.vybes.post.feed
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.vybes.post.model.AlbumReview
 import com.example.vybes.post.model.Like
 import com.example.vybes.post.model.Post
 import com.example.vybes.post.model.Vybe
@@ -123,20 +125,20 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    fun clickLikeButton(vybeId: Long, isLikedByCurrentUser: Boolean) {
+    fun clickLikeButton(postId: Long, isLikedByCurrentUser: Boolean) {
         if (isLikedByCurrentUser) {
-            unlikeVybe(vybeId)
+            unlikePost(postId)
         } else {
-            likeVybe(vybeId)
+            likePost(postId)
         }
     }
 
-    private fun likeVybe(vybeId: Long) {
+    private fun likePost(postId: Long) {
         viewModelScope.launch {
             try {
-                val response = postService.likeVybe(vybeId)
+                val response = postService.likePost(postId)
                 if (response.isSuccessful && response.body() != null) {
-                    updateVybeLikes(vybeId) { currentLikes ->
+                    updatePostLikes(postId) { currentLikes ->
                         currentLikes + Like(response.body()!!.userId)
                     }
                 } else {
@@ -148,12 +150,12 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    private fun unlikeVybe(vybeId: Long) {
+    private fun unlikePost(postId: Long) {
         viewModelScope.launch {
             try {
-                val response = postService.unlikeVybe(vybeId)
+                val response = postService.unlikePost(postId)
                 if (response.isSuccessful && response.body() != null) {
-                    updateVybeLikes(vybeId) { currentLikes ->
+                    updatePostLikes(postId) { currentLikes ->
                         currentLikes.filter { it.userId != response.body()!!.userId }
                     }
                 } else {
@@ -165,10 +167,12 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    private fun updateVybeLikes(vybeId: Long, update: (List<Like>) -> List<Like>) {
+    private fun updatePostLikes(postId: Long, update: (List<Like>) -> List<Like>) {
         _posts.value = _posts.value.map { post ->
-            if (post is Vybe && post.id == vybeId) {
-                post.copy(likes = update(post.likes))
+            if (post is Vybe && post.id == postId) {
+                post.copy(likes = update(post.likes.orEmpty()))
+            } else if (post is AlbumReview && post.id == postId) {
+                post.copy(likes = update(post.likes.orEmpty()))
             } else {
                 post
             }
