@@ -161,14 +161,14 @@ fun AddAlbumReviewScreen(
                         )
 
                         Text(
-                            text = state.album.artists.joinToString(", ") { it.name },
+                            text = state.album.releaseDate?.year.toString(),
                             style = artistsStyle,
                             color = SecondaryTextColor,
                             textAlign = TextAlign.Center
                         )
 
                         Text(
-                            text = state.album.releaseDate,
+                            text = state.album.artists.joinToString(", ") { it.name },
                             style = artistsStyle,
                             color = SecondaryTextColor,
                             textAlign = TextAlign.Center

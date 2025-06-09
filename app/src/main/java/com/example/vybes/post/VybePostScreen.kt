@@ -2,36 +2,25 @@ package com.example.vybes.post
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,28 +35,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
-import com.example.vybes.R
-import com.example.vybes.common.composables.DebouncedIconButton
-import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
-import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.common.util.DateUtils
 import com.example.vybes.post.feed.StatsBar
-import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Vybe
-import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import java.util.stream.Collectors
 
 @Composable
@@ -282,31 +264,66 @@ fun SongBanner(vybe: Vybe) {
             Box(
                 modifier = Modifier
                     .size(130.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .shadow(8.dp)
+                    .clip(CircleShape)
+                    .shadow(8.dp),
+                contentAlignment = Alignment.Center
             ) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            Color.Black,
+                            CircleShape
+                        )
+                        .border(2.dp, Color(0xFF333333), CircleShape)
+                        .fillMaxSize()
+                ) {
+//                    repeat(4) { index ->
+//                        Box(
+//                            modifier = Modifier
+//                                .fillMaxSize()
+//                                .padding((12 + index * 8).dp)
+//                                .border(
+//                                    0.5.dp,
+//                                    Color.White.copy(alpha = 0.1f),
+//                                    CircleShape
+//                                )
+//                        )
+//                    }
+                }
+
                 Image(
                     painter = painter,
-                    contentDescription = "Album Cover",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    contentDescription = "Album cover",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .border(1.dp, Color.White.copy(alpha = 0.3f), CircleShape),
+                    contentScale = ContentScale.Crop
                 )
 
-                if (painter.state is AsyncImagePainter.State.Loading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.DarkGray),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = PrimaryTextColor,
-                            strokeWidth = 2.dp
-                        )
-                    }
+                Box(
+                    modifier = Modifier
+                        .size(16.dp)
+                        .background(Color.Black, CircleShape)
+                        .border(1.dp, Color(0xFF444444), CircleShape)
+                )
+            }
+
+            if (painter.state is AsyncImagePainter.State.Loading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.DarkGray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = PrimaryTextColor,
+                        strokeWidth = 2.dp
+                    )
                 }
             }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 

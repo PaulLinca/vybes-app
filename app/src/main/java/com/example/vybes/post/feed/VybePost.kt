@@ -210,10 +210,8 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
         contentScale = ContentScale.Crop,
     )
 
-    // Extract colors from album art using Palette API
     var dominantColor by remember { mutableStateOf(Color.Black) }
     var vibrantColor by remember { mutableStateOf(Color.Gray) }
-
     LaunchedEffect(vybe.imageUrl) {
         val loader = ImageLoader(context)
         val request = ImageRequest.Builder(context)
@@ -265,25 +263,25 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
                         )
                         .border(2.dp, Color(0xFF333333), CircleShape)
                 ) {
-                    repeat(4) { index ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding((12 + index * 8).dp)
-                                .border(
-                                    0.5.dp,
-                                    Color.White.copy(alpha = 0.1f),
-                                    CircleShape
-                                )
-                        )
-                    }
+//                    repeat(4) { index ->
+//                        Box(
+//                            modifier = Modifier
+//                                .fillMaxSize()
+//                                .padding((12 + index * 8).dp)
+//                                .border(
+//                                    0.5.dp,
+//                                    Color.White.copy(alpha = 0.1f),
+//                                    CircleShape
+//                                )
+//                        )
+//                    }
                 }
 
                 Image(
                     painter = painter,
                     contentDescription = "Album cover",
                     modifier = Modifier
-                        .size(48.dp)
+                        .fillMaxSize()
                         .clip(CircleShape)
                         .border(1.dp, Color.White.copy(alpha = 0.3f), CircleShape),
                     contentScale = ContentScale.Crop
@@ -291,7 +289,7 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
 
                 Box(
                     modifier = Modifier
-                        .size(8.dp)
+                        .size(16.dp)
                         .background(Color.Black, CircleShape)
                         .border(1.dp, Color(0xFF444444), CircleShape)
                 )
@@ -432,11 +430,9 @@ fun AlbumReviewCard(
 
                     Spacer(modifier = Modifier.width(12.dp))
 
-                    // Album info
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
-                        // Album type indicator
                         Text(
                             text = "ALBUM REVIEW",
                             style = MaterialTheme.typography.labelSmall,
@@ -454,17 +450,17 @@ fun AlbumReviewCard(
                         )
 
                         Text(
-                            text = albumReview.artists.joinToString(", ") { it.name },
-                            style = artistsStyle,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+                            text = albumReview.releaseDate.year.toString(),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = SecondaryTextColor,
                             modifier = Modifier.padding(top = 2.dp)
                         )
 
                         Text(
-                            text = albumReview.releaseDate.year.toString(),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = SecondaryTextColor,
+                            text = albumReview.artists.joinToString(", ") { it.name },
+                            style = artistsStyle,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(top = 2.dp)
                         )
                     }

@@ -1,5 +1,7 @@
 package com.example.vybes.auth.model
 
+import java.time.LocalDate
+
 data class UserResponse(
     val userId: Long,
     val username: String,
@@ -20,7 +22,7 @@ data class Album(
     val tracks: List<Track>,
     override val name: String,
     override val imageUrl: String,
-    val releaseDate: String
+    val releaseDate: LocalDate?
 ) : MediaItem
 
 data class Track(
