@@ -2,36 +2,23 @@ package com.example.vybes.post
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,33 +33,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
-import com.example.vybes.R
-import com.example.vybes.common.composables.DebouncedIconButton
-import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
-import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.common.util.DateUtils
 import com.example.vybes.post.feed.StatsBar
-import com.example.vybes.post.model.Comment
-import com.example.vybes.post.model.Vybe
-import com.example.vybes.sharedpreferences.SharedPreferencesManager
+import com.example.vybes.post.model.AlbumReview
 import java.util.stream.Collectors
 
 @Composable
-fun VybePostScreen(
-    vybeViewModel: VybeViewModel = hiltViewModel(),
+fun AlbumReviewScreen(
+    vybeViewModel: AlbumReviewViewModel = hiltViewModel(),
     onGoBack: () -> Unit,
     navController: NavController
 ) {
@@ -99,15 +79,15 @@ fun VybePostScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                VybePostContent(
+                AlbumReviewPostContent(
                     vybe = state.post,
                     isLikedByUser = state.isLikedByCurrentUser,
                     commentText = commentText,
                     onGoBack = onGoBack,
                     onTextChanged = { vybeViewModel.updateText(it) },
                     onSendComment = { vybeViewModel.addComment() },
-                    onLikeVybe = { vybeViewModel.likeVybe() },
-                    onUnlikeVybe = { vybeViewModel.unlikeVybe() },
+                    onLikeVybe = { vybeViewModel.likeAlbumReview() },
+                    onUnlikeVybe = { vybeViewModel.unlikeAlbumReview() },
                     onLikeComment = { vybeViewModel.likeComment(it) },
                     onUnlikeComment = { vybeViewModel.unlikeComment(it) },
                     navController = navController
@@ -124,21 +104,21 @@ fun VybePostScreen(
         is PostViewModel.PostUiState.Error -> {
             ErrorScreen(
                 errorMessage = state.message,
-                onRetry = { vybeViewModel.refreshVybe() },
+                onRetry = { vybeViewModel.refreshAlbumReview() },
                 onGoBack = onGoBack
             )
         }
 
         is PostViewModel.PostUiState.Success -> {
-            VybePostContent(
+            AlbumReviewPostContent(
                 vybe = state.post,
                 isLikedByUser = state.isLikedByCurrentUser,
                 commentText = commentText,
                 onGoBack = onGoBack,
                 onTextChanged = { vybeViewModel.updateText(it) },
                 onSendComment = { vybeViewModel.addComment() },
-                onLikeVybe = { vybeViewModel.likeVybe() },
-                onUnlikeVybe = { vybeViewModel.unlikeVybe() },
+                onLikeVybe = { vybeViewModel.likeAlbumReview() },
+                onUnlikeVybe = { vybeViewModel.unlikeAlbumReview() },
                 onLikeComment = { vybeViewModel.likeComment(it) },
                 onUnlikeComment = { vybeViewModel.unlikeComment(it) },
                 navController = navController
@@ -149,8 +129,8 @@ fun VybePostScreen(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun VybePostContent(
-    vybe: Vybe,
+fun AlbumReviewPostContent(
+    vybe: AlbumReview,
     isLikedByUser: Boolean,
     commentText: String,
     onGoBack: () -> Unit,
@@ -197,12 +177,16 @@ fun VybePostContent(
                 }
             }
 
-            SongBanner(vybe = vybe)
+            AlbumBanner(vybe = vybe)
 
-            if (vybe.description.isNotBlank()) {
+            if (vybe.description.orEmpty().isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Text(text = vybe.description, style = artistsStyle, color = Color.LightGray)
+                    Text(
+                        text = vybe.description.orEmpty(),
+                        style = artistsStyle,
+                        color = Color.LightGray
+                    )
                 }
             }
 
@@ -245,7 +229,7 @@ fun VybePostContent(
 }
 
 @Composable
-fun SongBanner(vybe: Vybe) {
+fun AlbumBanner(vybe: AlbumReview) {
     val painter = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
             .data(vybe.imageUrl)
@@ -311,7 +295,7 @@ fun SongBanner(vybe: Vybe) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = vybe.songName,
+                text = vybe.albumName,
                 color = PrimaryTextColor,
                 textAlign = TextAlign.Center,
                 style = songTitleStyle,
@@ -323,7 +307,7 @@ fun SongBanner(vybe: Vybe) {
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = vybe.spotifyArtists.stream()
+                text = vybe.artists.stream()
                     .map { a -> a.name }
                     .collect(Collectors.joining(", ")),
                 color = Color.LightGray,

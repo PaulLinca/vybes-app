@@ -20,8 +20,10 @@ import com.example.vybes.auth.AuthEvent
 import com.example.vybes.auth.AuthEventBus
 import com.example.vybes.common.theme.VybesTheme
 import com.example.vybes.feedback.FeedbackScreen
+import com.example.vybes.post.AlbumReviewScreen
 import com.example.vybes.post.VybePostScreen
 import com.example.vybes.post.feed.FeedScreen
+import com.example.vybes.post.model.AlbumReviewScreen
 import com.example.vybes.post.model.User
 import com.example.vybes.post.model.VybeScreen
 import com.example.vybes.profile.ProfileScreen
@@ -96,6 +98,12 @@ class MainActivity : ComponentActivity() {
                     }
                     composable<VybeScreen> {
                         VybePostScreen(
+                            onGoBack = { navController.popBackStack() },
+                            navController = navController
+                        )
+                    }
+                    composable<AlbumReviewScreen> {
+                        AlbumReviewScreen(
                             onGoBack = { navController.popBackStack() },
                             navController = navController
                         )

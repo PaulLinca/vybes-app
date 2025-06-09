@@ -4,6 +4,7 @@ import com.example.vybes.add.model.network.AlbumSearchResult
 import com.example.vybes.add.model.network.ArtistSearchResult
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.auth.model.Album
+import com.example.vybes.post.model.AlbumReview
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Post
 import com.example.vybes.post.model.Vybe
@@ -23,6 +24,8 @@ interface PostService {
     ): Response<PageResponse<Post>>
 
     suspend fun getVybe(id: Long): Response<Vybe>
+
+    suspend fun getAlbumReview(id: Long): Response<AlbumReview>
 
     suspend fun postVybe(id: String, description: String): Response<Vybe>
 

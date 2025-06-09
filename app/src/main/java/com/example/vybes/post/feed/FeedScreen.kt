@@ -66,6 +66,7 @@ import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.logoStyle
 import com.example.vybes.post.model.AlbumReview
+import com.example.vybes.post.model.AlbumReviewScreen
 import com.example.vybes.post.model.User
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.model.VybeScreen
@@ -225,7 +226,7 @@ fun FeedScreen(
                                     val isLikedByCurrentUser = post.likes?.any { it.userId == currentUserId } == true
                                     AlbumReviewPost(
                                         albumReview = post,
-                                        onClickCard = { navController.navigate(VybeScreen(post.id)) },
+                                        onClickCard = { navController.navigate(AlbumReviewScreen(post.id)) },
                                         onLikeClicked = {
                                             viewModel.clickLikeButton(
                                                 post.id,

@@ -1,8 +1,19 @@
 package com.example.vybes.post.model
 
+import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
 import com.example.vybes.post.model.network.TrackRating
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.ZonedDateTime
+
+@Serializable
+data class AlbumReviewScreen(val id: Long) {
+    companion object {
+        fun from(savedStateHandle: SavedStateHandle) =
+            savedStateHandle.toRoute<AlbumReviewScreen>()
+    }
+}
 
 data class AlbumReview(
     override val id: Long,

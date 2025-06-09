@@ -10,6 +10,7 @@ import com.example.vybes.auth.model.RegisterResponse
 import com.example.vybes.auth.model.SetFavoritesRequest
 import com.example.vybes.auth.model.UserResponse
 import com.example.vybes.auth.model.UsernameSetupRequest
+import com.example.vybes.post.model.AlbumReview
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Post
 import com.example.vybes.post.model.Vybe
@@ -66,6 +67,9 @@ interface VybesApiClient {
 
     @GET("api/vybes/{vybeId}")
     suspend fun getVybeById(@Path("vybeId") vybeId: Long): Response<Vybe>
+
+    @GET("api/album-reviews/{albumReviewId}")
+    suspend fun getAlbumReviewById(@Path("albumReviewId") albumReviewId: Long): Response<AlbumReview>
 
     @POST("api/posts/{postId}/likes")
     suspend fun likePost(@Path("postId") postId: Long): Response<LikeResponse>
