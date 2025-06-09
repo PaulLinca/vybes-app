@@ -73,6 +73,7 @@ import com.example.vybes.common.theme.TryoutGreen
 import com.example.vybes.common.theme.TryoutOrange
 import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.TryoutYellow
+import com.example.vybes.common.theme.VybesVeryDarkGray
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
@@ -235,7 +236,7 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
             .fillMaxWidth()
             .height(120.dp),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, dominantColor.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, vibrantColor.copy(alpha = 0.2f)),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Row(
@@ -244,9 +245,8 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(
-                            dominantColor.copy(alpha = 0.9f),
-                            vibrantColor.copy(alpha = 0.7f),
-                            dominantColor.copy(alpha = 0.5f)
+                            VybesVeryDarkGray.copy(alpha = 0.9f),
+                            dominantColor.copy(alpha = 0.6f)
                         )
                     )
                 )
