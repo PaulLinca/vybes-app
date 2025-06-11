@@ -416,7 +416,12 @@ fun AlbumDescriptionSection(description: String?) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .clickable {
+                    if (description.length > 150) {
+                        isExpanded = !isExpanded
+                    }
+                },
             backgroundColor = ElevatedBackgroundColor,
             elevation = 2.dp,
             shape = RoundedCornerShape(12.dp)
@@ -437,11 +442,6 @@ fun AlbumDescriptionSection(description: String?) {
                     color = SecondaryTextColor,
                     maxLines = maxLines,
                     overflow = if (isExpanded) TextOverflow.Visible else TextOverflow.Ellipsis,
-                    modifier = Modifier.clickable {
-                        if (description.length > 150) {
-                            isExpanded = !isExpanded
-                        }
-                    }
                 )
 
                 if (description.length > 150) {

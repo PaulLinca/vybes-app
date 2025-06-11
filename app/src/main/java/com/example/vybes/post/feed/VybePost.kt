@@ -3,7 +3,6 @@ package com.example.vybes.post.feed
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -41,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -231,7 +230,7 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
         modifier = Modifier
             .clickable(onClick = onClickCard)
             .fillMaxWidth()
-            .height(120.dp),
+            .wrapContentHeight(),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, vibrantColor.copy(alpha = 0.2f)),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
@@ -372,6 +371,7 @@ fun AlbumReviewPost(
         )
     }
 }
+
 @Composable
 fun AlbumReviewCard(
     albumReview: AlbumReview,
