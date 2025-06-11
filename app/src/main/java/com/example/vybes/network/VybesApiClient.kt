@@ -10,6 +10,7 @@ import com.example.vybes.auth.model.RegisterResponse
 import com.example.vybes.auth.model.SetFavoritesRequest
 import com.example.vybes.auth.model.UserResponse
 import com.example.vybes.auth.model.UsernameSetupRequest
+import com.example.vybes.feedback.model.FeedbackRequest
 import com.example.vybes.post.model.AlbumReview
 import com.example.vybes.post.model.Comment
 import com.example.vybes.post.model.Post
@@ -130,4 +131,9 @@ interface VybesApiClient {
     suspend fun getAlbum(
         @Query("id") id: String
     ): Response<Album>
+
+    @POST("api/feedback/submit")
+    suspend fun submitFeedback(
+        @Body feedbackRequest: FeedbackRequest
+    ): Response<Void>
 }

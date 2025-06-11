@@ -4,7 +4,7 @@ import com.example.vybes.auth.service.AuthService
 import com.example.vybes.auth.service.VybesAuthService
 import com.example.vybes.auth.setup.UserService
 import com.example.vybes.auth.setup.VybesUserService
-import com.example.vybes.feedback.service.DummyFeedbackService
+import com.example.vybes.feedback.service.VybesFeedbackService
 import com.example.vybes.feedback.service.FeedbackService
 import com.example.vybes.network.AuthInterceptor
 import com.example.vybes.network.LocalDateTypeAdapter
@@ -89,7 +89,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFeedbackService(): FeedbackService {
-        return DummyFeedbackService()
+    fun provideFeedbackService(vybesApiClient: VybesApiClient): FeedbackService {
+        return VybesFeedbackService(vybesApiClient)
     }
 }

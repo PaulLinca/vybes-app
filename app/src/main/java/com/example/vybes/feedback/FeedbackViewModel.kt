@@ -60,8 +60,12 @@ class FeedbackViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                feedbackService.submit(currentText)
-                setSuccess()
+                val result = feedbackService.submit(currentText)
+                if (result.isSuccessful) {
+                    setSuccess()
+                } else {
+                    setError("Failed to submit feedback. Please try again.")
+                }
             } catch (e: Exception) {
                 setError("Failed to submit feedback. Please try again.")
             } finally {
