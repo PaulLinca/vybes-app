@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -38,7 +37,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -76,11 +74,8 @@ import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.SubtleBorderColor
 import com.example.vybes.common.theme.TryoutBlue
-import com.example.vybes.common.theme.TryoutGreen
-import com.example.vybes.common.theme.TryoutOrange
 import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.TryoutYellow
-import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.post.model.network.TrackRating
@@ -322,35 +317,14 @@ fun AlbumRatingSection(
             onValueChange = { onRatingChanged(it.roundToInt()) },
             valueRange = 0f..10f,
             steps = 9,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 10.dp),
             colors = SliderDefaults.colors(
                 thumbColor = TryoutBlue,
                 activeTrackColor = TryoutBlue,
                 activeTickColor = TryoutBlue
             )
-        )
-    }
-}
-
-@Composable
-fun RatingButton(
-    number: Int,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.surfaceVariant
-        ),
-        modifier = Modifier.size(40.dp),
-        contentPadding = PaddingValues(0.dp)
-    ) {
-        Text(
-            text = number.toString(),
-            fontSize = 12.sp,
-            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -444,72 +418,4 @@ fun TrackRatingChip(
             borderColor = if (isSelected) rating.color else Color.Gray
         )
     )
-}
-
-@Composable
-fun AlbumCard(album: Album, onClickCard: () -> Unit) {
-    val painter = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(album.imageUrl)
-            .size(Size.ORIGINAL)
-            .build(),
-        contentScale = ContentScale.FillWidth,
-    )
-
-    Box(
-        modifier = Modifier
-            .clickable(onClick = onClickCard)
-            .fillMaxWidth()
-            .border(1.dp, SubtleBorderColor, RoundedCornerShape(16.dp))
-            .clip(RoundedCornerShape(16.dp))
-            .background(color = ElevatedBackgroundColor)
-    ) {
-        Box(
-            modifier = Modifier
-                .blur(5.dp)
-                .paint(painter, contentScale = ContentScale.FillWidth)
-                .fillMaxSize(),
-        )
-        Box(
-            modifier = Modifier
-                .background(BackgroundColor.copy(alpha = 0.6f))
-                .fillMaxSize(),
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(5.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Image(
-                painter = painter,
-                contentDescription = "Button",
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(0.dp)
-                    .height(90.dp)
-                    .aspectRatio(1f)
-            )
-            Spacer(modifier = Modifier.width(2.dp))
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                Text(
-                    text = album.name,
-                    style = songTitleStyle,
-                    maxLines = 3
-                )
-                Text(
-                    text = album.artists.joinToString(", ") { it.name },
-                    modifier = Modifier.padding(top = 3.dp, bottom = 7.dp),
-                    style = artistsStyle,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-    }
 }

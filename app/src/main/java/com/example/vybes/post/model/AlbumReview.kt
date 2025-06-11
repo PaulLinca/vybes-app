@@ -36,6 +36,6 @@ data class TrackReviewDTO(
     val id: Long?,
     val name: String,
     val spotifyTrackId: String,
-    val rating: TrackRating,
+    val rating: TrackRating?,
     val isFavorite: Boolean
 )

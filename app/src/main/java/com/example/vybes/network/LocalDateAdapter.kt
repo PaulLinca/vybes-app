@@ -2,6 +2,7 @@ package com.example.vybes.network
 
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -19,7 +20,12 @@ class LocalDateTypeAdapter : TypeAdapter<LocalDate>() {
     }
 
     override fun read(reader: JsonReader): LocalDate? {
-        val dateString = reader.nextString()
-        return LocalDate.parse(dateString, formatter)
+        return if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull()
+            null
+        } else {
+            val dateString = reader.nextString()
+            LocalDate.parse(dateString, formatter)
+        }
     }
 }

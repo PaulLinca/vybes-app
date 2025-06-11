@@ -89,7 +89,6 @@ fun CommentSection(
 ) {
     Column(
         modifier = modifier
-            .verticalScroll(rememberScrollState())
             .fillMaxWidth()
     ) {
         if (comments.isEmpty()) {
