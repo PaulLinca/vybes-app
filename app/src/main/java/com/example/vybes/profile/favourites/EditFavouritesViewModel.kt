@@ -54,6 +54,15 @@ class EditFavouritesViewModel @Inject constructor(
         loadCurrentUserFavorites()
     }
 
+    private fun getFirstSelectedIndex(): Int? {
+        for ((index, value) in _currentFavorites.value.withIndex()) {
+            if (value.isEmpty) {
+                return index
+            }
+        }
+        return null
+    }
+
     private fun loadCurrentUserFavorites() {
         viewModelScope.launch {
             try {
@@ -80,6 +89,7 @@ class EditFavouritesViewModel @Inject constructor(
                     }
 
                     _currentFavorites.value = paddedFavorites
+                    _selectedIndex.value = getFirstSelectedIndex()
                     _uiState.value = UiState(isLoading = false)
                 } else {
                     _uiState.value = UiState(
@@ -111,7 +121,6 @@ class EditFavouritesViewModel @Inject constructor(
             try {
                 _uiState.value = _uiState.value.copy(isSearching = true)
 
-                // Search for the appropriate type
                 val response = when (favoriteType) {
                     FavoriteType.ARTISTS -> vybesPostService.searchArtist(query)
                     FavoriteType.ALBUMS -> vybesPostService.searchAlbum(query)
@@ -144,7 +153,7 @@ class EditFavouritesViewModel @Inject constructor(
             val updatedFavorites = _currentFavorites.value.toMutableList()
             updatedFavorites[index] = newItem
             _currentFavorites.value = updatedFavorites
-            _selectedIndex.value = null
+            _selectedIndex.value = getFirstSelectedIndex()
             updateSearchQuery("")
         }
     }
@@ -153,6 +162,7 @@ class EditFavouritesViewModel @Inject constructor(
         val updatedFavorites = _currentFavorites.value.toMutableList()
         updatedFavorites[index] = createEmptyMediaItem()
         _currentFavorites.value = updatedFavorites
+        _selectedIndex.value = getFirstSelectedIndex()
     }
 
     fun saveFavorites() {

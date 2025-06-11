@@ -23,8 +23,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -57,6 +58,7 @@ import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.SubtleBorderColor
 import com.example.vybes.common.theme.TryoutGreen
 import com.example.vybes.common.theme.TryoutRed
+import com.example.vybes.common.theme.VybesVeryDarkGray
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.post.feed.FeedScreen
@@ -109,99 +111,103 @@ fun EditFavouritesScreen(
         topBar = {
             TopBarWithBackButton(onGoBack = { navController.popBackStack() }) {
                 Text(
-                    text = "Edit favorites",
+                    text = "Edit Favorites",
                     color = PrimaryTextColor,
                     textAlign = TextAlign.Center,
                     style = songTitleStyle,
                 )
             }
         },
-        containerColor = BackgroundColor,
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { editFavouritesViewModel.saveFavorites() },
-                containerColor = ElevatedBackgroundColor
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.save),
-                    contentDescription = "Save favorites",
-                    tint = IconColor,
-                    modifier = Modifier.size(35.dp)
-                )
-            }
-        }
+        containerColor = BackgroundColor
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                currentFavorites.forEachIndexed { index, item ->
-                    FavoriteItem(
-                        type = favoriteType,
-                        item = item,
-                        isSelected = selectedIndex == index,
-                        onClick = { editFavouritesViewModel.selectFavoriteToReplace(index) },
-                        onDelete = { editFavouritesViewModel.deleteFavorite(index) }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            MultilineTextField(
-                value = searchQuery,
-                onValueChanged = { editFavouritesViewModel.updateSearchQuery(it) },
-                hintText = deriveHintText(selectedIndex, favoriteType),
-                textStyle = artistsStyle,
-                maxLines = 1,
-                enabled = selectedIndex != null,
-                contentAlignment = Alignment.CenterStart,
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (uiState.isSearching) {
-                Box(
+                    .fillMaxSize()
+                    .padding(top = 16.dp, bottom = 80.dp, start = 16.dp, end = 16.dp)
+            ) {
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    CircularProgressIndicator(color = TryoutGreen)
-                }
-            } else if (searchQuery.length >= 2 && searchResults.isEmpty()) {
-                Text(
-                    text = "No results found",
-                    color = PrimaryTextColor.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(searchResults) { item ->
-                        SearchResultItem(
+                    currentFavorites.forEachIndexed { index, item ->
+                        FavoriteItem(
                             type = favoriteType,
                             item = item,
-                            onClick = {
-                                if (selectedIndex != null) {
-                                    editFavouritesViewModel.replaceSelectedFavorite(item)
-                                }
-                            }
+                            isSelected = selectedIndex == index,
+                            onClick = { editFavouritesViewModel.selectFavoriteToReplace(index) },
+                            onDelete = { editFavouritesViewModel.deleteFavorite(index) }
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                MultilineTextField(
+                    value = searchQuery,
+                    onValueChanged = { editFavouritesViewModel.updateSearchQuery(it) },
+                    hintText = deriveHintText(selectedIndex, favoriteType),
+                    textStyle = artistsStyle,
+                    maxLines = 1,
+                    enabled = selectedIndex != null,
+                    contentAlignment = Alignment.CenterStart,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (uiState.isSearching) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = TryoutGreen)
+                    }
+                } else if (searchQuery.length >= 2 && searchResults.isEmpty()) {
+                    Text(
+                        text = "No results found",
+                        color = PrimaryTextColor.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(searchResults) { item ->
+                            SearchResultItem(
+                                type = favoriteType,
+                                item = item,
+                                onClick = {
+                                    if (selectedIndex != null) {
+                                        editFavouritesViewModel.replaceSelectedFavorite(item)
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+            Button(
+                onClick = { editFavouritesViewModel.saveFavorites() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .height(48.dp)
+                    .align(Alignment.BottomCenter),
+                colors = ButtonDefaults.buttonColors(containerColor = VybesVeryDarkGray, contentColor = PrimaryTextColor)
+            ) {
+                Text("Save Favorites", color = PrimaryTextColor)
             }
         }
+
     }
 
     if (uiState.isLoading) {
