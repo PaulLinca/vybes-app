@@ -1,5 +1,6 @@
 package com.example.vybes.add
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,10 +47,13 @@ import com.example.vybes.R
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
+import com.example.vybes.common.theme.AccentBorderColor
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
+import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.SubtleBorderColor
+import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
@@ -62,7 +67,7 @@ fun AddPostScreen(
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val description by viewModel.description.collectAsState()
-    val maxDescriptionChars = 150
+    val remainingCharacters = viewModel.remainingCharacters
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { success ->
@@ -92,21 +97,30 @@ fun AddPostScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        MultilineTextField(
-            value = description,
-            onValueChanged = {
-                if (it.length <= maxDescriptionChars) {
-                    viewModel.onDescriptionChange(it)
-                }
-            },
-            hintText = "Add a description...",
-            textStyle = artistsStyle,
-            maxLines = 4,
-            contentAlignment = Alignment.CenterStart,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-        )
+        Box(modifier = Modifier.fillMaxWidth().height(56.dp)) {
+
+            MultilineTextField(
+                enabled = true,
+                value = description,
+                onValueChanged = viewModel::onDescriptionChange,
+                hintText = stringResource(R.string.feedback_field_hint),
+                textStyle = artistsStyle,
+                contentAlignment = Alignment.CenterStart,
+                maxLines = 10,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .animateContentSize()
+            )
+
+            Text(
+                text = "$remainingCharacters",
+                color = if (remainingCharacters < 50) TryoutRed else SecondaryTextColor,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 16.dp, bottom = 8.dp)
+            )
+        }
 
         Spacer(modifier = Modifier.height(10.dp))
 

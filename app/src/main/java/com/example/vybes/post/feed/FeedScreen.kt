@@ -149,16 +149,16 @@ fun FeedScreen(
                             icon = R.drawable.music_note,
                             text = "Song",
                             onClick = {
-                                navController.navigate(SearchTrackScreen)
                                 showOptionsDialog = false
+                                navController.navigate(SearchTrackScreen)
                             }
                         )
                         OptionButton(
                             icon = R.drawable.album,
                             text = "Album review",
                             onClick = {
-                                navController.navigate(SearchAlbumScreen)
                                 showOptionsDialog = false
+                                navController.navigate(SearchAlbumScreen)
                             }
                         )
                     }

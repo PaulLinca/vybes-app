@@ -16,7 +16,7 @@ class FeedbackViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val minFeedbackLength = 10
-    private val maxFeedbackLength = 500
+    private val maxFeedbackLength = 5000
 
     data class FeedbackUiState(
         val text: String = "",
@@ -55,7 +55,6 @@ class FeedbackViewModel @Inject constructor(
             return
         }
 
-        // Set loading state
         _uiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {

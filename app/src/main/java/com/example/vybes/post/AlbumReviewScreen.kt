@@ -81,6 +81,7 @@ fun AlbumReviewScreen(
 ) {
     val uiState by albumReviewViewModel.uiState.collectAsState()
     val commentText = albumReviewViewModel.commentText
+    val remainingCharacters = albumReviewViewModel.remainingCharacters
 
     when (val state = uiState) {
         is PostViewModel.PostUiState.Loading -> {
@@ -113,7 +114,8 @@ fun AlbumReviewScreen(
                     onUnlikeAlbumReview = { albumReviewViewModel.unlikeAlbumReview() },
                     onLikeComment = { albumReviewViewModel.likeComment(it) },
                     onUnlikeComment = { albumReviewViewModel.unlikeComment(it) },
-                    navController = navController
+                    navController = navController,
+                    remainingCharacters = remainingCharacters
                 )
                 Box(
                     modifier = Modifier
@@ -144,7 +146,8 @@ fun AlbumReviewScreen(
                 onUnlikeAlbumReview = { albumReviewViewModel.unlikeAlbumReview() },
                 onLikeComment = { albumReviewViewModel.likeComment(it) },
                 onUnlikeComment = { albumReviewViewModel.unlikeComment(it) },
-                navController = navController
+                navController = navController,
+                remainingCharacters = remainingCharacters
             )
         }
     }
@@ -163,7 +166,8 @@ fun AlbumReviewPostContent(
     onUnlikeAlbumReview: () -> Unit,
     onLikeComment: (Long) -> Unit,
     onUnlikeComment: (Long) -> Unit,
-    navController: NavController
+    navController: NavController,
+    remainingCharacters: Int
 ) {
     val pullRefreshState = rememberPullRefreshState(
         refreshing = false,
@@ -235,6 +239,7 @@ fun AlbumReviewPostContent(
 
                 CommentInputBar(
                     commentText = commentText,
+                    remainingCharacters = remainingCharacters,
                     onTextChanged = onTextChanged,
                     onSendComment = onSendComment
                 )

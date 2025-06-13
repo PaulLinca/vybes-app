@@ -25,6 +25,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val authService: AuthService
 ) : ViewModel() {
+    private val maxEmailLength = 320
+    private val maxPasswordLength = 128
 
     data class LoginUiState(
         val isLoading: Boolean = false,
@@ -120,14 +122,15 @@ class LoginViewModel @Inject constructor(
     private fun validateInputs(): Boolean {
         val emailError = when {
             emailText.isBlank() -> "Email cannot be empty"
+            emailText.length > maxEmailLength -> "Email can't be longer than ${maxEmailLength} characters"
             !Patterns.EMAIL_ADDRESS.matcher(emailText)
                 .matches() -> "Please enter a valid email address"
-
             else -> null
         }
 
         val passwordError = when {
             passwordText.isBlank() -> "Password cannot be empty"
+            passwordText.length > maxPasswordLength -> "Password can't be longer than ${maxPasswordLength} characters"
             passwordText.length < 6 -> "Password must be at least 6 characters"
             else -> null
         }

@@ -1,5 +1,6 @@
 package com.example.vybes.post
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,9 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material3.Button
@@ -40,6 +39,7 @@ import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.SecondaryTextColor
+import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.util.DateUtils
 import com.example.vybes.post.model.Comment
@@ -49,6 +49,7 @@ import com.example.vybes.sharedpreferences.SharedPreferencesManager
 @Composable
 fun CommentInputBar(
     commentText: String,
+    remainingCharacters: Int,
     onTextChanged: (String) -> Unit,
     onSendComment: () -> Unit
 ) {
@@ -58,16 +59,32 @@ fun CommentInputBar(
             .fillMaxWidth()
             .padding(8.dp)
     ) {
-        MultilineTextField(
-            value = commentText,
-            onValueChanged = onTextChanged,
-            hintText = "Add a comment...",
-            textStyle = artistsStyle,
-            contentAlignment = Alignment.CenterStart,
-            weightModifier = Modifier.weight(1f),
-            modifier = Modifier
-                .height(56.dp)
-        )
+        Box(modifier = Modifier
+            .height(56.dp)
+            .weight(1f)) {
+
+            MultilineTextField(
+                enabled = true,
+                value = commentText,
+                onValueChanged = onTextChanged,
+                hintText = "Add a comment...",
+                textStyle = artistsStyle,
+                contentAlignment = Alignment.CenterStart,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .animateContentSize()
+            )
+
+            Text(
+                text = "$remainingCharacters",
+                color = if (remainingCharacters < 50) TryoutRed else SecondaryTextColor,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 16.dp, bottom = 8.dp)
+            )
+        }
+
 
         DebouncedIconButton(
             onClick = onSendComment,

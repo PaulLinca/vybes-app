@@ -19,10 +19,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import kotlin.math.max
 
 abstract class PostViewModel<T : Post>(
     protected open val postService: PostService
 ) : ViewModel() {
+    private val maxCommentLength = 500
 
     sealed class PostUiState<T : Post> {
         class Loading<T : Post> : PostUiState<T>()
@@ -42,9 +44,11 @@ abstract class PostViewModel<T : Post>(
     val _errorMessage = MutableStateFlow<String?>(null)
     val _isLikedByCurrentUser = MutableStateFlow(false)
     private var _commentText: String by mutableStateOf("")
+    private var _remainingCharacters: Int by mutableStateOf(maxCommentLength)
 
     val commentText: String get() = _commentText
     val post = _post.asStateFlow()
+    val remainingCharacters: Int get() = _remainingCharacters
 
     val uiState = combine(
         _post,
@@ -62,11 +66,15 @@ abstract class PostViewModel<T : Post>(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PostUiState.Loading())
 
     fun updateText(updatedText: String) {
-        _commentText = updatedText
+        if (updatedText.length <= maxCommentLength) {
+            _commentText = updatedText
+            _remainingCharacters = maxCommentLength - updatedText.length
+        }
     }
 
     fun clearText() {
         _commentText = ""
+        _remainingCharacters = 0
     }
 
     fun likePost(postId: Long) {

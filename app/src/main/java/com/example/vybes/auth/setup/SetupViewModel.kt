@@ -16,6 +16,8 @@ import javax.inject.Inject
 class SetupViewModel @Inject constructor(
     private val userService: UserService
 ) : ViewModel() {
+    private val maxUsernameLength = 20
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
@@ -35,12 +37,16 @@ class SetupViewModel @Inject constructor(
     }
 
     private fun isUsernameValid(): Boolean {
-        if (usernameText.isNotBlank()) {
-            return true
+        if (usernameText.isBlank()) {
+            _usernameError.value = "Username can't be blank"
+            return false
+        }
+        if (usernameText.length > maxUsernameLength) {
+            _usernameError.value = "Username can't be longer than ${maxUsernameLength} characters"
+            return false
         }
 
-        _usernameError.value = "Username can't be blank"
-        return false
+        return true
     }
 
     fun login() {

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -69,6 +68,7 @@ fun VybePostScreen(
 ) {
     val uiState by vybeViewModel.uiState.collectAsState()
     val commentText = vybeViewModel.commentText
+    val remainingCharacters = vybeViewModel.remainingCharacters
 
     when (val state = uiState) {
         is PostViewModel.PostUiState.Loading -> {
@@ -101,7 +101,8 @@ fun VybePostScreen(
                     onUnlikeVybe = { vybeViewModel.unlikeVybe() },
                     onLikeComment = { vybeViewModel.likeComment(it) },
                     onUnlikeComment = { vybeViewModel.unlikeComment(it) },
-                    navController = navController
+                    navController = navController,
+                    remainingCharacters = remainingCharacters
                 )
                 Box(
                     modifier = Modifier
@@ -132,7 +133,8 @@ fun VybePostScreen(
                 onUnlikeVybe = { vybeViewModel.unlikeVybe() },
                 onLikeComment = { vybeViewModel.likeComment(it) },
                 onUnlikeComment = { vybeViewModel.unlikeComment(it) },
-                navController = navController
+                navController = navController,
+                remainingCharacters = remainingCharacters
             )
         }
     }
@@ -151,7 +153,8 @@ fun VybePostContent(
     onUnlikeVybe: () -> Unit,
     onLikeComment: (Long) -> Unit,
     onUnlikeComment: (Long) -> Unit,
-    navController: NavController
+    navController: NavController,
+    remainingCharacters: Int
 ) {
     val pullRefreshState = rememberPullRefreshState(
         refreshing = false,
@@ -221,6 +224,7 @@ fun VybePostContent(
 
             CommentInputBar(
                 commentText = commentText,
+                remainingCharacters = remainingCharacters,
                 onTextChanged = onTextChanged,
                 onSendComment = onSendComment
             )

@@ -68,6 +68,7 @@ import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.TryoutYellow
 import com.example.vybes.common.theme.VybesVeryDarkGray
 import com.example.vybes.common.theme.artistsStyle
+import com.example.vybes.common.theme.disabledStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.post.model.network.TrackRating
 import kotlinx.serialization.Serializable
@@ -92,6 +93,7 @@ fun AddAlbumReviewScreen(
     val albumRating = viewModel.albumRating
     val trackRatings = viewModel.trackRatings
     val favoriteTrackIds = viewModel.favoriteTrackIds
+    val remainingCharacters = viewModel.remainingCharacters
 
     when (val state = uiState) {
         is AddAlbumViewModel.ReviewUiState.Success -> {
@@ -182,25 +184,37 @@ fun AddAlbumReviewScreen(
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
 
-                            MultilineTextField(
-                                enabled = true,
-                                value = descriptionText,
-                                onValueChanged = viewModel::updateText,
-                                hintText = "Share your thoughts about this album...",
-                                textStyle = artistsStyle,
-                                maxLines = 10,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(150.dp)
-                                    .clip(RoundedCornerShape(25.dp))
-                                    .background(BackgroundColor, shape = RoundedCornerShape(25.dp))
-                                    .border(
-                                        1.dp,
-                                        AccentBorderColor,
-                                        RoundedCornerShape(25.dp)
-                                    )
-                                    .animateContentSize()
-                            )
+                            Box(modifier = Modifier.fillMaxWidth()) {
+
+                                MultilineTextField(
+                                    enabled = true,
+                                    value = descriptionText,
+                                    onValueChanged = viewModel::updateText,
+                                    hintText = stringResource(R.string.feedback_field_hint),
+                                    textStyle = artistsStyle,
+                                    maxLines = 10,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(150.dp)
+                                        .clip(RoundedCornerShape(25.dp))
+                                        .background(BackgroundColor, shape = RoundedCornerShape(25.dp))
+                                        .border(
+                                            1.dp,
+                                            AccentBorderColor,
+                                            RoundedCornerShape(25.dp)
+                                        )
+                                        .animateContentSize()
+                                )
+
+                                Text(
+                                    text = "$remainingCharacters",
+                                    color = if (remainingCharacters < 50) TryoutRed else SecondaryTextColor,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier
+                                        .align(Alignment.BottomEnd)
+                                        .padding(end = 16.dp, bottom = 8.dp)
+                                )
+                            }
                         }
                     }
 

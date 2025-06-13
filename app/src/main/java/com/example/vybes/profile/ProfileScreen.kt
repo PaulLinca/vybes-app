@@ -84,27 +84,30 @@ fun ProfileScreen(
 
     Scaffold(
         topBar = {
-            TopBarWithBackButton(onGoBack = { navController.popBackStack() },
+            TopBarWithBackButton(
+                onGoBack = { navController.popBackStack() },
                 rightButtonComposable = {
-                    DebouncedIconButton(
-                        onClick = { showMenu.value = true },
-                        modifier = Modifier.size(35.dp),
-                        contentDescription = "Go back",
-                        iconResId = R.drawable.more
-                    )
-                    DropdownMenu(
-                        expanded = showMenu.value,
-                        onDismissRequest = { showMenu.value = false },
-                        modifier = Modifier.background(ElevatedBackgroundColor)
-                    ) {
-                        DropdownMenuItem(
-                            onClick = { navController.navigate(FeedbackScreen) },
-                            text = {
-                                Text("Send feedback", color = PrimaryTextColor)
+                    if (isCurrentUser) {
+                        DebouncedIconButton(
+                            onClick = { showMenu.value = true },
+                            modifier = Modifier.size(35.dp),
+                            contentDescription = "Go back",
+                            iconResId = R.drawable.more
+                        )
+                        DropdownMenu(
+                            expanded = showMenu.value,
+                            onDismissRequest = { showMenu.value = false },
+                            modifier = Modifier.background(ElevatedBackgroundColor)
+                        ) {
+                            DropdownMenuItem(
+                                onClick = { navController.navigate(FeedbackScreen) },
+                                text = {
+                                    Text("Send feedback", color = PrimaryTextColor)
+                                })
+                            DropdownMenuItem(onClick = { profileViewModel.logout() }, text = {
+                                Text("Logout", color = TryoutRed)
                             })
-                        DropdownMenuItem(onClick = { profileViewModel.logout() }, text = {
-                            Text("Logout", color = TryoutRed)
-                        })
+                        }
                     }
                 })
         },

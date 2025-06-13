@@ -1,5 +1,8 @@
 package com.example.vybes.add
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vybes.post.service.PostService
@@ -15,6 +18,8 @@ import javax.inject.Inject
 class AddPostViewModel @Inject constructor(
     private val postService: PostService
 ) : ViewModel() {
+    private val maxDescriptionLength = 100
+
     private val _navigationEvent = MutableSharedFlow<Boolean>()
     val navigationEvent = _navigationEvent.asSharedFlow()
 
@@ -24,8 +29,14 @@ class AddPostViewModel @Inject constructor(
     private val _description = MutableStateFlow("")
     val description = _description.asStateFlow()
 
+    private var _remainingCharacters: Int by mutableStateOf(maxDescriptionLength)
+    val remainingCharacters: Int get() = _remainingCharacters
+
     fun onDescriptionChange(newDescription: String) {
-        _description.value = newDescription
+        if(newDescription.length <= maxDescriptionLength) {
+            _description.value = newDescription
+            _remainingCharacters = maxDescriptionLength - newDescription.length
+        }
     }
 
     fun submit(id: String) {

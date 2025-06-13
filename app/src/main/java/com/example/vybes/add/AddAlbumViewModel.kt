@@ -1,22 +1,15 @@
 package com.example.vybes.add
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.vybes.auth.model.Album
-import com.example.vybes.common.theme.TryoutBlue
-import com.example.vybes.common.theme.TryoutGreen
-import com.example.vybes.common.theme.TryoutOrange
-import com.example.vybes.common.theme.TryoutRed
-import com.example.vybes.common.theme.TryoutYellow
 import com.example.vybes.post.model.network.CreateAlbumReviewRequest
 import com.example.vybes.post.model.network.TrackRating
 import com.example.vybes.post.model.network.TrackReview
@@ -28,8 +21,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -41,6 +32,7 @@ class AddAlbumViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     private val args = AddAlbumReviewScreen.from(savedStateHandle)
+    private val maxReviewLength = 5000
 
     sealed class ReviewUiState {
         data object Loading : ReviewUiState()
@@ -56,12 +48,14 @@ class AddAlbumViewModel @Inject constructor(
     private var _albumRating: Int by mutableStateOf(0)
     private val _trackRatings = mutableStateMapOf<String, TrackRating>()
     private val _favoriteTrackIds = mutableStateListOf<String>()
+    private var _remainingCharacters: Int by mutableStateOf(maxReviewLength)
 
     val descriptionText: String get() = _descriptionText
     val albumRating: Int get() = _albumRating
     val trackRatings: Map<String, TrackRating> get() = _trackRatings.toMap()
     val favoriteTrackIds: List<String> get() = _favoriteTrackIds.toList()
     val album = _album.asStateFlow()
+    val remainingCharacters: Int get() = _remainingCharacters
 
     val uiState = combine(
         _album,
@@ -82,7 +76,10 @@ class AddAlbumViewModel @Inject constructor(
     }
 
     fun updateText(updatedText: String) {
-        _descriptionText = updatedText
+        if (updatedText.length <= maxReviewLength) {
+            _descriptionText = updatedText
+            _remainingCharacters = maxReviewLength - updatedText.length
+        }
     }
 
     fun updateAlbumRating(rating: Int) {

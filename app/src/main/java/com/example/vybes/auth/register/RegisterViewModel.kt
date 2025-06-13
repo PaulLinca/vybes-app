@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.vybes.auth.login.LoginViewModel.Resource
 import com.example.vybes.auth.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,8 @@ import javax.inject.Inject
 class RegisterViewModel @Inject constructor(
     private val authService: AuthService
 ) : ViewModel() {
+    private val maxEmailLength = 320
+    private val maxPasswordLength = 128
 
     data class RegisterUiState(
         val isLoading: Boolean = false,
@@ -118,14 +121,7 @@ class RegisterViewModel @Inject constructor(
                     is Resource.Success -> {
                         _uiState.update { it.copy(isRegisterSuccess = true) }
                     }
-
-                    is Resource.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                networkError = result.message ?: "Registration failed unexpectedly"
-                            )
-                        }
-                    }
+                    is Resource.Error -> handleLoginError(result.errorCode, result.message)
                 }
             } catch (e: Exception) {
                 _uiState.update {
@@ -140,6 +136,7 @@ class RegisterViewModel @Inject constructor(
     private fun validateInputs(): Boolean {
         val emailError = when {
             emailText.isBlank() -> "Email cannot be empty"
+            emailText.length > maxEmailLength -> "Email can't be longer than ${maxEmailLength} characters"
             !Patterns.EMAIL_ADDRESS.matcher(emailText)
                 .matches() -> "Please enter a valid email address"
 
@@ -148,6 +145,8 @@ class RegisterViewModel @Inject constructor(
 
         val passwordError = when {
             passwordText.length < 8 -> "Password must be at least 8 characters"
+            passwordText.length > maxPasswordLength -> "Password can't be longer than ${maxPasswordLength} characters"
+
             else -> null
         }
 
@@ -165,6 +164,17 @@ class RegisterViewModel @Inject constructor(
         }
 
         return emailError == null && passwordError == null && repeatPasswordError == null
+    }
+
+    private fun handleLoginError(errorCode: Int?, message: String?) {
+        val errorMessage = when (errorCode) {
+            409 -> "Email already used"
+            500 -> "Server error. Please try again later"
+            null -> message ?: "Network error"
+            else -> message ?: "Registration failed unexpectedly"
+        }
+
+        _uiState.update { it.copy(networkError = errorMessage) }
     }
 
     sealed class Resource<out T> {
