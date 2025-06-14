@@ -60,6 +60,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
 import com.example.vybes.common.composables.DebouncedIconButton
+import com.example.vybes.common.composables.DebouncedImageButton
 import com.example.vybes.common.composables.IconTextButton
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
@@ -120,15 +121,28 @@ fun VybePost(
 @Composable
 fun TopBar(user: User, postedDate: ZonedDateTime, navController: NavController) {
     Row {
-        DebouncedIconButton(
-            onClick = { navController.navigate(user) },
-            modifier = Modifier
-                .size(30.dp)
-                .clip(CircleShape)
-                .align(Alignment.CenterVertically),
-            contentDescription = "Go to user profile",
-            iconResId = R.drawable.user
-        )
+        if(user.profilePictureUrl != null) {
+            DebouncedImageButton(
+                onClick = { navController.navigate(user) },
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.CenterVertically),
+                contentDescription = "Go to user profile",
+                pictureUrl = user.profilePictureUrl
+            )
+        } else {
+            DebouncedIconButton(
+                onClick = { navController.navigate(user) },
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.CenterVertically),
+                contentDescription = "Go to user profile",
+                iconResId = R.drawable.user
+            )
+        }
+
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier

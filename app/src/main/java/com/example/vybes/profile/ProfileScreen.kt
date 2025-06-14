@@ -1,5 +1,8 @@
 package com.example.vybes.profile
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,8 +40,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -55,6 +60,7 @@ import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.SecondaryTextColor
+import com.example.vybes.common.theme.SubtleBorderColor
 import com.example.vybes.common.theme.TryoutBlue
 import com.example.vybes.common.theme.TryoutGreen
 import com.example.vybes.common.theme.TryoutRed
@@ -72,7 +78,6 @@ fun ProfileScreen(
     navController: NavController,
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
-
     LaunchedEffect(key1 = user.username) {
         profileViewModel.loadUser(user.username)
     }
@@ -81,6 +86,22 @@ fun ProfileScreen(
     val isCurrentUser = profileViewModel.isCurrentUser(user)
     val uiState = profileViewModel.uiState.collectAsState()
     val showMenu = remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val imagePart = profileViewModel.createMultipartFromUri(context, it)
+            profileViewModel.imagePart = imagePart
+            profileViewModel.uploadProfilePicture()
+        }
+    }
+
+    val onUploadProfilePicture = {
+        imagePickerLauncher.launch("image/*")
+    }
 
     Scaffold(
         topBar = {
@@ -144,6 +165,7 @@ fun ProfileScreen(
                             )
                         )
                     },
+                    onUploadProfilePicture = onUploadProfilePicture
                 )
             }
         }
@@ -157,14 +179,19 @@ private fun ProfileContent(
     userState: UserResponse?,
     isCurrentUser: Boolean,
     onEditFavoriteArtists: () -> Unit,
-    onEditFavoriteAlbums: () -> Unit
+    onEditFavoriteAlbums: () -> Unit,
+    onUploadProfilePicture: () -> Unit
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(BackgroundColor)
     ) {
-        ProfileHeader(username = user.username)
+        ProfileHeader(
+            username = user.username,
+            profilePictureUrl = userState?.profilePictureUrl,
+            onUploadProfilePicture = onUploadProfilePicture
+        )
 
         Spacer(modifier = Modifier.height(30.dp))
 
@@ -199,19 +226,44 @@ private fun ProfileContent(
 }
 
 @Composable
-private fun ProfileHeader(username: String) {
+private fun ProfileHeader(
+    username: String,
+    profilePictureUrl: String?,
+    onUploadProfilePicture: () -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(top = 40.dp)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.user),
-            contentDescription = "Profile picture of $username",
-            colorFilter = ColorFilter.tint(White),
-            modifier = Modifier.size(64.dp)
-        )
+        if (profilePictureUrl == null) {
+            Image(
+                painter = painterResource(id = R.drawable.user),
+                contentDescription = "Profile picture of $username",
+                colorFilter = ColorFilter.tint(White),
+                modifier = Modifier
+                    .size(64.dp)
+                    .clickable { onUploadProfilePicture() }
+            )
+        } else {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = profilePictureUrl,
+                    error = painterResource(id = R.drawable.user)
+                ),
+                contentDescription = "Profile picture of $username",
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .border(
+                        width = 2.dp,
+                        color = Color.White,
+                        shape = CircleShape
+                    )
+                    .size(96.dp)
+                    .clickable { onUploadProfilePicture() }
+            )
+        }
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -282,7 +334,7 @@ private fun MediaItemThumbnail(
         Image(
             painter = rememberAsyncImagePainter(
                 model = item.imageUrl,
-                error = painterResource(id = R.drawable.spotify)
+                error = painterResource(id = R.drawable.user)
             ),
             contentDescription = item.name,
             contentScale = ContentScale.Crop,

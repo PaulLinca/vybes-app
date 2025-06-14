@@ -7,7 +7,8 @@ data class UserResponse(
     val username: String,
     val email: String,
     val favoriteArtists: List<Artist>,
-    val favoriteAlbums: List<Album>
+    val favoriteAlbums: List<Album>,
+    val profilePictureUrl: String? = null
 )
 
 data class Artist(

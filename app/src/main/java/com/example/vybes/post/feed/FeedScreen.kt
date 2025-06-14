@@ -55,6 +55,7 @@ import com.example.vybes.R
 import com.example.vybes.add.SearchAlbumScreen
 import com.example.vybes.add.SearchTrackScreen
 import com.example.vybes.common.composables.DebouncedIconButton
+import com.example.vybes.common.composables.DebouncedImageButton
 import com.example.vybes.common.composables.TopBarWithSideButtons
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
@@ -375,7 +376,7 @@ fun TopBar(
             )
         },
         rightButtonComposable = {
-            DebouncedIconButton(
+            DebouncedImageButton(
                 onClick = {
                     navController.navigate(
                         User(
@@ -388,7 +389,7 @@ fun TopBar(
                     .size(30.dp)
                     .clip(CircleShape),
                 contentDescription = "Profile Button",
-                iconResId = R.drawable.user
+                pictureUrl = "http://10.0.2.2:8080/api/user/profilePicture/${SharedPreferencesManager.getUserId()}"
             )
         }
     )

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.vybes.R
 import com.example.vybes.common.composables.DebouncedIconButton
+import com.example.vybes.common.composables.DebouncedImageButton
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
@@ -159,13 +160,13 @@ fun CommentItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                DebouncedIconButton(
+                DebouncedImageButton(
                     onClick = { onUserClick() },
                     modifier = Modifier
                         .size(25.dp)
                         .clip(CircleShape),
                     contentDescription = "Go to user profile",
-                    iconResId = R.drawable.user
+                    pictureUrl = comment.user.profilePictureUrl
                 )
                 Text(
                     text = comment.user.username,

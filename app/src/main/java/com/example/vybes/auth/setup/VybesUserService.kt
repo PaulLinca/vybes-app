@@ -5,6 +5,7 @@ import com.example.vybes.auth.model.SetFavoritesRequest
 import com.example.vybes.auth.model.UserResponse
 import com.example.vybes.auth.model.UsernameSetupRequest
 import com.example.vybes.network.VybesApiClient
+import okhttp3.MultipartBody
 import retrofit2.Response
 
 class VybesUserService(private val vybesApiClient: VybesApiClient) : UserService {
@@ -12,6 +13,10 @@ class VybesUserService(private val vybesApiClient: VybesApiClient) : UserService
         return vybesApiClient.setupUsername(
             UsernameSetupRequest(username)
         )
+    }
+
+    override suspend fun setupProfilePicture(image: MultipartBody.Part): Response<UserResponse> {
+        return vybesApiClient.uploadProfilePicture(image)
     }
 
     override suspend fun getUser(username: String): Response<UserResponse> {
