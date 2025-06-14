@@ -1,7 +1,8 @@
-package com.example.vybes.add
+package com.example.vybes.add.vybe
 
 import androidx.lifecycle.viewModelScope
-import com.example.vybes.add.model.network.TrackSearchResult
+import com.example.vybes.add.GenericSearchViewModel
+import com.example.vybes.add.model.TrackSearchResult
 import com.example.vybes.post.service.VybesPostService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

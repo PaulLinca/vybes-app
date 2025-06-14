@@ -181,7 +181,7 @@ fun FeedbackScreen(
                 } else {
                     Text(
                         text =
-                        if (uiState.isSubmitted) "Submitted" else "Submit",
+                            if (uiState.isSubmitted) "Submitted" else "Submit",
                         color = if (uiState.isSubmitted) SecondaryTextColor else PrimaryTextColor
                     )
                 }

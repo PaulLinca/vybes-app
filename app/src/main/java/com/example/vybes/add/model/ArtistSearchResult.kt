@@ -1,4 +1,4 @@
-package com.example.vybes.add.model.network
+package com.example.vybes.add.model
 
 import android.net.Uri
 import android.os.Bundle

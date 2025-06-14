@@ -1,4 +1,4 @@
-package com.example.vybes.add
+package com.example.vybes.add.album
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
@@ -318,9 +318,11 @@ fun AddAlbumReviewScreen(
         }
 
         is AddAlbumViewModel.ReviewUiState.AlbumReviewExists -> {
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .background(BackgroundColor)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(BackgroundColor)
+            ) {
                 TopBarWithBackButton(onGoBack = onGoBack) {
                     Text(
                         text = stringResource(R.string.review_album),

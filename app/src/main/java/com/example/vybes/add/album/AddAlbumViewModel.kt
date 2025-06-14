@@ -1,4 +1,4 @@
-package com.example.vybes.add
+package com.example.vybes.add.album
 
 import android.app.Application
 import androidx.compose.runtime.getValue

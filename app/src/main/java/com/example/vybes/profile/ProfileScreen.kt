@@ -60,7 +60,6 @@ import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.SecondaryTextColor
-import com.example.vybes.common.theme.SubtleBorderColor
 import com.example.vybes.common.theme.TryoutBlue
 import com.example.vybes.common.theme.TryoutGreen
 import com.example.vybes.common.theme.TryoutRed

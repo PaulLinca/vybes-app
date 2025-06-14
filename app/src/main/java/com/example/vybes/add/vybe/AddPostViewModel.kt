@@ -1,4 +1,4 @@
-package com.example.vybes.add
+package com.example.vybes.add.vybe
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +33,7 @@ class AddPostViewModel @Inject constructor(
     val remainingCharacters: Int get() = _remainingCharacters
 
     fun onDescriptionChange(newDescription: String) {
-        if(newDescription.length <= maxDescriptionLength) {
+        if (newDescription.length <= maxDescriptionLength) {
             _description.value = newDescription
             _remainingCharacters = maxDescriptionLength - newDescription.length
         }

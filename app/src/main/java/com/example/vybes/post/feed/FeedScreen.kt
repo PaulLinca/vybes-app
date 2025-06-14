@@ -52,8 +52,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.vybes.R
-import com.example.vybes.add.SearchAlbumScreen
-import com.example.vybes.add.SearchTrackScreen
+import com.example.vybes.add.album.SearchAlbumScreen
+import com.example.vybes.add.vybe.SearchTrackScreen
 import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.DebouncedImageButton
 import com.example.vybes.common.composables.TopBarWithSideButtons
@@ -208,7 +208,8 @@ fun FeedScreen(
                             when (post) {
                                 is Vybe -> {
                                     val currentUserId = SharedPreferencesManager.getUserId()
-                                    val isLikedByCurrentUser = post.likes?.any { it.userId == currentUserId } == true
+                                    val isLikedByCurrentUser =
+                                        post.likes?.any { it.userId == currentUserId } == true
                                     VybePost(
                                         vybe = post,
                                         onClickCard = { navController.navigate(VybeScreen(post.id)) },
@@ -224,10 +225,17 @@ fun FeedScreen(
 
                                 is AlbumReview -> {
                                     val currentUserId = SharedPreferencesManager.getUserId()
-                                    val isLikedByCurrentUser = post.likes?.any { it.userId == currentUserId } == true
+                                    val isLikedByCurrentUser =
+                                        post.likes?.any { it.userId == currentUserId } == true
                                     AlbumReviewPost(
                                         albumReview = post,
-                                        onClickCard = { navController.navigate(AlbumReviewScreen(post.id)) },
+                                        onClickCard = {
+                                            navController.navigate(
+                                                AlbumReviewScreen(
+                                                    post.id
+                                                )
+                                            )
+                                        },
                                         onLikeClicked = {
                                             viewModel.clickLikeButton(
                                                 post.id,

@@ -121,7 +121,7 @@ fun VybePost(
 @Composable
 fun TopBar(user: User, postedDate: ZonedDateTime, navController: NavController) {
     Row {
-        if(user.profilePictureUrl != null) {
+        if (user.profilePictureUrl != null) {
             DebouncedImageButton(
                 onClick = { navController.navigate(user) },
                 modifier = Modifier

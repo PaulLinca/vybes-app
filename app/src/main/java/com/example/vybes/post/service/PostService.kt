@@ -1,8 +1,8 @@
 package com.example.vybes.post.service
 
-import com.example.vybes.add.model.network.AlbumSearchResult
-import com.example.vybes.add.model.network.ArtistSearchResult
-import com.example.vybes.add.model.network.TrackSearchResult
+import com.example.vybes.add.model.AlbumSearchResult
+import com.example.vybes.add.model.ArtistSearchResult
+import com.example.vybes.add.model.TrackSearchResult
 import com.example.vybes.auth.model.Album
 import com.example.vybes.post.model.AlbumReview
 import com.example.vybes.post.model.Comment

@@ -1,4 +1,4 @@
-package com.example.vybes.network
+package com.example.vybes.network.adapters
 
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader

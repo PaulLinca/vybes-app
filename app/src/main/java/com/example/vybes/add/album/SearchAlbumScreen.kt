@@ -1,22 +1,23 @@
-package com.example.vybes.add
+package com.example.vybes.add.album
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.vybes.add.GenericSearchScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-object SearchTrackScreen
+object SearchAlbumScreen
 
 @Composable
-fun SearchTrackScreen(
+fun SearchAlbumScreen(
     navController: NavController,
-    viewModel: SearchTrackViewModel = hiltViewModel()
+    viewModel: SearchAlbumViewModel = hiltViewModel()
 ) {
     GenericSearchScreen(
         navController = navController,
         viewModel = viewModel,
-        hint = "Search tracks...",
-        onItemClick = { track -> navController.navigate(track) }
+        hint = "Search albums...",
+        onItemClick = { album -> navController.navigate(AddAlbumReviewScreen(album.spotifyId)) }
     )
 }

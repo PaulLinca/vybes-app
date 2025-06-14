@@ -121,6 +121,7 @@ class RegisterViewModel @Inject constructor(
                     is Resource.Success -> {
                         _uiState.update { it.copy(isRegisterSuccess = true) }
                     }
+
                     is Resource.Error -> handleLoginError(result.errorCode, result.message)
                 }
             } catch (e: Exception) {

@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.vybes.add.model.network.SearchResultItem
+import com.example.vybes.add.model.SearchResultItem
 import com.example.vybes.post.service.VybesPostService
 
 abstract class GenericSearchViewModel<T : SearchResultItem>(

@@ -125,6 +125,7 @@ class LoginViewModel @Inject constructor(
             emailText.length > maxEmailLength -> "Email can't be longer than ${maxEmailLength} characters"
             !Patterns.EMAIL_ADDRESS.matcher(emailText)
                 .matches() -> "Please enter a valid email address"
+
             else -> null
         }
 

@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import kotlin.math.max
 
 abstract class PostViewModel<T : Post>(
     protected open val postService: PostService

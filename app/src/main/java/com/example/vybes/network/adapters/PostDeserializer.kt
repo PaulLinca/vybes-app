@@ -1,4 +1,4 @@
-package com.example.vybes.network
+package com.example.vybes.network.adapters
 
 import com.example.vybes.post.model.AlbumReview
 import com.example.vybes.post.model.Post

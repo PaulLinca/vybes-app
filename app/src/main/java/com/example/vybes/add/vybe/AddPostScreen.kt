@@ -1,4 +1,4 @@
-package com.example.vybes.add
+package com.example.vybes.add.vybe
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
@@ -44,7 +44,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
-import com.example.vybes.add.model.network.TrackSearchResult
+import com.example.vybes.add.model.TrackSearchResult
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.BackgroundColor
@@ -101,9 +101,11 @@ fun AddPostScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            ) {
 
                 MultilineTextField(
                     enabled = true,

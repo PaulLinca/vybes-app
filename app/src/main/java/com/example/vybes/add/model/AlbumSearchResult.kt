@@ -1,4 +1,4 @@
-package com.example.vybes.add.model.network
+package com.example.vybes.add.model
 
 import com.example.vybes.auth.model.MediaItem
 import kotlinx.serialization.Serializable

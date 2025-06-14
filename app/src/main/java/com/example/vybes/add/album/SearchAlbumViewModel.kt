@@ -1,7 +1,8 @@
-package com.example.vybes.add
+package com.example.vybes.add.album
 
 import androidx.lifecycle.viewModelScope
-import com.example.vybes.add.model.network.AlbumSearchResult
+import com.example.vybes.add.GenericSearchViewModel
+import com.example.vybes.add.model.AlbumSearchResult
 import com.example.vybes.post.service.VybesPostService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

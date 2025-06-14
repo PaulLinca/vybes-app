@@ -217,7 +217,8 @@ fun VybePostContent(
                 onLikeComment = { commentId, isLiked ->
                     if (isLiked) onUnlikeComment(commentId) else onLikeComment(commentId)
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
                     .verticalScroll(rememberScrollState()),
                 navController = navController
             )

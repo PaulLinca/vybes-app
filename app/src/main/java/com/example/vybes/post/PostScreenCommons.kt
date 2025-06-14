@@ -60,9 +60,11 @@ fun CommentInputBar(
             .fillMaxWidth()
             .padding(8.dp)
     ) {
-        Box(modifier = Modifier
-            .height(56.dp)
-            .weight(1f)) {
+        Box(
+            modifier = Modifier
+                .height(56.dp)
+                .weight(1f)
+        ) {
 
             MultilineTextField(
                 enabled = true,
