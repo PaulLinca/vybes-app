@@ -99,7 +99,7 @@ class VybesPostService @Inject constructor(
         return vybesApiClient.getAlbumSearchResults(query)
     }
 
-    override suspend fun getAlbum(id: String): Response<Album> {
-        return vybesApiClient.getAlbum(id)
+    override suspend fun getAlbum(id: String, findReview: Boolean): Response<Album> {
+        return vybesApiClient.getAlbum(id, findReview)
     }
 }

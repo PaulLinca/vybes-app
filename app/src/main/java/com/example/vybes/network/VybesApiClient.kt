@@ -129,7 +129,8 @@ interface VybesApiClient {
 
     @GET("api/music/album")
     suspend fun getAlbum(
-        @Query("id") id: String
+        @Query("id") id: String,
+        @Query("findReview") findReview: Boolean
     ): Response<Album>
 
     @POST("api/feedback/submit")

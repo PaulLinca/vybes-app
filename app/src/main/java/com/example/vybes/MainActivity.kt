@@ -87,7 +87,9 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(FeedScreen) {
                                     popUpTo(0)
                                 }
-                            })
+                            },
+                            onSeeReview = { reviewScreen -> navController.navigate(reviewScreen) }
+                        )
                     }
                     composable<User> { backStackEntry ->
                         val user: User = backStackEntry.toRoute()

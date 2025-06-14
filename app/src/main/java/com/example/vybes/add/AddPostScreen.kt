@@ -47,7 +47,6 @@ import com.example.vybes.R
 import com.example.vybes.add.model.network.TrackSearchResult
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
-import com.example.vybes.common.theme.AccentBorderColor
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
@@ -90,61 +89,69 @@ fun AddPostScreen(
                 style = songTitleStyle,
             )
         }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        VybeCard(searchResult = searchResult) {}
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Box(modifier = Modifier.fillMaxWidth().height(56.dp)) {
-
-            MultilineTextField(
-                enabled = true,
-                value = description,
-                onValueChanged = viewModel::onDescriptionChange,
-                hintText = stringResource(R.string.feedback_field_hint),
-                textStyle = artistsStyle,
-                contentAlignment = Alignment.CenterStart,
-                maxLines = 10,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .animateContentSize()
-            )
-
-            Text(
-                text = "$remainingCharacters",
-                color = if (remainingCharacters < 50) TryoutRed else SecondaryTextColor,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = 16.dp, bottom = 8.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Button(
-            onClick = { viewModel.submit(searchResult.id) },
-            enabled = !isLoading,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = ElevatedBackgroundColor),
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                .fillMaxSize()
+                .padding(8.dp)
+                .background(BackgroundColor)
         ) {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    color = VybesVeryLightGray,
-                    strokeWidth = 2.dp
+            Spacer(modifier = Modifier.height(10.dp))
+
+            VybeCard(searchResult = searchResult) {}
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)) {
+
+                MultilineTextField(
+                    enabled = true,
+                    value = description,
+                    onValueChanged = viewModel::onDescriptionChange,
+                    hintText = "Add a description...",
+                    textStyle = artistsStyle,
+                    contentAlignment = Alignment.CenterStart,
+                    maxLines = 10,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .animateContentSize()
                 )
-            } else {
+
                 Text(
-                    text = stringResource(R.string.submit),
-                    color = PrimaryTextColor
+                    text = "$remainingCharacters",
+                    color = if (remainingCharacters < 50) TryoutRed else SecondaryTextColor,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 16.dp, bottom = 8.dp)
                 )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = { viewModel.submit(searchResult.id) },
+                enabled = !isLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = ElevatedBackgroundColor),
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = VybesVeryLightGray,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.submit),
+                        color = PrimaryTextColor
+                    )
+                }
             }
         }
     }

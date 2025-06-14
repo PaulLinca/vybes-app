@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -35,6 +36,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,8 +46,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
@@ -107,9 +113,73 @@ fun EditFavouritesScreen(
         }
     }
 
+    var showConfirmDialog by remember { mutableStateOf(false) }
+
+    if (showConfirmDialog) {
+        Dialog(
+            onDismissRequest = { showConfirmDialog = false }
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+                backgroundColor = BackgroundColor
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Are you sure?",
+                        style = androidx.compose.material.MaterialTheme.typography.body2,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        color = PrimaryTextColor,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    Button(
+                        onClick = {
+                            showConfirmDialog = false
+                            navController.popBackStack()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = VybesVeryDarkGray,
+                            contentColor = PrimaryTextColor
+                        )
+                    ) {
+                        Text("Go back", color = TryoutRed)
+                    }
+
+                    Spacer(Modifier.height(6.dp))
+
+                    Button(
+                        onClick = {
+                            showConfirmDialog = false
+                            editFavouritesViewModel.saveFavorites()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = VybesVeryDarkGray,
+                            contentColor = PrimaryTextColor
+                        )
+                    ) {
+                        Text("Save favorites", color = PrimaryTextColor)
+                    }
+                }
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
-            TopBarWithBackButton(onGoBack = { navController.popBackStack() }) {
+            TopBarWithBackButton(onGoBack = { showConfirmDialog = true }) {
                 Text(
                     text = "Edit Favorites",
                     color = PrimaryTextColor,
@@ -202,7 +272,10 @@ fun EditFavouritesScreen(
                     .padding(16.dp)
                     .height(48.dp)
                     .align(Alignment.BottomCenter),
-                colors = ButtonDefaults.buttonColors(containerColor = VybesVeryDarkGray, contentColor = PrimaryTextColor)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = VybesVeryDarkGray,
+                    contentColor = PrimaryTextColor
+                )
             ) {
                 Text("Save Favorites", color = PrimaryTextColor)
             }

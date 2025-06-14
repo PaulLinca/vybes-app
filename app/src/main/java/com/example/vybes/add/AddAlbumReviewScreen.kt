@@ -68,8 +68,8 @@ import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.TryoutYellow
 import com.example.vybes.common.theme.VybesVeryDarkGray
 import com.example.vybes.common.theme.artistsStyle
-import com.example.vybes.common.theme.disabledStyle
 import com.example.vybes.common.theme.songTitleStyle
+import com.example.vybes.post.model.AlbumReviewScreen
 import com.example.vybes.post.model.network.TrackRating
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
@@ -86,6 +86,7 @@ data class AddAlbumReviewScreen(val spotifyId: String) {
 fun AddAlbumReviewScreen(
     onGoBack: () -> Unit,
     onSubmitSuccess: () -> Unit,
+    onSeeReview: (AlbumReviewScreen) -> Unit,
     viewModel: AddAlbumViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -190,14 +191,17 @@ fun AddAlbumReviewScreen(
                                     enabled = true,
                                     value = descriptionText,
                                     onValueChanged = viewModel::updateText,
-                                    hintText = stringResource(R.string.feedback_field_hint),
+                                    hintText = "Write your review here...",
                                     textStyle = artistsStyle,
                                     maxLines = 10,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(150.dp)
                                         .clip(RoundedCornerShape(25.dp))
-                                        .background(BackgroundColor, shape = RoundedCornerShape(25.dp))
+                                        .background(
+                                            BackgroundColor,
+                                            shape = RoundedCornerShape(25.dp)
+                                        )
                                         .border(
                                             1.dp,
                                             AccentBorderColor,
@@ -268,7 +272,10 @@ fun AddAlbumReviewScreen(
                         .height(48.dp)
                         .align(Alignment.BottomCenter),
                     enabled = !descriptionText.isBlank(),
-                    colors = ButtonDefaults.buttonColors(containerColor = VybesVeryDarkGray, contentColor = PrimaryTextColor)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = VybesVeryDarkGray,
+                        contentColor = PrimaryTextColor
+                    )
                 ) {
                     Text("Submit Review", color = PrimaryTextColor)
                 }
@@ -278,7 +285,9 @@ fun AddAlbumReviewScreen(
 
         is AddAlbumViewModel.ReviewUiState.Loading -> {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(BackgroundColor),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
@@ -289,6 +298,7 @@ fun AddAlbumReviewScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(BackgroundColor)
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -307,7 +317,65 @@ fun AddAlbumReviewScreen(
             }
         }
 
+        is AddAlbumViewModel.ReviewUiState.AlbumReviewExists -> {
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .background(BackgroundColor)) {
+                TopBarWithBackButton(onGoBack = onGoBack) {
+                    Text(
+                        text = stringResource(R.string.review_album),
+                        color = PrimaryTextColor,
+                        textAlign = TextAlign.Center,
+                        style = songTitleStyle,
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    val painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(state.album.imageUrl)
+                            .size(Size.ORIGINAL)
+                            .crossfade(true)
+                            .build(),
+                        contentScale = ContentScale.Crop,
+                    )
+
+                    Image(
+                        painter = painter,
+                        contentDescription = "Album cover",
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    Text(
+                        text = "You've already reviewed ${state.album.name}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = PrimaryTextColor,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = ElevatedBackgroundColor),
+                        onClick = { onSeeReview(AlbumReviewScreen(state.album.reviewId!!)) }) {
+                        Text("See Review", color = PrimaryTextColor)
+                    }
+                }
+            }
+        }
+
         else -> {
+
         }
     }
 }
