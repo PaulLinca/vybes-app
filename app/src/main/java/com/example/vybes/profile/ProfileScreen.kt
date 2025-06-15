@@ -72,6 +72,7 @@ import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.songTitleStyle
+import com.example.vybes.common.util.DateUtils
 import com.example.vybes.feedback.FeedbackScreen
 import com.example.vybes.post.feed.AlbumReviewCard
 import com.example.vybes.post.feed.VybeCard
@@ -341,6 +342,12 @@ private fun ProfileContent(
 
             else -> {
                 items(posts) { post ->
+                    Text(
+                        text = DateUtils.formatPostedDate(post.postedDate),
+                        color = Color.LightGray,
+                        style = androidx.compose.material3.MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(Modifier.height(4.dp))
                     when (post) {
                         is Vybe -> {
 
