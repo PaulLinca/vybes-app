@@ -9,11 +9,13 @@ import com.example.vybes.auth.AuthEvent
 import com.example.vybes.auth.AuthEventBus
 import com.example.vybes.auth.model.UserResponse
 import com.example.vybes.auth.setup.UserService
+import com.example.vybes.post.model.Post
 import com.example.vybes.post.model.User
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -31,10 +33,31 @@ class ProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState
 
+    private val _posts = MutableStateFlow<List<Post>>(emptyList())
+    val posts: StateFlow<List<Post>> = _posts
+
+    private val _isLoadingPosts = MutableStateFlow(false)
+    val isLoadingPosts = _isLoadingPosts.asStateFlow()
+
+    private val _isLoadingMorePosts = MutableStateFlow(false)
+    val isLoadingMorePosts = _isLoadingMorePosts.asStateFlow()
+
+    private val _hasMorePosts = MutableStateFlow(true)
+    val hasMorePosts = _hasMorePosts.asStateFlow()
+
+    private val _postsError = MutableStateFlow<String?>(null)
+    val postsError = _postsError.asStateFlow()
+
+    private var currentPostsPage = 0
+    private val postsPageSize = 10
+    private var totalPostsPages = Int.MAX_VALUE
+    private var currentUserId: Long? = null
+
     var imagePart: MultipartBody.Part? = null
 
     data class UiState(
         val isLoading: Boolean = false,
+        val uploadSuccessMessage: String? = null,
         val error: String? = null
     )
 
@@ -47,6 +70,11 @@ class ProfileViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     _user.value = response.body()
                     _uiState.value = UiState(isLoading = false)
+
+                    response.body()?.let { userResponse ->
+                        currentUserId = userResponse.userId
+                        loadInitialPosts(userResponse.userId)
+                    }
                 } else {
                     _uiState.value = UiState(
                         isLoading = false,
@@ -63,6 +91,74 @@ class ProfileViewModel @Inject constructor(
                     error = "Network error: ${e.message ?: "Unknown error"}"
                 )
                 Log.e("ProfileViewModel", "Exception fetching user", e)
+            }
+        }
+    }
+
+    private fun loadInitialPosts(userId: Long) {
+        viewModelScope.launch {
+            _isLoadingPosts.value = true
+            _postsError.value = null
+            currentPostsPage = 0
+
+            try {
+                val response = userService.getPostsPaginated(
+                    userId = userId,
+                    page = 0,
+                    size = postsPageSize,
+                    sort = null,
+                    direction = null
+                )
+                if (response.isSuccessful && response.body() != null) {
+                    val pageResponse = response.body()!!
+                    _posts.value = pageResponse.content
+                    totalPostsPages = pageResponse.totalPages
+                    _hasMorePosts.value = !pageResponse.last
+                } else {
+                    _postsError.value = "Failed to load posts: ${response.message()}"
+                }
+            } catch (e: Exception) {
+                _postsError.value = "Network error: ${e.localizedMessage ?: "Unknown error"}"
+            } finally {
+                _isLoadingPosts.value = false
+            }
+        }
+    }
+
+    fun loadMorePosts() {
+        val userId = currentUserId ?: return
+        if (_isLoadingMorePosts.value || !_hasMorePosts.value || currentPostsPage >= totalPostsPages - 1) return
+
+        viewModelScope.launch {
+            _isLoadingMorePosts.value = true
+            try {
+                val nextPage = currentPostsPage + 1
+                val response = userService.getPostsPaginated(
+                    userId = userId,
+                    page = nextPage,
+                    size = postsPageSize,
+                    sort = null,
+                    direction = null
+                )
+
+                if (response.isSuccessful && response.body() != null) {
+                    val pageResponse = response.body()!!
+                    val newPosts = pageResponse.content
+
+                    if (newPosts.isNotEmpty()) {
+                        _posts.value += newPosts
+                        currentPostsPage = nextPage
+                        _hasMorePosts.value = !pageResponse.last
+                    } else {
+                        _hasMorePosts.value = false
+                    }
+                } else {
+                    _postsError.value = "Failed to load more posts"
+                }
+            } catch (e: Exception) {
+                _postsError.value = "Network error while loading more posts"
+            } finally {
+                _isLoadingMorePosts.value = false
             }
         }
     }
@@ -93,6 +189,8 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun uploadProfilePicture() {
+        _uiState.value = UiState(isLoading = true)
+
         val part = imagePart ?: return
 
         viewModelScope.launch {
@@ -100,12 +198,23 @@ class ProfileViewModel @Inject constructor(
                 userService.setupProfilePicture(part)
             } catch (e: Exception) {
                 Log.e("Upload", "Failed: ${e.message}")
+                _uiState.value = UiState(isLoading = false, error = "Upload failed")
                 return@launch
             }
 
             if (response.isSuccessful) {
                 _user.value = response.body()
+                _uiState.value = UiState(
+                    isLoading = false,
+                    uploadSuccessMessage = "Upload successful!\nChanges may take a moment to appear"
+                )
+            } else {
+                _uiState.value = UiState(isLoading = false, error = "Upload failed")
             }
         }
+    }
+
+    fun clearSuccessMessage() {
+        _uiState.value = UiState(uploadSuccessMessage = null)
     }
 }

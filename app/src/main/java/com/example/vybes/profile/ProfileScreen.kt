@@ -1,6 +1,7 @@
 package com.example.vybes.profile
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -11,6 +12,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,8 +20,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -37,6 +41,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +50,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -67,9 +73,18 @@ import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.feedback.FeedbackScreen
+import com.example.vybes.post.feed.AlbumReviewCard
+import com.example.vybes.post.feed.VybeCard
+import com.example.vybes.post.model.AlbumReview
+import com.example.vybes.post.model.AlbumReviewScreen
+import com.example.vybes.post.model.Post
 import com.example.vybes.post.model.User
+import com.example.vybes.post.model.Vybe
+import com.example.vybes.post.model.VybeScreen
 import com.example.vybes.profile.favourites.EditFavouritesScreen
 import com.example.vybes.profile.favourites.FavoriteType
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun ProfileScreen(
@@ -77,16 +92,29 @@ fun ProfileScreen(
     navController: NavController,
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
+
     LaunchedEffect(key1 = user.username) {
         profileViewModel.loadUser(user.username)
     }
 
+    val uiState = profileViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(uiState.value.uploadSuccessMessage) {
+        uiState.value.uploadSuccessMessage?.let { message ->
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            profileViewModel.clearSuccessMessage()
+        }
+    }
+
     val userState by profileViewModel.user.collectAsState()
     val isCurrentUser = profileViewModel.isCurrentUser(user)
-    val uiState = profileViewModel.uiState.collectAsState()
     val showMenu = remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
+    val posts by profileViewModel.posts.collectAsState()
+    val isLoadingPosts by profileViewModel.isLoadingPosts.collectAsState()
+    val isLoadingMorePosts by profileViewModel.isLoadingMorePosts.collectAsState()
+    val hasMorePosts by profileViewModel.hasMorePosts.collectAsState()
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -149,6 +177,10 @@ fun ProfileScreen(
                     modifier = Modifier.padding(paddingValues),
                     user = user,
                     userState = userState,
+                    posts = posts,
+                    isLoadingPosts = isLoadingPosts,
+                    isLoadingMorePosts = isLoadingMorePosts,
+                    hasMorePosts = hasMorePosts,
                     isCurrentUser = isCurrentUser,
                     onEditFavoriteArtists = {
                         navController.navigate(
@@ -164,7 +196,9 @@ fun ProfileScreen(
                             )
                         )
                     },
-                    onUploadProfilePicture = onUploadProfilePicture
+                    onUploadProfilePicture = onUploadProfilePicture,
+                    onLoadMorePosts = { profileViewModel.loadMorePosts() },
+                    navController = navController
                 )
             }
         }
@@ -176,51 +210,176 @@ private fun ProfileContent(
     modifier: Modifier = Modifier,
     user: User,
     userState: UserResponse?,
+    posts: List<Post>,
+    isLoadingPosts: Boolean,
+    isLoadingMorePosts: Boolean,
+    hasMorePosts: Boolean,
     isCurrentUser: Boolean,
     onEditFavoriteArtists: () -> Unit,
     onEditFavoriteAlbums: () -> Unit,
-    onUploadProfilePicture: () -> Unit
+    onUploadProfilePicture: () -> Unit,
+    onLoadMorePosts: () -> Unit,
+    navController: NavController
 ) {
-    Column(
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+            .distinctUntilChanged { old, new ->
+                old.size == new.size && old.lastOrNull()?.index == new.lastOrNull()?.index
+            }
+            .collectLatest { visibleItems ->
+                if (!isLoadingPosts && !isLoadingMorePosts && hasMorePosts) {
+                    val lastVisibleItemIndex = visibleItems.lastOrNull()?.index ?: 0
+                    val totalItems = listState.layoutInfo.totalItemsCount
+
+                    if (lastVisibleItemIndex >= totalItems - 3) {
+                        onLoadMorePosts()
+                    }
+                }
+            }
+    }
+
+    LazyColumn(
+        state = listState,
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundColor)
+            .background(BackgroundColor),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        ProfileHeader(
-            username = user.username,
-            profilePictureUrl = userState?.profilePictureUrl,
-            onUploadProfilePicture = onUploadProfilePicture
-        )
+        item {
+            ProfileHeader(
+                username = user.username,
+                profilePictureUrl = userState?.profilePictureUrl,
+                onUploadProfilePicture = onUploadProfilePicture
+            )
+        }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        item {
+            Text(
+                text = "Favorites",
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold,
+                color = PrimaryTextColor
+            )
+        }
 
-        FavoriteSection(
-            title = "Favourite artists",
-            items = userState?.favoriteArtists.orEmpty(),
-            emptyMessage = if (isCurrentUser) {
-                "You haven't set your favourite artists yet"
-            } else {
-                "${user.username} hasn't set their favourite artists"
-            },
-            isCurrentUser = isCurrentUser,
-            isCircular = true,
-            onSectionClick = onEditFavoriteArtists
-        )
+        item {
+            FavoriteSection(
+                title = "Favorite artists",
+                items = userState?.favoriteArtists.orEmpty(),
+                emptyMessage = if (isCurrentUser) {
+                    "You haven't set your favorite artists yet"
+                } else {
+                    "${user.username} hasn't set their favorite artists"
+                },
+                isCurrentUser = isCurrentUser,
+                isCircular = true,
+                onSectionClick = onEditFavoriteArtists
+            )
+        }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        item {
+            FavoriteSection(
+                title = "Favorite albums",
+                items = userState?.favoriteAlbums.orEmpty(),
+                emptyMessage = if (isCurrentUser) {
+                    "You haven't set your favorite albums yet"
+                } else {
+                    "${user.username} hasn't set their favorite albums"
+                },
+                isCurrentUser = isCurrentUser,
+                isCircular = false,
+                onSectionClick = onEditFavoriteAlbums
+            )
+        }
 
-        FavoriteSection(
-            title = "Favourite albums",
-            items = userState?.favoriteAlbums.orEmpty(),
-            emptyMessage = if (isCurrentUser) {
-                "You haven't set your favourite albums yet"
-            } else {
-                "${user.username} hasn't set their favourite albums"
-            },
-            isCurrentUser = isCurrentUser,
-            isCircular = false,
-            onSectionClick = onEditFavoriteAlbums
-        )
+        item {
+            Text(
+                text = "Posts",
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold,
+                color = PrimaryTextColor
+            )
+        }
+
+        when {
+            isLoadingPosts && posts.isEmpty() -> {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 40.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = White)
+                    }
+                }
+            }
+
+            posts.isEmpty() -> {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 40.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (isCurrentUser) {
+                                "You haven't posted anything yet"
+                            } else {
+                                "${user.username} hasn't posted anything yet"
+                            },
+                            color = SecondaryTextColor,
+                            style = MaterialTheme.typography.body1
+                        )
+                    }
+                }
+            }
+
+            else -> {
+                items(posts) { post ->
+                    when (post) {
+                        is Vybe -> {
+
+                            VybeCard(
+                                vybe = post,
+                                onClickCard = { navController.navigate(VybeScreen(post.id)) },
+                            )
+                        }
+
+                        is AlbumReview -> {
+                            AlbumReviewCard(
+                                albumReview = post,
+                                onClickCard = {
+                                    navController.navigate(
+                                        AlbumReviewScreen(post.id)
+                                    )
+                                }
+                            )
+                        }
+                    }
+                }
+                if (isLoadingMorePosts) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = White,
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.dp
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -286,7 +445,6 @@ private fun <T : MediaItem> FavoriteSection(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
             .background(ElevatedBackgroundColor, shape = RoundedCornerShape(12.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },

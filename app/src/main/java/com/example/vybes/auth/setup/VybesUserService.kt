@@ -5,6 +5,8 @@ import com.example.vybes.auth.model.SetFavoritesRequest
 import com.example.vybes.auth.model.UserResponse
 import com.example.vybes.auth.model.UsernameSetupRequest
 import com.example.vybes.network.VybesApiClient
+import com.example.vybes.post.model.Post
+import com.example.vybes.post.model.network.PageResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 
@@ -39,5 +41,15 @@ class VybesUserService(private val vybesApiClient: VybesApiClient) : UserService
                 albumIds = albums.map { a -> a.spotifyId.orEmpty() }
             )
         )
+    }
+
+    override suspend fun getPostsPaginated(
+        userId: Long,
+        page: Int,
+        size: Int,
+        sort: String?,
+        direction: String?
+    ): Response<PageResponse<Post>> {
+        return vybesApiClient.getUserPosts(userId, page, size, sort, direction)
     }
 }

@@ -55,6 +55,15 @@ interface VybesApiClient {
     @GET("api/user")
     suspend fun getUser(@Query("username") username: String): Response<UserResponse>
 
+    @GET("api/user/{userId}/posts")
+    suspend fun getUserPosts(
+        @Path("userId") userId: Long,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String? = "createdAt",
+        @Query("direction") direction: String? = "DESC"
+    ): Response<PageResponse<Post>>
+
     @POST("api/auth/refresh")
     suspend fun refresh(@Header("Authorization") refreshToken: String): Response<LoginResponse>
 
