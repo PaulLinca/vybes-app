@@ -106,18 +106,18 @@ fun FeedScreen(
     var showOptionsDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(listState) {
-        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
-            .distinctUntilChanged { old, new ->
-                old.size == new.size && old.lastOrNull()?.index == new.lastOrNull()?.index
-            }
-            .collectLatest { visibleItems ->
-                if (!isLoading && !isLoadingMore && hasMoreContent) {
-                    val lastVisibleItemIndex = visibleItems.lastOrNull()?.index ?: 0
-                    val totalItems = posts.size
-
-                    if (lastVisibleItemIndex >= totalItems - 3) {
-                        viewModel.loadMorePosts()
-                    }
+        snapshotFlow {
+            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+        }
+            .distinctUntilChanged()
+            .collectLatest { lastVisibleIndex ->
+                if (lastVisibleIndex != null &&
+                    !isLoading &&
+                    !isLoadingMore &&
+                    hasMoreContent &&
+                    lastVisibleIndex >= posts.size - 3
+                ) {
+                    viewModel.loadMorePosts()
                 }
             }
     }
@@ -207,18 +207,22 @@ fun FeedScreen(
                 }
 
                 else -> {
+                    val currentUserId = remember { SharedPreferencesManager.getUserId() }
                     LazyColumn(
                         state = listState,
                         contentPadding = PaddingValues(vertical = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        items(posts) { post ->
+                        items(
+                            items = posts,
+                            key = { post -> post.id }
+                        ) { post ->
                             when (post) {
                                 is Vybe -> {
-                                    val currentUserId = SharedPreferencesManager.getUserId()
-                                    val isLikedByCurrentUser =
+                                    val isLikedByCurrentUser = remember(post.likes, currentUserId) {
                                         post.likes?.any { it.userId == currentUserId } == true
+                                    }
                                     VybePost(
                                         vybe = post,
                                         onClickCard = { navController.navigate(VybeScreen(post.id)) },
@@ -234,16 +238,14 @@ fun FeedScreen(
                                 }
 
                                 is AlbumReview -> {
-                                    val currentUserId = SharedPreferencesManager.getUserId()
-                                    val isLikedByCurrentUser =
+                                    val isLikedByCurrentUser = remember(post.likes, currentUserId) {
                                         post.likes?.any { it.userId == currentUserId } == true
+                                    }
                                     AlbumReviewPost(
                                         albumReview = post,
                                         onClickCard = {
                                             navController.navigate(
-                                                AlbumReviewScreen(
-                                                    post.id
-                                                )
+                                                AlbumReviewScreen(post.id)
                                             )
                                         },
                                         onLikeClicked = {
