@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -35,12 +36,10 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,6 +65,8 @@ import com.example.vybes.auth.model.MediaItem
 import com.example.vybes.auth.model.UserResponse
 import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.TopBarWithBackButton
+import com.example.vybes.common.posts.PostFilter
+import com.example.vybes.common.posts.PostFilterTabs
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
@@ -92,36 +93,32 @@ import com.example.vybes.profile.favourites.FavoriteType
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 
+enum class ProfileMenuItem {
+    FEEDBACK, LOGOUT
+}
+
 @Composable
 fun ProfileScreen(
     user: User,
     navController: NavController,
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
-
-    LaunchedEffect(key1 = user.username) {
-        profileViewModel.loadUser(user.username)
-    }
-
-    val uiState = profileViewModel.uiState.collectAsState()
+    val uiState by profileViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(uiState.value.uploadSuccessMessage) {
-        uiState.value.uploadSuccessMessage?.let { message ->
+    LaunchedEffect(uiState.uploadSuccessMessage) {
+        uiState.uploadSuccessMessage?.let { message ->
             Toast.makeText(context, message, Toast.LENGTH_LONG).show()
             profileViewModel.clearSuccessMessage()
         }
     }
 
-    val userState by profileViewModel.user.collectAsState()
+    LaunchedEffect(user.username) {
+        profileViewModel.loadUser(user.username)
+    }
+
     val isCurrentUser = profileViewModel.isCurrentUser(user)
     val showMenu = remember { mutableStateOf(false) }
-
-    val isLoadingPosts by profileViewModel.isLoadingPosts.collectAsState()
-    val isLoadingMorePosts by profileViewModel.isLoadingMorePosts.collectAsState()
-    val hasMorePosts by profileViewModel.hasMorePosts.collectAsState()
-    val filteredPosts by profileViewModel.filteredPosts.collectAsState() // Instead of posts
-    val selectedPostFilter by profileViewModel.selectedPostFilter.collectAsState()
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -133,105 +130,123 @@ fun ProfileScreen(
         }
     }
 
-    val onUploadProfilePicture = {
-        imagePickerLauncher.launch("image/*")
-    }
-
     Scaffold(
         topBar = {
-            TopBarWithBackButton(
-                onGoBack = { navController.popBackStack() },
-                rightButtonComposable = {
-                    if (isCurrentUser) {
-                        DebouncedIconButton(
-                            onClick = { showMenu.value = true },
-                            modifier = Modifier.size(35.dp),
-                            contentDescription = "Go back",
-                            iconResId = R.drawable.more
-                        )
-                        DropdownMenu(
-                            expanded = showMenu.value,
-                            onDismissRequest = { showMenu.value = false },
-                            modifier = Modifier.background(ElevatedBackgroundColor)
-                        ) {
-                            DropdownMenuItem(
-                                onClick = { navController.navigate(FeedbackScreen) },
-                                text = {
-                                    Text("Send feedback", color = PrimaryTextColor)
-                                })
-                            DropdownMenuItem(onClick = { profileViewModel.logout() }, text = {
-                                Text("Logout", color = TryoutRed)
-                            })
-                        }
+            ProfileTopBar(
+                navController = navController,
+                isCurrentUser = isCurrentUser,
+                showMenu = showMenu,
+                onMenuItemClick = { menuItem ->
+                    when (menuItem) {
+                        ProfileMenuItem.FEEDBACK -> navController.navigate(FeedbackScreen)
+                        ProfileMenuItem.LOGOUT -> profileViewModel.logout()
                     }
-                })
+                }
+            )
         },
         backgroundColor = BackgroundColor
     ) { paddingValues ->
-        when {
-            uiState.value.isLoading -> {
-                LoadingIndicator()
-            }
+        ProfileContent(
+            modifier = Modifier.padding(paddingValues),
+            uiState = uiState,
+            user = user,
+            isCurrentUser = isCurrentUser,
+            profileViewModel = profileViewModel,
+            onUploadProfilePicture = { imagePickerLauncher.launch("image/*") },
+            onRetryLoad = { profileViewModel.loadUser(user.username) },
+            navController = navController
+        )
+    }
+}
 
-            uiState.value.error != null -> {
-                ErrorView(message = uiState.value.error!!) {
-                    profileViewModel.loadUser(user.username)
+@Composable
+private fun ProfileTopBar(
+    isCurrentUser: Boolean,
+    showMenu: MutableState<Boolean>,
+    onMenuItemClick: (ProfileMenuItem) -> Unit,
+    navController: NavController
+) {
+    TopBarWithBackButton(
+        onGoBack = { navController.popBackStack() },
+        rightButtonComposable = {
+            if (isCurrentUser) {
+                DebouncedIconButton(
+                    onClick = { showMenu.value = true },
+                    modifier = Modifier.size(35.dp),
+                    contentDescription = "Menu",
+                    iconResId = R.drawable.more
+                )
+                DropdownMenu(
+                    expanded = showMenu.value,
+                    onDismissRequest = { showMenu.value = false },
+                    modifier = Modifier.background(ElevatedBackgroundColor)
+                ) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onMenuItemClick(ProfileMenuItem.FEEDBACK)
+                            showMenu.value = false
+                        },
+                        text = { Text("Send feedback", color = PrimaryTextColor) }
+                    )
+                    DropdownMenuItem(
+                        onClick = {
+                            onMenuItemClick(ProfileMenuItem.LOGOUT)
+                            showMenu.value = false
+                        },
+                        text = { Text("Logout", color = TryoutRed) }
+                    )
                 }
             }
-
-            else -> {
-                ProfileContent(
-                    modifier = Modifier.padding(paddingValues),
-                    user = user,
-                    userState = userState,
-                    posts = filteredPosts,
-                    selectedPostFilter = selectedPostFilter,
-                    onFilterSelected = { filter -> profileViewModel.setPostFilter(filter) },
-                    isLoadingPosts = isLoadingPosts,
-                    isLoadingMorePosts = isLoadingMorePosts,
-                    hasMorePosts = hasMorePosts,
-                    isCurrentUser = isCurrentUser,
-                    onEditFavoriteArtists = {
-                        navController.navigate(
-                            EditFavouritesScreen(
-                                FavoriteType.ARTISTS.name
-                            )
-                        )
-                    },
-                    onEditFavoriteAlbums = {
-                        navController.navigate(
-                            EditFavouritesScreen(
-                                FavoriteType.ALBUMS.name
-                            )
-                        )
-                    },
-                    onUploadProfilePicture = onUploadProfilePicture,
-                    onLoadMorePosts = { profileViewModel.loadMorePosts() },
-                    navController = navController
-                )
-            }
         }
-    }
+    )
 }
 
 @Composable
 private fun ProfileContent(
     modifier: Modifier = Modifier,
+    uiState: ProfileUiState,
     user: User,
-    userState: UserResponse?,
-    posts: List<Post>,
-    isLoadingPosts: Boolean,
-    isLoadingMorePosts: Boolean,
-    hasMorePosts: Boolean,
     isCurrentUser: Boolean,
-    onEditFavoriteArtists: () -> Unit,
-    onEditFavoriteAlbums: () -> Unit,
+    profileViewModel: ProfileViewModel,
     onUploadProfilePicture: () -> Unit,
-    selectedPostFilter: ProfileViewModel.PostFilter,
-    onFilterSelected: (ProfileViewModel.PostFilter) -> Unit,
-    onLoadMorePosts: () -> Unit,
+    onRetryLoad: () -> Unit,
     navController: NavController
 ) {
+    when {
+        uiState.isLoading -> LoadingIndicator()
+        uiState.error != null -> ErrorView(
+            message = uiState.error,
+            onRetry = onRetryLoad
+        )
+
+        else -> ProfileLoadedContent(
+            modifier = modifier,
+            user = user,
+            userState = uiState.user,
+            isCurrentUser = isCurrentUser,
+            profileViewModel = profileViewModel,
+            onUploadProfilePicture = onUploadProfilePicture,
+            navController = navController
+        )
+    }
+}
+
+@Composable
+private fun ProfileLoadedContent(
+    modifier: Modifier = Modifier,
+    user: User,
+    userState: UserResponse?,
+    isCurrentUser: Boolean,
+    profileViewModel: ProfileViewModel,
+    onUploadProfilePicture: () -> Unit,
+    navController: NavController
+) {
+    val filteredPosts by profileViewModel.filteredPosts.collectAsState()
+    val selectedPostFilter by profileViewModel.selectedPostFilter.collectAsState()
+    val isLoadingPosts by profileViewModel.isLoadingPosts.collectAsState()
+    val isLoadingMorePosts by profileViewModel.isLoadingMorePosts.collectAsState()
+    val hasMorePosts by profileViewModel.hasMorePosts.collectAsState()
+
     val listState = rememberLazyListState()
 
     LaunchedEffect(listState) {
@@ -245,7 +260,7 @@ private fun ProfileContent(
                     val totalItems = listState.layoutInfo.totalItemsCount
 
                     if (lastVisibleItemIndex >= totalItems - 3) {
-                        onLoadMorePosts()
+                        profileViewModel.loadMorePosts()
                     }
                 }
             }
@@ -263,144 +278,95 @@ private fun ProfileContent(
             ProfileHeader(
                 username = user.username,
                 profilePictureUrl = userState?.profilePictureUrl,
-                onUploadProfilePicture = onUploadProfilePicture
+                onUploadProfilePicture = onUploadProfilePicture,
+                isCurrentUser = isCurrentUser
             )
         }
 
         item {
-            Text(
-                text = "Favorites",
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold,
-                color = PrimaryTextColor
-            )
-        }
-
-        item {
-            FavoriteSection(
-                title = "Favorite artists",
-                items = userState?.favoriteArtists.orEmpty(),
-                emptyMessage = if (isCurrentUser) {
-                    "You haven't set your favorite artists yet"
-                } else {
-                    "${user.username} hasn't set their favorite artists"
-                },
+            FavoritesSection(
+                user = user,
+                userState = userState,
                 isCurrentUser = isCurrentUser,
-                isCircular = true,
-                onSectionClick = onEditFavoriteArtists
-            )
-        }
-
-        item {
-            FavoriteSection(
-                title = "Favorite albums",
-                items = userState?.favoriteAlbums.orEmpty(),
-                emptyMessage = if (isCurrentUser) {
-                    "You haven't set your favorite albums yet"
-                } else {
-                    "${user.username} hasn't set their favorite albums"
+                onEditFavoriteArtists = {
+                    navController.navigate(EditFavouritesScreen(FavoriteType.ARTISTS.name))
                 },
-                isCurrentUser = isCurrentUser,
-                isCircular = false,
-                onSectionClick = onEditFavoriteAlbums
+                onEditFavoriteAlbums = {
+                    navController.navigate(EditFavouritesScreen(FavoriteType.ALBUMS.name))
+                }
             )
         }
 
         item {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "Posts",
-                    style = MaterialTheme.typography.h6,
-                    fontWeight = FontWeight.Bold,
-                    color = PrimaryTextColor
-                )
-                PostFilterTabs(
-                    selectedFilter = selectedPostFilter,
-                    onFilterSelected = onFilterSelected
-                )
-            }
-
+            PostsHeader(
+                selectedPostFilter = selectedPostFilter,
+                onFilterSelected = profileViewModel::setPostFilter
+            )
         }
 
+        postsContent(
+            posts = filteredPosts,
+            isLoadingPosts = isLoadingPosts,
+            isLoadingMorePosts = isLoadingMorePosts,
+            user = user,
+            isCurrentUser = isCurrentUser,
+            navController = navController
+        )
+    }
+}
 
-        when {
-            isLoadingPosts && posts.isEmpty() -> {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 40.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = White)
-                    }
+private fun LazyListScope.postsContent(
+    posts: List<Post>,
+    isLoadingPosts: Boolean,
+    isLoadingMorePosts: Boolean,
+    user: User,
+    isCurrentUser: Boolean,
+    navController: NavController
+) {
+    when {
+        isLoadingPosts && posts.isEmpty() -> {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 40.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = White)
                 }
             }
+        }
 
-            posts.isEmpty() -> {
+        posts.isEmpty() -> {
+            item {
+                EmptyPostsMessage(
+                    user = user,
+                    isCurrentUser = isCurrentUser
+                )
+            }
+        }
+
+        else -> {
+            items(posts) { post ->
+                PostItem(
+                    post = post,
+                    navController = navController
+                )
+            }
+
+            if (isLoadingMorePosts) {
                 item {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 40.dp),
+                            .padding(vertical = 16.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = if (isCurrentUser) {
-                                "You haven't posted anything yet"
-                            } else {
-                                "${user.username} hasn't posted anything yet"
-                            },
-                            color = SecondaryTextColor,
-                            style = MaterialTheme.typography.body1
+                        CircularProgressIndicator(
+                            color = White,
+                            modifier = Modifier.size(24.dp),
+                            strokeWidth = 2.dp
                         )
-                    }
-                }
-            }
-
-            else -> {
-                items(posts) { post ->
-                    Text(
-                        text = DateUtils.formatPostedDate(post.postedDate),
-                        color = Color.LightGray,
-                        style = androidx.compose.material3.MaterialTheme.typography.bodySmall
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    when (post) {
-                        is Vybe -> {
-
-                            VybeCard(
-                                vybe = post,
-                                onClickCard = { navController.navigate(VybeScreen(post.id)) },
-                            )
-                        }
-
-                        is AlbumReview -> {
-                            AlbumReviewCard(
-                                albumReview = post,
-                                onClickCard = {
-                                    navController.navigate(
-                                        AlbumReviewScreen(post.id)
-                                    )
-                                }
-                            )
-                        }
-                    }
-                }
-                if (isLoadingMorePosts) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = White,
-                                modifier = Modifier.size(24.dp),
-                                strokeWidth = 2.dp
-                            )
-                        }
                     }
                 }
             }
@@ -412,42 +378,20 @@ private fun ProfileContent(
 private fun ProfileHeader(
     username: String,
     profilePictureUrl: String?,
-    onUploadProfilePicture: () -> Unit
+    onUploadProfilePicture: () -> Unit,
+    isCurrentUser: Boolean
 ) {
     Column(
         modifier = Modifier
-            .padding(top = 40.dp)
+            .padding(top = 15.dp)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (profilePictureUrl == null) {
-            Image(
-                painter = painterResource(id = R.drawable.user),
-                contentDescription = "Profile picture of $username",
-                colorFilter = ColorFilter.tint(White),
-                modifier = Modifier
-                    .size(64.dp)
-                    .clickable { onUploadProfilePicture() }
-            )
-        } else {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = profilePictureUrl,
-                    error = painterResource(id = R.drawable.user)
-                ),
-                contentDescription = "Profile picture of $username",
-                modifier = Modifier
-                    .size(96.dp)
-                    .border(
-                        width = 2.dp,
-                        color = SubtleBorderColor,
-                        shape = CircleShape
-                    )
-                    .padding(2.dp) // border thick so that the image doesnt go over the border
-                    .clip(CircleShape)
-                    .clickable { onUploadProfilePicture() }
-            )
-        }
+        ProfilePicture(
+            profilePictureUrl = profilePictureUrl,
+            username = username,
+            onUploadProfilePicture = if (isCurrentUser) onUploadProfilePicture else null
+        )
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -455,6 +399,90 @@ private fun ProfileHeader(
             text = username,
             color = White,
             style = songTitleStyle
+        )
+    }
+}
+
+@Composable
+private fun ProfilePicture(
+    profilePictureUrl: String?,
+    username: String,
+    onUploadProfilePicture: (() -> Unit)?
+) {
+    val clickModifier = if (onUploadProfilePicture != null) {
+        Modifier.clickable { onUploadProfilePicture() }
+    } else Modifier
+
+    if (profilePictureUrl == null) {
+        Image(
+            painter = painterResource(id = R.drawable.user),
+            contentDescription = "Profile picture of $username",
+            colorFilter = ColorFilter.tint(White),
+            modifier = Modifier
+                .size(64.dp)
+                .then(clickModifier)
+        )
+    } else {
+        Image(
+            painter = rememberAsyncImagePainter(
+                model = profilePictureUrl,
+                error = painterResource(id = R.drawable.user)
+            ),
+            contentDescription = "Profile picture of $username",
+            modifier = Modifier
+                .size(96.dp)
+                .border(
+                    width = 2.dp,
+                    color = SubtleBorderColor,
+                    shape = CircleShape
+                )
+                .padding(2.dp)
+                .clip(CircleShape)
+                .then(clickModifier)
+        )
+    }
+}
+
+@Composable
+private fun FavoritesSection(
+    user: User,
+    userState: UserResponse?,
+    isCurrentUser: Boolean,
+    onEditFavoriteArtists: () -> Unit,
+    onEditFavoriteAlbums: () -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text(
+            text = "Favorites",
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold,
+            color = PrimaryTextColor
+        )
+
+        FavoriteSection(
+            title = "Favorite artists",
+            items = userState?.favoriteArtists.orEmpty(),
+            emptyMessage = if (isCurrentUser) {
+                "You haven't set your favorite artists yet"
+            } else {
+                "${user.username} hasn't set their favorite artists"
+            },
+            isCurrentUser = isCurrentUser,
+            isCircular = true,
+            onSectionClick = onEditFavoriteArtists
+        )
+
+        FavoriteSection(
+            title = "Favorite albums",
+            items = userState?.favoriteAlbums.orEmpty(),
+            emptyMessage = if (isCurrentUser) {
+                "You haven't set your favorite albums yet"
+            } else {
+                "${user.username} hasn't set their favorite albums"
+            },
+            isCurrentUser = isCurrentUser,
+            isCircular = false,
+            onSectionClick = onEditFavoriteAlbums
         )
     }
 }
@@ -481,7 +509,6 @@ private fun <T : MediaItem> FavoriteSection(
     ) {
         Column {
             Text(text = title, color = White)
-
             Spacer(modifier = Modifier.height(16.dp))
 
             if (items.isNotEmpty()) {
@@ -537,6 +564,25 @@ private fun MediaItemThumbnail(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.width(72.dp),
             textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun PostsHeader(
+    selectedPostFilter: PostFilter,
+    onFilterSelected: (PostFilter) -> Unit
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = "Posts",
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold,
+            color = PrimaryTextColor
+        )
+        PostFilterTabs(
+            selectedFilter = selectedPostFilter,
+            onFilterSelected = onFilterSelected
         )
     }
 }
@@ -610,41 +656,57 @@ private fun ErrorView(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PostFilterTabs(
-    selectedFilter: ProfileViewModel.PostFilter,
-    onFilterSelected: (ProfileViewModel.PostFilter) -> Unit,
-    modifier: Modifier = Modifier
+private fun PostItem(
+    post: Post,
+    navController: NavController
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        ProfileViewModel.PostFilter.entries.forEach { filter ->
-            val isSelected = selectedFilter == filter
-            FilterChip(
-                selected = isSelected,
-                onClick = { onFilterSelected(filter) },
-                label = {
-                    Text(
-                        text = when (filter) {
-                            ProfileViewModel.PostFilter.ALL -> "All"
-                            ProfileViewModel.PostFilter.VYBES -> "Vybes"
-                            ProfileViewModel.PostFilter.ALBUM_REVIEWS -> "Reviews"
-                        },
-                        color = if (isSelected) White else SecondaryTextColor
-                    )
-                },
-                modifier = Modifier,
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = ElevatedBackgroundColor,
-                    containerColor = BackgroundColor
-                ),
-                shape = RoundedCornerShape(16.dp)
-            )
+    Column {
+        Text(
+            text = DateUtils.formatPostedDate(post.postedDate),
+            color = Color.LightGray,
+            style = androidx.compose.material3.MaterialTheme.typography.bodySmall
+        )
+        Spacer(Modifier.height(4.dp))
+
+        when (post) {
+            is Vybe -> {
+                VybeCard(
+                    vybe = post,
+                    onClickCard = { navController.navigate(VybeScreen(post.id)) }
+                )
+            }
+
+            is AlbumReview -> {
+                AlbumReviewCard(
+                    albumReview = post,
+                    onClickCard = { navController.navigate(AlbumReviewScreen(post.id)) }
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun EmptyPostsMessage(
+    user: User,
+    isCurrentUser: Boolean
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 40.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = if (isCurrentUser) {
+                "You haven't posted anything yet"
+            } else {
+                "${user.username} hasn't posted anything yet"
+            },
+            color = SecondaryTextColor,
+            style = MaterialTheme.typography.body1,
+            textAlign = TextAlign.Center
+        )
     }
 }
