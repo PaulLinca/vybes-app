@@ -7,7 +7,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,6 +61,8 @@ import com.example.vybes.R
 import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.DebouncedImageButton
 import com.example.vybes.common.composables.IconTextButton
+import com.example.vybes.common.composables.LoadingLikeButton
+import com.example.vybes.common.composables.debouncedClickable
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
@@ -89,7 +90,8 @@ fun VybePost(
     vybe: Vybe,
     onClickCard: () -> Unit,
     onLikeClicked: () -> Unit = {},
-    navController: NavController
+    navController: NavController,
+    isLikeLoading: Boolean
 ) {
     val currentUserId = SharedPreferencesManager.getUserId()
     val isLikedByCurrentUser = vybe.likes.orEmpty().any { it.userId == currentUserId }
@@ -97,10 +99,10 @@ fun VybePost(
     Column(modifier = Modifier.padding(vertical = 5.dp)) {
         TopBar(user = vybe.user, postedDate = vybe.postedDate, navController = navController)
         VybeCard(vybe, onClickCard)
-        if (vybe.description.isNotBlank()) {
+        if (vybe.description.orEmpty().isNotBlank()) {
             Row(modifier = Modifier.padding(top = 5.dp)) {
                 Text(
-                    text = vybe.description,
+                    text = vybe.description.orEmpty(),
                     style = artistsStyle,
                     color = Color.LightGray,
                     maxLines = 1,
@@ -113,7 +115,8 @@ fun VybePost(
             onClickComment = onClickCard,
             onLikeClicked = onLikeClicked,
             modifier = Modifier.padding(top = 5.dp),
-            isLiked = isLikedByCurrentUser
+            isLiked = isLikedByCurrentUser,
+            isLikeLoading = isLikeLoading
         )
     }
 }
@@ -170,7 +173,8 @@ fun StatsBar(
     onLikeClicked: () -> Unit = {},
     modifier: Modifier,
     iconSize: Dp = 20.dp,
-    isLiked: Boolean = false
+    isLiked: Boolean = false,
+    isLikeLoading: Boolean = false
 ) {
     val type = if (post.type.equals("VYBE")) "track" else "album"
     val context = LocalContext.current
@@ -186,11 +190,11 @@ fun StatsBar(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier = modifier
     ) {
-        IconTextButton(
-            description = "Like this vybe",
+        LoadingLikeButton(
             onClick = onLikeClicked,
-            text = post.likes?.size.toString(),
-            drawableId = if (isLiked) R.drawable.thumb_up_filled else R.drawable.thumb_up,
+            likeCount = post.likes?.size ?: 0,
+            isLiked = isLiked,
+            isLoading = isLikeLoading,
             iconSize = iconSize,
             iconColor = White
         )
@@ -242,7 +246,7 @@ fun VybeCard(vybe: Vybe, onClickCard: () -> Unit) {
 
     Card(
         modifier = Modifier
-            .clickable(onClick = onClickCard)
+            .debouncedClickable { onClickCard() }
             .fillMaxWidth()
             .wrapContentHeight(),
         shape = RoundedCornerShape(16.dp),
@@ -364,7 +368,8 @@ fun AlbumReviewPost(
     albumReview: AlbumReview,
     onClickCard: () -> Unit,
     onLikeClicked: () -> Unit = {},
-    navController: NavController
+    navController: NavController,
+    isLikeLoading: Boolean
 ) {
     val currentUserId = SharedPreferencesManager.getUserId()
     val isLikedByCurrentUser = albumReview.likes?.any { it.userId == currentUserId } == true
@@ -381,7 +386,8 @@ fun AlbumReviewPost(
             onClickComment = onClickCard,
             onLikeClicked = onLikeClicked,
             modifier = Modifier.padding(top = 5.dp),
-            isLiked = isLikedByCurrentUser
+            isLiked = isLikedByCurrentUser,
+            isLikeLoading = isLikeLoading
         )
     }
 }
@@ -403,7 +409,7 @@ fun AlbumReviewCard(
 
     Card(
         modifier = Modifier
-            .clickable(onClick = onClickCard)
+            .debouncedClickable { onClickCard() }
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, SubtleBorderColor),

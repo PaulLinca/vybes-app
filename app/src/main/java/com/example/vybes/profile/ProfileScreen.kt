@@ -66,6 +66,7 @@ import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.SecondaryTextColor
+import com.example.vybes.common.theme.SubtleBorderColor
 import com.example.vybes.common.theme.TryoutBlue
 import com.example.vybes.common.theme.TryoutGreen
 import com.example.vybes.common.theme.TryoutRed
@@ -419,13 +420,14 @@ private fun ProfileHeader(
                 ),
                 contentDescription = "Profile picture of $username",
                 modifier = Modifier
-                    .clip(CircleShape)
+                    .size(96.dp)
                     .border(
                         width = 2.dp,
-                        color = Color.White,
+                        color = SubtleBorderColor,
                         shape = CircleShape
                     )
-                    .size(96.dp)
+                    .padding(2.dp) // border thick so that the image doesnt go over the border
+                    .clip(CircleShape)
                     .clickable { onUploadProfilePicture() }
             )
         }

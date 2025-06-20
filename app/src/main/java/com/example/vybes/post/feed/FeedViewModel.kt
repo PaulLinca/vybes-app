@@ -1,5 +1,6 @@
 package com.example.vybes.post.feed
 
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vybes.post.model.AlbumReview
@@ -24,6 +25,9 @@ class FeedViewModel @Inject constructor(
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
+
+    private val _likeLoadingStates = MutableStateFlow<Map<Long, Boolean>>(emptyMap())
+    val likeLoadingStates = _likeLoadingStates.asStateFlow()
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
@@ -125,6 +129,8 @@ class FeedViewModel @Inject constructor(
     }
 
     fun clickLikeButton(postId: Long, isLikedByCurrentUser: Boolean) {
+        _likeLoadingStates.value += (postId to true)
+
         if (isLikedByCurrentUser) {
             unlikePost(postId)
         } else {
@@ -145,6 +151,8 @@ class FeedViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _errorState.value = "Network error while liking post"
+            } finally {
+                _likeLoadingStates.value -= postId
             }
         }
     }
@@ -162,6 +170,8 @@ class FeedViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _errorState.value = "Network error while unliking post"
+            } finally {
+                _likeLoadingStates.value -= postId
             }
         }
     }

@@ -74,7 +74,7 @@ object TokenAuthenticator : Authenticator {
         val okHttpClient = OkHttpClient().newBuilder()
             .build()
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/")
+            .baseUrl("https://vybes-service.onrender.com/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
             .build()

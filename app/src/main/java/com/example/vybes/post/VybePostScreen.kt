@@ -75,7 +75,7 @@ fun VybePostScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(PrimaryTextColor),
+                    .background(BackgroundColor),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
@@ -87,7 +87,9 @@ fun VybePostScreen(
 
         is PostViewModel.PostUiState.LoadingCall -> {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(BackgroundColor),
                 contentAlignment = Alignment.Center
             ) {
                 VybePostContent(
@@ -193,20 +195,20 @@ fun VybePostContent(
 
             SongBanner(vybe = vybe)
 
-            if (vybe.description.isNotBlank()) {
+            if (vybe.description.orEmpty().isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Text(text = vybe.description, style = artistsStyle, color = Color.LightGray)
+                    Text(text = vybe.description.orEmpty(), style = artistsStyle, color = Color.LightGray)
                 }
             }
 
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 StatsBar(
                     post = vybe,
-                    modifier = Modifier.padding(top = 8.dp, start = 8.dp, bottom = 8.dp),
                     onLikeClicked = {
                         if (isLikedByUser) onUnlikeVybe() else onLikeVybe()
                     },
+                    modifier = Modifier.padding(top = 8.dp, start = 8.dp, bottom = 8.dp),
                     iconSize = 23.dp,
                     isLiked = isLikedByUser
                 )
@@ -256,7 +258,7 @@ fun SongBanner(vybe: Vybe) {
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .defaultMinSize(minHeight = 200.dp) // Minimum height to ensure background shows
+            .defaultMinSize(minHeight = 200.dp)
             .background(color = ElevatedBackgroundColor)
     ) {
 

@@ -97,6 +97,8 @@ fun FeedScreen(
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val hasMoreContent by viewModel.hasMoreContent.collectAsState()
 
+    val likeLoadingStates by viewModel.likeLoadingStates.collectAsState()
+
     val listState = rememberLazyListState()
 
     var showOptionsDialog by remember { mutableStateOf(false) }
@@ -219,8 +221,8 @@ fun FeedScreen(
                                                 isLikedByCurrentUser
                                             )
                                         },
-                                        navController = navController
-                                    )
+                                        navController = navController,
+                                        isLikeLoading = likeLoadingStates[post.id] ?: false                                    )
                                 }
 
                                 is AlbumReview -> {
@@ -242,7 +244,8 @@ fun FeedScreen(
                                                 isLikedByCurrentUser
                                             )
                                         },
-                                        navController = navController
+                                        navController = navController,
+                                        isLikeLoading = likeLoadingStates[post.id] ?: false
                                     )
                                 }
                             }
@@ -397,7 +400,7 @@ fun TopBar(
                     .size(30.dp)
                     .clip(CircleShape),
                 contentDescription = "Profile Button",
-                pictureUrl = "http://10.0.2.2:8080/api/user/profilePicture/${SharedPreferencesManager.getUserId()}"
+                pictureUrl = "https://vybes-service.onrender.com/api/user/profilePicture/${SharedPreferencesManager.getUserId()}"
             )
         }
     )

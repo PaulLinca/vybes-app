@@ -88,7 +88,7 @@ fun AlbumReviewScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(PrimaryTextColor),
+                    .background(BackgroundColor),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
@@ -100,7 +100,9 @@ fun AlbumReviewScreen(
 
         is PostViewModel.PostUiState.LoadingCall -> {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(BackgroundColor),
                 contentAlignment = Alignment.Center
             ) {
                 AlbumReviewPostContent(
@@ -220,10 +222,10 @@ fun AlbumReviewPostContent(
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     StatsBar(
                         post = albumReview,
-                        modifier = Modifier.padding(top = 8.dp, start = 8.dp, bottom = 8.dp),
                         onLikeClicked = {
                             if (isLikedByUser) onUnlikeAlbumReview() else onLikeAlbumReview()
                         },
+                        modifier = Modifier.padding(top = 8.dp, start = 8.dp, bottom = 8.dp),
                         iconSize = 23.dp,
                         isLiked = isLikedByUser
                     )

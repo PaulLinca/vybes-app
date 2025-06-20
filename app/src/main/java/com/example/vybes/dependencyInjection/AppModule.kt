@@ -57,7 +57,7 @@ object AppModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/")
+            .baseUrl("https://vybes-service.onrender.com/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()

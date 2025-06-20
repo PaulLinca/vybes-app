@@ -20,7 +20,7 @@ data class Vybe(
     val spotifyArtists: List<Artist>,
     val spotifyAlbumId: String,
     val imageUrl: String,
-    val description: String,
+    val description: String?,
     override val user: User,
     override val postedDate: ZonedDateTime,
     override val likes: List<Like>? = mutableListOf(),
