@@ -9,8 +9,10 @@ import com.example.vybes.auth.AuthEvent
 import com.example.vybes.auth.AuthEventBus
 import com.example.vybes.auth.model.UserResponse
 import com.example.vybes.auth.setup.UserService
+import com.example.vybes.post.model.AlbumReview
 import com.example.vybes.post.model.Post
 import com.example.vybes.post.model.User
+import com.example.vybes.post.model.Vybe
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +29,10 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val userService: UserService
 ) : ViewModel() {
+    enum class PostFilter {
+        ALL, VYBES, ALBUM_REVIEWS
+    }
+
     private val _user = MutableStateFlow<UserResponse?>(null)
     val user: StateFlow<UserResponse?> = _user
 
@@ -35,6 +41,13 @@ class ProfileViewModel @Inject constructor(
 
     private val _posts = MutableStateFlow<List<Post>>(emptyList())
     val posts: StateFlow<List<Post>> = _posts
+
+    private val _allPosts = MutableStateFlow<List<Post>>(emptyList()) // Store all posts
+    private val _filteredPosts = MutableStateFlow<List<Post>>(emptyList())
+    val filteredPosts = _filteredPosts.asStateFlow()
+
+    private val _selectedPostFilter = MutableStateFlow(PostFilter.ALL)
+    val selectedPostFilter = _selectedPostFilter.asStateFlow()
 
     private val _isLoadingPosts = MutableStateFlow(false)
     val isLoadingPosts = _isLoadingPosts.asStateFlow()
@@ -111,9 +124,10 @@ class ProfileViewModel @Inject constructor(
                 )
                 if (response.isSuccessful && response.body() != null) {
                     val pageResponse = response.body()!!
-                    _posts.value = pageResponse.content
+                    _allPosts.value = pageResponse.content
                     totalPostsPages = pageResponse.totalPages
                     _hasMorePosts.value = !pageResponse.last
+                    applyFilter()
                 } else {
                     _postsError.value = "Failed to load posts: ${response.message()}"
                 }
@@ -146,9 +160,10 @@ class ProfileViewModel @Inject constructor(
                     val newPosts = pageResponse.content
 
                     if (newPosts.isNotEmpty()) {
-                        _posts.value += newPosts
+                        _allPosts.value += newPosts
                         currentPostsPage = nextPage
                         _hasMorePosts.value = !pageResponse.last
+                        applyFilter()
                     } else {
                         _hasMorePosts.value = false
                     }
@@ -160,6 +175,20 @@ class ProfileViewModel @Inject constructor(
             } finally {
                 _isLoadingMorePosts.value = false
             }
+        }
+    }
+
+    fun setPostFilter(filter: PostFilter) {
+        _selectedPostFilter.value = filter
+        applyFilter()
+    }
+
+    private fun applyFilter() {
+        val allPosts = _allPosts.value
+        _filteredPosts.value = when (_selectedPostFilter.value) {
+            PostFilter.ALL -> allPosts
+            PostFilter.VYBES -> allPosts.filterIsInstance<Vybe>()
+            PostFilter.ALBUM_REVIEWS -> allPosts.filterIsInstance<AlbumReview>()
         }
     }
 

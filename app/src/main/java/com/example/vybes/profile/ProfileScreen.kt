@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +35,9 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -113,10 +117,11 @@ fun ProfileScreen(
     val isCurrentUser = profileViewModel.isCurrentUser(user)
     val showMenu = remember { mutableStateOf(false) }
 
-    val posts by profileViewModel.posts.collectAsState()
     val isLoadingPosts by profileViewModel.isLoadingPosts.collectAsState()
     val isLoadingMorePosts by profileViewModel.isLoadingMorePosts.collectAsState()
     val hasMorePosts by profileViewModel.hasMorePosts.collectAsState()
+    val filteredPosts by profileViewModel.filteredPosts.collectAsState() // Instead of posts
+    val selectedPostFilter by profileViewModel.selectedPostFilter.collectAsState()
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -179,7 +184,9 @@ fun ProfileScreen(
                     modifier = Modifier.padding(paddingValues),
                     user = user,
                     userState = userState,
-                    posts = posts,
+                    posts = filteredPosts,
+                    selectedPostFilter = selectedPostFilter,
+                    onFilterSelected = { filter -> profileViewModel.setPostFilter(filter) },
                     isLoadingPosts = isLoadingPosts,
                     isLoadingMorePosts = isLoadingMorePosts,
                     hasMorePosts = hasMorePosts,
@@ -220,6 +227,8 @@ private fun ProfileContent(
     onEditFavoriteArtists: () -> Unit,
     onEditFavoriteAlbums: () -> Unit,
     onUploadProfilePicture: () -> Unit,
+    selectedPostFilter: ProfileViewModel.PostFilter,
+    onFilterSelected: (ProfileViewModel.PostFilter) -> Unit,
     onLoadMorePosts: () -> Unit,
     navController: NavController
 ) {
@@ -298,13 +307,21 @@ private fun ProfileContent(
         }
 
         item {
-            Text(
-                text = "Posts",
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold,
-                color = PrimaryTextColor
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "Posts",
+                    style = MaterialTheme.typography.h6,
+                    fontWeight = FontWeight.Bold,
+                    color = PrimaryTextColor
+                )
+                PostFilterTabs(
+                    selectedFilter = selectedPostFilter,
+                    onFilterSelected = onFilterSelected
+                )
+            }
+
         }
+
 
         when {
             isLoadingPosts && posts.isEmpty() -> {
@@ -589,6 +606,45 @@ private fun ErrorView(
             colors = ButtonDefaults.buttonColors(backgroundColor = ElevatedBackgroundColor)
         ) {
             Text("Retry", color = PrimaryTextColor)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PostFilterTabs(
+    selectedFilter: ProfileViewModel.PostFilter,
+    onFilterSelected: (ProfileViewModel.PostFilter) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        ProfileViewModel.PostFilter.entries.forEach { filter ->
+            val isSelected = selectedFilter == filter
+            FilterChip(
+                selected = isSelected,
+                onClick = { onFilterSelected(filter) },
+                label = {
+                    Text(
+                        text = when (filter) {
+                            ProfileViewModel.PostFilter.ALL -> "All"
+                            ProfileViewModel.PostFilter.VYBES -> "Vybes"
+                            ProfileViewModel.PostFilter.ALBUM_REVIEWS -> "Reviews"
+                        },
+                        color = if (isSelected) White else SecondaryTextColor
+                    )
+                },
+                modifier = Modifier,
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = ElevatedBackgroundColor,
+                    containerColor = BackgroundColor
+                ),
+                shape = RoundedCornerShape(16.dp)
+            )
         }
     }
 }
