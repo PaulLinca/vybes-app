@@ -1,6 +1,9 @@
 package com.example.vybes.common.posts
 
+import com.example.vybes.post.model.AlbumReview
+import com.example.vybes.post.model.Like
 import com.example.vybes.post.model.Post
+import com.example.vybes.post.model.Vybe
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -74,4 +77,20 @@ class PostsManager {
         !_isLoadingMorePosts.value && _hasMorePosts.value && currentPage < totalPages - 1
 
     fun getPageSize() = pageSize
+
+    fun updatePostLikes(postId: Long, update: (List<Like>) -> List<Like>) {
+        val currentPosts = _allPosts.value
+        val updatedPosts = currentPosts.map { post ->
+            when (post) {
+                is Vybe -> if (post.id == postId) {
+                    post.copy(likes = update(post.likes.orEmpty()))
+                } else post
+                is AlbumReview -> if (post.id == postId) {
+                    post.copy(likes = update(post.likes.orEmpty()))
+                } else post
+                else -> post
+            }
+        }
+        _allPosts.value = updatedPosts
+    }
 }

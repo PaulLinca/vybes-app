@@ -26,8 +26,7 @@ fun PostFilterTabs(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         PostFilter.entries.forEach { filter ->

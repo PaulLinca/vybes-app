@@ -57,6 +57,7 @@ import com.example.vybes.add.vybe.SearchTrackScreen
 import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.DebouncedImageButton
 import com.example.vybes.common.composables.TopBarWithSideButtons
+import com.example.vybes.common.posts.PostFilterTabs
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.IconColor
@@ -90,9 +91,10 @@ fun FeedScreen(
         refreshing = isRefreshing,
         onRefresh = { viewModel.refresh() }
     )
-    val errorState by viewModel.errorState.collectAsState()
+    val errorState by viewModel.postsError.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val posts by viewModel.posts.collectAsState()
+    val selectedPostFilter by viewModel.selectedPostFilter.collectAsState()
 
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val hasMoreContent by viewModel.hasMoreContent.collectAsState()
@@ -190,6 +192,11 @@ fun FeedScreen(
                 )
             }
 
+            PostFilterTabs(
+                selectedFilter = selectedPostFilter,
+                onFilterSelected = viewModel::setPostFilter
+            )
+
             when {
                 isLoading && posts.isEmpty() -> {
                     LoadingState()
@@ -222,7 +229,8 @@ fun FeedScreen(
                                             )
                                         },
                                         navController = navController,
-                                        isLikeLoading = likeLoadingStates[post.id] ?: false                                    )
+                                        isLikeLoading = likeLoadingStates[post.id] ?: false
+                                    )
                                 }
 
                                 is AlbumReview -> {
@@ -251,7 +259,6 @@ fun FeedScreen(
                             }
                         }
 
-                        // Loading indicator at bottom when loading more items
                         if (isLoadingMore) {
                             item {
                                 Box(
@@ -333,9 +340,8 @@ private fun EmptyFeedState() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(top = 50.dp, start = 24.dp, end = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(70.dp))
         Image(

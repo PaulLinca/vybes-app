@@ -2,14 +2,12 @@ package com.example.vybes.post.feed
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.vybes.post.model.AlbumReview
+import com.example.vybes.common.posts.PostFilter
+import com.example.vybes.common.posts.PostsManager
 import com.example.vybes.post.model.Like
-import com.example.vybes.post.model.Post
-import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.service.PostService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,11 +17,14 @@ class FeedViewModel @Inject constructor(
     private val postService: PostService
 ) : ViewModel() {
 
-    private val _posts = MutableStateFlow<List<Post>>(emptyList())
-    val posts: StateFlow<List<Post>> = _posts
+    private val postsManager = PostsManager()
 
-    private val _isLoading = MutableStateFlow(true)
-    val isLoading = _isLoading.asStateFlow()
+    val posts = postsManager.filteredPosts
+    val selectedPostFilter = postsManager.selectedPostFilter
+    val isLoading = postsManager.isLoadingPosts
+    val isLoadingMore = postsManager.isLoadingMorePosts
+    val hasMoreContent = postsManager.hasMorePosts
+    val postsError = postsManager.postsError
 
     private val _likeLoadingStates = MutableStateFlow<Map<Long, Boolean>>(emptyMap())
     val likeLoadingStates = _likeLoadingStates.asStateFlow()
@@ -31,43 +32,34 @@ class FeedViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 
-    private val _errorState = MutableStateFlow<String?>(null)
-    val errorState = _errorState.asStateFlow()
-
-    private val _isLoadingMore = MutableStateFlow(false)
-    val isLoadingMore = _isLoadingMore.asStateFlow()
-
-    private val _hasMoreContent = MutableStateFlow(true)
-    val hasMoreContent = _hasMoreContent.asStateFlow()
-
-    private var currentPage = 0
-    private val pageSize = 10
-    private var totalPages = Int.MAX_VALUE
-
     init {
         loadInitialPosts()
     }
 
     private fun loadInitialPosts() {
         viewModelScope.launch {
-            _isLoading.value = true
-            _errorState.value = null
-            currentPage = 0
+            postsManager.setLoadingState(true)
+            postsManager.setError(null)
 
             try {
-                val response = postService.getPostsPaginated(page = 0, size = pageSize)
+                val response = postService.getPostsPaginated(
+                    page = 0,
+                    size = postsManager.getPageSize()
+                )
                 if (response.isSuccessful && response.body() != null) {
                     val pageResponse = response.body()!!
-                    _posts.value = pageResponse.content
-                    totalPages = pageResponse.totalPages
-                    _hasMoreContent.value = !pageResponse.last
+                    postsManager.setInitialPosts(
+                        posts = pageResponse.content,
+                        totalPages = pageResponse.totalPages,
+                        isLastPage = pageResponse.last
+                    )
                 } else {
-                    _errorState.value = "Failed to load posts: ${response.message()}"
+                    postsManager.setError("Failed to load posts: ${response.message()}")
                 }
             } catch (e: Exception) {
-                _errorState.value = "Network error: ${e.localizedMessage ?: "Unknown error"}"
+                postsManager.setError("Network error: ${e.localizedMessage ?: "Unknown error"}")
             } finally {
-                _isLoading.value = false
+                postsManager.setLoadingState(false)
             }
         }
     }
@@ -75,21 +67,25 @@ class FeedViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _isRefreshing.value = true
-            _errorState.value = null
-            currentPage = 0
+            postsManager.setError(null)
 
             try {
-                val response = postService.getPostsPaginated(page = 0, size = pageSize)
+                val response = postService.getPostsPaginated(
+                    page = 0,
+                    size = postsManager.getPageSize()
+                )
                 if (response.isSuccessful && response.body() != null) {
                     val pageResponse = response.body()!!
-                    _posts.value = pageResponse.content
-                    totalPages = pageResponse.totalPages
-                    _hasMoreContent.value = !pageResponse.last
+                    postsManager.setInitialPosts(
+                        posts = pageResponse.content,
+                        totalPages = pageResponse.totalPages,
+                        isLastPage = pageResponse.last
+                    )
                 } else {
-                    _errorState.value = "Failed to refresh: ${response.message()}"
+                    postsManager.setError("Failed to refresh: ${response.message()}")
                 }
             } catch (e: Exception) {
-                _errorState.value = "Network error: ${e.localizedMessage ?: "Unknown error"}"
+                postsManager.setError("Network error: ${e.localizedMessage ?: "Unknown error"}")
             } finally {
                 _isRefreshing.value = false
             }
@@ -97,34 +93,37 @@ class FeedViewModel @Inject constructor(
     }
 
     fun loadMorePosts() {
-        if (_isLoadingMore.value || !_hasMoreContent.value || currentPage >= totalPages - 1) return
+        if (!postsManager.canLoadMore()) return
 
         viewModelScope.launch {
-            _isLoadingMore.value = true
+            postsManager.setLoadingMoreState(true)
+
             try {
-                val nextPage = currentPage + 1
-                val response = postService.getPostsPaginated(page = nextPage, size = pageSize)
+                val nextPage = postsManager.getCurrentPage() + 1
+                val response = postService.getPostsPaginated(
+                    page = nextPage,
+                    size = postsManager.getPageSize()
+                )
 
                 if (response.isSuccessful && response.body() != null) {
                     val pageResponse = response.body()!!
-                    val newPosts = pageResponse.content
-
-                    if (newPosts.isNotEmpty()) {
-                        _posts.value += newPosts
-                        currentPage = nextPage
-                        _hasMoreContent.value = !pageResponse.last
-                    } else {
-                        _hasMoreContent.value = false
-                    }
+                    postsManager.addMorePosts(
+                        newPosts = pageResponse.content,
+                        isLastPage = pageResponse.last
+                    )
                 } else {
-                    _errorState.value = "Failed to load more posts"
+                    postsManager.setError("Failed to load more posts")
                 }
             } catch (e: Exception) {
-                _errorState.value = "Network error while loading more posts"
+                postsManager.setError("Network error while loading more posts")
             } finally {
-                _isLoadingMore.value = false
+                postsManager.setLoadingMoreState(false)
             }
         }
+    }
+
+    fun setPostFilter(filter: PostFilter) {
+        postsManager.setPostFilter(filter)
     }
 
     fun clickLikeButton(postId: Long, isLikedByCurrentUser: Boolean) {
@@ -146,10 +145,10 @@ class FeedViewModel @Inject constructor(
                         currentLikes + Like(response.body()!!.userId)
                     }
                 } else {
-                    _errorState.value = "Failed to like post"
+                    postsManager.setError("Failed to like post")
                 }
             } catch (e: Exception) {
-                _errorState.value = "Network error while liking post"
+                postsManager.setError("Network error while liking post")
             } finally {
                 _likeLoadingStates.value -= postId
             }
@@ -165,10 +164,10 @@ class FeedViewModel @Inject constructor(
                         currentLikes.filter { it.userId != response.body()!!.userId }
                     }
                 } else {
-                    _errorState.value = "Failed to unlike post"
+                    postsManager.setError("Failed to unlike post")
                 }
             } catch (e: Exception) {
-                _errorState.value = "Network error while unliking post"
+                postsManager.setError("Network error while unliking post")
             } finally {
                 _likeLoadingStates.value -= postId
             }
@@ -176,18 +175,10 @@ class FeedViewModel @Inject constructor(
     }
 
     private fun updatePostLikes(postId: Long, update: (List<Like>) -> List<Like>) {
-        _posts.value = _posts.value.map { post ->
-            if (post is Vybe && post.id == postId) {
-                post.copy(likes = update(post.likes.orEmpty()))
-            } else if (post is AlbumReview && post.id == postId) {
-                post.copy(likes = update(post.likes.orEmpty()))
-            } else {
-                post
-            }
-        }
+        postsManager.updatePostLikes(postId, update)
     }
 
     fun clearError() {
-        _errorState.value = null
+        postsManager.setError(null)
     }
 }

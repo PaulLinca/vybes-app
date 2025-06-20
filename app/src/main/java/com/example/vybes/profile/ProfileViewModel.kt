@@ -30,7 +30,7 @@ class ProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState
 
-    val postsManager = PostsManager()
+    private val postsManager = PostsManager()
     private var currentUserId: Long? = null
     var imagePart: MultipartBody.Part? = null
 

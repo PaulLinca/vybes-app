@@ -582,7 +582,8 @@ private fun PostsHeader(
         )
         PostFilterTabs(
             selectedFilter = selectedPostFilter,
-            onFilterSelected = onFilterSelected
+            onFilterSelected = onFilterSelected,
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
 }
