@@ -349,7 +349,7 @@ fun AlbumBanner(albumReview: AlbumReview) {
 
             Box(
                 modifier = Modifier
-                    .size(130.dp)
+                    .size(180.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .shadow(8.dp)
             ) {
