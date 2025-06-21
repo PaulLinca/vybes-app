@@ -198,10 +198,16 @@ abstract class PostViewModel<T : Post>(
 
     fun deletePost(postId: Long) {
         viewModelScope.launch {
+            _isLoading.value = true
+
             safeApiCall {
                 postService.deletePost(postId)
             }.onSuccess {
                 _navigationEvents.emit(NavigationEvent.NavigateToHomeClearingBackStack)
+                _isLoading.value = false
+            }.onFailure {
+                _errorMessage.value = "Failed to delete post. Try again later..."
+                _isLoading.value = false
             }
         }
     }

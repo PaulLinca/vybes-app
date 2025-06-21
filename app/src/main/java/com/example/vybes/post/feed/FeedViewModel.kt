@@ -174,26 +174,6 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    fun deletePost(postId: Long) {
-        postsManager.setLoadingState(true)
-        postsManager.setError(null)
-
-        viewModelScope.launch {
-            try {
-                val response = postService.deletePost(postId)
-                if (response.isSuccessful && response.body() != null) {
-                    deletePost(postId)
-                } else {
-                    postsManager.setError("Failed to delete post")
-                }
-            } catch (e: Exception) {
-                postsManager.setError("Network error while deleting post")
-            } finally {
-                postsManager.setLoadingState(false)
-            }
-        }
-    }
-
     private fun updatePostLikes(postId: Long, update: (List<Like>) -> List<Like>) {
         postsManager.updatePostLikes(postId, update)
     }
