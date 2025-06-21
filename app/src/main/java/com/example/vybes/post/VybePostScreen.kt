@@ -19,16 +19,21 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.DropdownMenu
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -48,6 +53,8 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.example.vybes.R
+import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
@@ -56,8 +63,10 @@ import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.common.util.DateUtils
+import com.example.vybes.post.feed.FeedScreen
 import com.example.vybes.post.feed.StatsBar
 import com.example.vybes.post.model.Vybe
+import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import java.util.stream.Collectors
 
 @Composable
@@ -69,6 +78,20 @@ fun VybePostScreen(
     val uiState by vybeViewModel.uiState.collectAsState()
     val commentText = vybeViewModel.commentText
     val remainingCharacters = vybeViewModel.remainingCharacters
+
+    val navigationEvents = vybeViewModel.navigationEvents
+
+    LaunchedEffect(Unit) {
+        navigationEvents.collect { event ->
+            when (event) {
+                is PostViewModel.NavigationEvent.NavigateToHomeClearingBackStack -> {
+                    navController.navigate(FeedScreen) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
+        }
+    }
 
     when (val state = uiState) {
         is PostViewModel.PostUiState.Loading -> {
@@ -97,6 +120,7 @@ fun VybePostScreen(
                     isLikedByUser = state.isLikedByCurrentUser,
                     commentText = commentText,
                     onGoBack = onGoBack,
+                    onDeletePost = { vybeViewModel.deletePost(state.post.id) },
                     onTextChanged = { vybeViewModel.updateText(it) },
                     onSendComment = { vybeViewModel.addComment() },
                     onLikeVybe = { vybeViewModel.likeVybe() },
@@ -131,6 +155,7 @@ fun VybePostScreen(
                 onGoBack = onGoBack,
                 onTextChanged = { vybeViewModel.updateText(it) },
                 onSendComment = { vybeViewModel.addComment() },
+                onDeletePost = { vybeViewModel.deletePost(state.post.id) },
                 onLikeVybe = { vybeViewModel.likeVybe() },
                 onUnlikeVybe = { vybeViewModel.unlikeVybe() },
                 onLikeComment = { vybeViewModel.likeComment(it) },
@@ -151,6 +176,7 @@ fun VybePostContent(
     onGoBack: () -> Unit,
     onTextChanged: (String) -> Unit,
     onSendComment: () -> Unit,
+    onDeletePost: () -> Unit,
     onLikeVybe: () -> Unit,
     onUnlikeVybe: () -> Unit,
     onLikeComment: (Long) -> Unit,
@@ -162,6 +188,7 @@ fun VybePostContent(
         refreshing = false,
         onRefresh = { /* Should we refresh? */ }
     )
+    val showMenu = remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -173,7 +200,29 @@ fun VybePostContent(
                 .fillMaxSize()
                 .background(BackgroundColor)
         ) {
-            TopBarWithBackButton(onGoBack = onGoBack) {
+            TopBarWithBackButton(onGoBack = onGoBack, rightButtonComposable = {
+                if (vybe.user.userId == SharedPreferencesManager.getUserId()) {
+                    DebouncedIconButton(
+                        onClick = { showMenu.value = true },
+                        modifier = Modifier.size(35.dp),
+                        contentDescription = "Menu",
+                        iconResId = R.drawable.more
+                    )
+                    DropdownMenu(
+                        expanded = showMenu.value,
+                        onDismissRequest = { showMenu.value = false },
+                        modifier = Modifier.background(ElevatedBackgroundColor)
+                    ) {
+                        DropdownMenuItem(
+                            onClick = {
+                                onDeletePost()
+                                showMenu.value = false
+                            },
+                            text = { Text("Delete post", color = TryoutRed) }
+                        )
+                    }
+                }
+            }) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -198,7 +247,11 @@ fun VybePostContent(
             if (vybe.description.orEmpty().isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Text(text = vybe.description.orEmpty(), style = artistsStyle, color = Color.LightGray)
+                    Text(
+                        text = vybe.description.orEmpty(),
+                        style = artistsStyle,
+                        color = Color.LightGray
+                    )
                 }
             }
 

@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
+import androidx.compose.material.DropdownMenu
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -28,8 +29,10 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +58,8 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.example.vybes.R
+import com.example.vybes.common.composables.DebouncedIconButton
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
@@ -69,9 +74,11 @@ import com.example.vybes.common.theme.TryoutYellow
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.common.util.DateUtils
+import com.example.vybes.post.feed.FeedScreen
 import com.example.vybes.post.feed.StatsBar
 import com.example.vybes.post.model.AlbumReview
 import com.example.vybes.post.model.TrackReviewDTO
+import com.example.vybes.sharedpreferences.SharedPreferencesManager
 
 @Composable
 fun AlbumReviewScreen(
@@ -79,9 +86,24 @@ fun AlbumReviewScreen(
     onGoBack: () -> Unit,
     navController: NavController
 ) {
+
     val uiState by albumReviewViewModel.uiState.collectAsState()
     val commentText = albumReviewViewModel.commentText
     val remainingCharacters = albumReviewViewModel.remainingCharacters
+
+    val navigationEvents = albumReviewViewModel.navigationEvents
+
+    LaunchedEffect(Unit) {
+        navigationEvents.collect { event ->
+            when (event) {
+                is PostViewModel.NavigationEvent.NavigateToHomeClearingBackStack -> {
+                    navController.navigate(FeedScreen) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
+        }
+    }
 
     when (val state = uiState) {
         is PostViewModel.PostUiState.Loading -> {
@@ -110,6 +132,7 @@ fun AlbumReviewScreen(
                     isLikedByUser = state.isLikedByCurrentUser,
                     commentText = commentText,
                     onGoBack = onGoBack,
+                    onDeletePost = { albumReviewViewModel.deletePost(state.post.id) },
                     onTextChanged = { albumReviewViewModel.updateText(it) },
                     onSendComment = { albumReviewViewModel.addComment() },
                     onLikeAlbumReview = { albumReviewViewModel.likeAlbumReview() },
@@ -142,6 +165,7 @@ fun AlbumReviewScreen(
                 isLikedByUser = state.isLikedByCurrentUser,
                 commentText = commentText,
                 onGoBack = onGoBack,
+                onDeletePost = { albumReviewViewModel.deletePost(state.post.id) },
                 onTextChanged = { albumReviewViewModel.updateText(it) },
                 onSendComment = { albumReviewViewModel.addComment() },
                 onLikeAlbumReview = { albumReviewViewModel.likeAlbumReview() },
@@ -169,12 +193,15 @@ fun AlbumReviewPostContent(
     onLikeComment: (Long) -> Unit,
     onUnlikeComment: (Long) -> Unit,
     navController: NavController,
-    remainingCharacters: Int
+    remainingCharacters: Int,
+    onDeletePost: () -> Unit
 ) {
     val pullRefreshState = rememberPullRefreshState(
         refreshing = false,
         onRefresh = { /* Should we refresh? */ }
     )
+
+    val showMenu = remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -186,7 +213,29 @@ fun AlbumReviewPostContent(
                 .fillMaxSize()
                 .background(BackgroundColor)
         ) {
-            TopBarWithBackButton(onGoBack = onGoBack) {
+            TopBarWithBackButton(onGoBack = onGoBack, rightButtonComposable = {
+                if (albumReview.user.userId == SharedPreferencesManager.getUserId()) {
+                    DebouncedIconButton(
+                        onClick = { showMenu.value = true },
+                        modifier = Modifier.size(35.dp),
+                        contentDescription = "Menu",
+                        iconResId = R.drawable.more
+                    )
+                    DropdownMenu(
+                        expanded = showMenu.value,
+                        onDismissRequest = { showMenu.value = false },
+                        modifier = Modifier.background(ElevatedBackgroundColor)
+                    ) {
+                        DropdownMenuItem(
+                            onClick = {
+                                onDeletePost()
+                                showMenu.value = false
+                            },
+                            text = { Text("Delete post", color = TryoutRed) }
+                        )
+                    }
+                }
+            }) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally

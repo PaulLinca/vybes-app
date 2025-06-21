@@ -296,9 +296,10 @@ fun FeedScreen(
 fun LoadingState() {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
+            .background(BackgroundColor)
             .padding(vertical = 40.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.TopCenter
     ) {
         CircularProgressIndicator(color = White)
     }

@@ -93,4 +93,9 @@ class PostsManager {
         }
         _allPosts.value = updatedPosts
     }
+
+    fun deletePost(postId: Long) {
+        _allPosts.value = _allPosts.value.filterNot { it.id == postId }
+        applyFilter()
+    }
 }

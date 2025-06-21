@@ -54,4 +54,6 @@ interface PostService {
     suspend fun searchAlbum(query: String): Response<List<AlbumSearchResult>>
 
     suspend fun getAlbum(id: String, findReview: Boolean): Response<Album>
+
+    suspend fun deletePost(postId: Long): Response<Void>
 }

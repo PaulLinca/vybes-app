@@ -12,8 +12,10 @@ import com.example.vybes.post.model.Post
 import com.example.vybes.post.model.Vybe
 import com.example.vybes.post.service.PostService
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -23,6 +25,14 @@ import retrofit2.Response
 abstract class PostViewModel<T : Post>(
     protected open val postService: PostService
 ) : ViewModel() {
+
+    private val _navigationEvents = MutableSharedFlow<NavigationEvent>()
+    val navigationEvents = _navigationEvents.asSharedFlow()
+
+    sealed class NavigationEvent {
+        object NavigateToHomeClearingBackStack : NavigationEvent()
+    }
+
     private val maxCommentLength = 500
 
     sealed class PostUiState<T : Post> {
@@ -183,6 +193,16 @@ abstract class PostViewModel<T : Post>(
                 _errorMessage.value = "Failed to add comment: ${error.localizedMessage}"
             }
             _isLoading.value = false
+        }
+    }
+
+    fun deletePost(postId: Long) {
+        viewModelScope.launch {
+            safeApiCall {
+                postService.deletePost(postId)
+            }.onSuccess {
+                _navigationEvents.emit(NavigationEvent.NavigateToHomeClearingBackStack)
+            }
         }
     }
 

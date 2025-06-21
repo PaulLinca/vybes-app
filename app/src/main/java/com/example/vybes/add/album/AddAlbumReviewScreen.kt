@@ -67,6 +67,7 @@ import com.example.vybes.common.theme.TryoutBlue
 import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.TryoutYellow
 import com.example.vybes.common.theme.VybesVeryDarkGray
+import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.post.model.AlbumReviewScreen
@@ -97,190 +98,30 @@ fun AddAlbumReviewScreen(
     val remainingCharacters = viewModel.remainingCharacters
 
     when (val state = uiState) {
-        is AddAlbumViewModel.ReviewUiState.Success -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(BackgroundColor),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    item {
-                        TopBarWithBackButton(onGoBack = onGoBack) {
-                            Text(
-                                text = stringResource(R.string.review_album),
-                                color = PrimaryTextColor,
-                                textAlign = TextAlign.Center,
-                                style = songTitleStyle,
-                            )
-                        }
-                    }
-
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            val painter = rememberAsyncImagePainter(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(state.album.imageUrl)
-                                    .size(Size.ORIGINAL)
-                                    .crossfade(true)
-                                    .build(),
-                                contentScale = ContentScale.Crop,
-                            )
-
-                            Image(
-                                painter = painter,
-                                contentDescription = "Album cover",
-                                modifier = Modifier
-                                    .size(200.dp)
-                                    .clip(RoundedCornerShape(12.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            Text(
-                                text = state.album.name,
-                                style = songTitleStyle,
-                                color = PrimaryTextColor,
-                                textAlign = TextAlign.Center
-                            )
-
-                            Text(
-                                text = state.album.releaseDate?.year.toString(),
-                                style = artistsStyle,
-                                color = SecondaryTextColor,
-                                textAlign = TextAlign.Center
-                            )
-
-                            Text(
-                                text = state.album.artists.joinToString(", ") { it.name },
-                                style = artistsStyle,
-                                color = SecondaryTextColor,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-
-                    item {
-                        AlbumRatingSection(
-                            rating = albumRating,
-                            onRatingChanged = viewModel::updateAlbumRating,
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-                    }
-
-                    item {
-                        Column(
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        ) {
-                            Text(
-                                text = "Write your review",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = PrimaryTextColor,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-
-                            Box(modifier = Modifier.fillMaxWidth()) {
-
-                                MultilineTextField(
-                                    enabled = true,
-                                    value = descriptionText,
-                                    onValueChanged = viewModel::updateText,
-                                    hintText = "Write your review here...",
-                                    textStyle = artistsStyle,
-                                    maxLines = 10,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(150.dp)
-                                        .clip(RoundedCornerShape(25.dp))
-                                        .background(
-                                            BackgroundColor,
-                                            shape = RoundedCornerShape(25.dp)
-                                        )
-                                        .border(
-                                            1.dp,
-                                            AccentBorderColor,
-                                            RoundedCornerShape(25.dp)
-                                        )
-                                        .animateContentSize()
-                                )
-
-                                Text(
-                                    text = "$remainingCharacters",
-                                    color = if (remainingCharacters < 50) TryoutRed else SecondaryTextColor,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier
-                                        .align(Alignment.BottomEnd)
-                                        .padding(end = 16.dp, bottom = 8.dp)
-                                )
-                            }
-                        }
-                    }
-
-                    item {
-                        Text(
-                            text = "Rate the tracks",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = PrimaryTextColor,
-                            modifier = Modifier.padding(start = 16.dp, top = 8.dp)
-                        )
-                    }
-
-                    item {
-                        Text(
-                            text = "Select up to 3 favorites",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = SecondaryTextColor,
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-                    }
-
-                    items(state.album.tracks) { track ->
-                        TrackRatingItem(
-                            track = track,
-                            rating = trackRatings[track.spotifyId],
-                            isFavorite = favoriteTrackIds.contains(track.spotifyId),
-                            onRatingChange = { rating ->
-                                viewModel.updateTrackRating(track.spotifyId, rating)
-                            },
-                            onFavoriteToggle = {
-                                viewModel.toggleFavoriteTrack(track.spotifyId)
-                            },
-                            canAddMoreFavorites = favoriteTrackIds.size < 3,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                        )
-                    }
-                    item {
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                                .height(48.dp),
-                        )
-                    }
-                }
-                Button(
-                    onClick = { viewModel.submit { onSubmitSuccess() } },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .height(48.dp)
-                        .align(Alignment.BottomCenter),
-                    enabled = !descriptionText.isBlank(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = VybesVeryDarkGray,
-                        contentColor = PrimaryTextColor
-                    )
-                ) {
-                    Text("Submit Review", color = PrimaryTextColor)
-                }
+        is AddAlbumViewModel.ReviewUiState.LoadingCall -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(BackgroundColor)
+                    .padding(vertical = 40.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = White)
             }
+        }
 
+        is AddAlbumViewModel.ReviewUiState.Success -> {
+            AddAlbumReviewScreenContent(
+                onGoBack,
+                state,
+                albumRating,
+                viewModel,
+                descriptionText,
+                remainingCharacters,
+                trackRatings,
+                favoriteTrackIds,
+                onSubmitSuccess
+            )
         }
 
         is AddAlbumViewModel.ReviewUiState.Loading -> {
@@ -378,6 +219,202 @@ fun AddAlbumReviewScreen(
 
         else -> {
 
+        }
+    }
+}
+
+@Composable
+private fun AddAlbumReviewScreenContent(
+    onGoBack: () -> Unit,
+    state: AddAlbumViewModel.ReviewUiState.Success,
+    albumRating: Int,
+    viewModel: AddAlbumViewModel,
+    descriptionText: String,
+    remainingCharacters: Int,
+    trackRatings: Map<String, TrackRating>,
+    favoriteTrackIds: List<String>,
+    onSubmitSuccess: () -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(BackgroundColor),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                TopBarWithBackButton(onGoBack = onGoBack) {
+                    Text(
+                        text = stringResource(R.string.review_album),
+                        color = PrimaryTextColor,
+                        textAlign = TextAlign.Center,
+                        style = songTitleStyle,
+                    )
+                }
+            }
+
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(state.album.imageUrl)
+                            .size(Size.ORIGINAL)
+                            .crossfade(true)
+                            .build(),
+                        contentScale = ContentScale.Crop,
+                    )
+
+                    Image(
+                        painter = painter,
+                        contentDescription = "Album cover",
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = state.album.name,
+                        style = songTitleStyle,
+                        color = PrimaryTextColor,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Text(
+                        text = state.album.releaseDate?.year.toString(),
+                        style = artistsStyle,
+                        color = SecondaryTextColor,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Text(
+                        text = state.album.artists.joinToString(", ") { it.name },
+                        style = artistsStyle,
+                        color = SecondaryTextColor,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            item {
+                AlbumRatingSection(
+                    rating = albumRating,
+                    onRatingChanged = viewModel::updateAlbumRating,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+
+            item {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    Text(
+                        text = "Write your review",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = PrimaryTextColor,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    Box(modifier = Modifier.fillMaxWidth()) {
+
+                        MultilineTextField(
+                            enabled = true,
+                            value = descriptionText,
+                            onValueChanged = viewModel::updateText,
+                            hintText = "Write your review here...",
+                            textStyle = artistsStyle,
+                            maxLines = 10,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp)
+                                .clip(RoundedCornerShape(25.dp))
+                                .background(
+                                    BackgroundColor,
+                                    shape = RoundedCornerShape(25.dp)
+                                )
+                                .border(
+                                    1.dp,
+                                    AccentBorderColor,
+                                    RoundedCornerShape(25.dp)
+                                )
+                                .animateContentSize()
+                        )
+
+                        Text(
+                            text = "$remainingCharacters",
+                            color = if (remainingCharacters < 50) TryoutRed else SecondaryTextColor,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(end = 16.dp, bottom = 8.dp)
+                        )
+                    }
+                }
+            }
+
+            item {
+                Text(
+                    text = "Rate the tracks",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = PrimaryTextColor,
+                    modifier = Modifier.padding(start = 16.dp, top = 8.dp)
+                )
+            }
+
+            item {
+                Text(
+                    text = "Select up to 3 favorites",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SecondaryTextColor,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+
+            items(state.album.tracks) { track ->
+                TrackRatingItem(
+                    track = track,
+                    rating = trackRatings[track.spotifyId],
+                    isFavorite = favoriteTrackIds.contains(track.spotifyId),
+                    onRatingChange = { rating ->
+                        viewModel.updateTrackRating(track.spotifyId, rating)
+                    },
+                    onFavoriteToggle = {
+                        viewModel.toggleFavoriteTrack(track.spotifyId)
+                    },
+                    canAddMoreFavorites = favoriteTrackIds.size < 3,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            }
+            item {
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .height(48.dp),
+                )
+            }
+        }
+        Button(
+            onClick = { viewModel.submit { onSubmitSuccess() } },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .height(48.dp)
+                .align(Alignment.BottomCenter),
+            enabled = !descriptionText.isBlank(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = VybesVeryDarkGray,
+                contentColor = PrimaryTextColor
+            )
+        ) {
+            Text("Submit Review", color = PrimaryTextColor)
         }
     }
 }

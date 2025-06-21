@@ -90,6 +90,11 @@ interface VybesApiClient {
     @GET("api/album-reviews/{albumReviewId}")
     suspend fun getAlbumReviewById(@Path("albumReviewId") albumReviewId: Long): Response<AlbumReview>
 
+    @DELETE("api/posts/{postId}")
+    suspend fun deletePost(
+        @Path("postId") postId: Long
+    ): Response<Void>
+
     @POST("api/posts/{postId}/likes")
     suspend fun likePost(@Path("postId") postId: Long): Response<LikeResponse>
 
