@@ -1,5 +1,6 @@
 package com.example.vybes.network
 
+import com.example.vybes.BuildConfig
 import com.example.vybes.auth.AuthEvent
 import com.example.vybes.auth.AuthEventBus
 import com.example.vybes.auth.model.LoginResponse
@@ -74,7 +75,7 @@ object TokenAuthenticator : Authenticator {
         val okHttpClient = OkHttpClient().newBuilder()
             .build()
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://vybes-service.onrender.com/")
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
             .build()

@@ -1,5 +1,6 @@
 package com.example.vybes.dependencyInjection
 
+import com.example.vybes.BuildConfig
 import com.example.vybes.auth.service.AuthService
 import com.example.vybes.auth.service.VybesAuthService
 import com.example.vybes.auth.setup.UserService
@@ -57,7 +58,7 @@ object AppModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("https://vybes-service.onrender.com/")
+            .baseUrl(BuildConfig.BASE_URL)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()

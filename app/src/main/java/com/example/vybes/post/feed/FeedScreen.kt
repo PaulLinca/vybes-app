@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.vybes.BuildConfig
 import com.example.vybes.R
 import com.example.vybes.add.album.SearchAlbumScreen
 import com.example.vybes.add.vybe.SearchTrackScreen
@@ -409,7 +410,7 @@ fun TopBar(
                     .size(30.dp)
                     .clip(CircleShape),
                 contentDescription = "Profile Button",
-                pictureUrl = "https://vybes-service.onrender.com/api/user/profilePicture/${SharedPreferencesManager.getUserId()}"
+                pictureUrl = BuildConfig.BASE_URL + "api/user/profilePicture/${SharedPreferencesManager.getUserId()}"
             )
         }
     )
