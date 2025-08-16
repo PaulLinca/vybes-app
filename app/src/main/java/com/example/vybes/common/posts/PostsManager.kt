@@ -88,10 +88,10 @@ class PostsManager {
                 is AlbumReview -> if (post.id == postId) {
                     post.copy(likes = update(post.likes.orEmpty()))
                 } else post
-                else -> post
             }
         }
         _allPosts.value = updatedPosts
+        applyFilter()
     }
 
     fun deletePost(postId: Long) {

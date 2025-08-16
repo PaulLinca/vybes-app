@@ -6,6 +6,7 @@ import com.example.vybes.common.posts.PostFilter
 import com.example.vybes.common.posts.PostsManager
 import com.example.vybes.post.model.Like
 import com.example.vybes.post.service.PostService
+import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -129,25 +130,37 @@ class FeedViewModel @Inject constructor(
     fun clickLikeButton(postId: Long, isLikedByCurrentUser: Boolean) {
         _likeLoadingStates.value += (postId to true)
 
+        // Optimistically update UI
         if (isLikedByCurrentUser) {
-            unlikePost(postId)
+            updatePostLikes(postId) { currentLikes ->
+                currentLikes.filter { it.userId != SharedPreferencesManager.getUserId() }
+            }
+            unlikePost(postId, revertOnFailure = true)
         } else {
-            likePost(postId)
+            updatePostLikes(postId) { currentLikes ->
+                currentLikes + Like(SharedPreferencesManager.getUserId())
+            }
+            likePost(postId, revertOnFailure = true)
         }
     }
 
-    private fun likePost(postId: Long) {
+    private fun likePost(postId: Long, revertOnFailure: Boolean) {
         viewModelScope.launch {
             try {
                 val response = postService.likePost(postId)
-                if (response.isSuccessful && response.body() != null) {
+                if (!(response.isSuccessful && response.body() != null) && revertOnFailure) {
+                    // Revert optimistic update
                     updatePostLikes(postId) { currentLikes ->
-                        currentLikes + Like(response.body()!!.userId)
+                        currentLikes.filter { it.userId != SharedPreferencesManager.getUserId() }
                     }
-                } else {
                     postsManager.setError("Failed to like post")
                 }
             } catch (e: Exception) {
+                if (revertOnFailure) {
+                    updatePostLikes(postId) { currentLikes ->
+                        currentLikes.filter { it.userId != SharedPreferencesManager.getUserId() }
+                    }
+                }
                 postsManager.setError("Network error while liking post")
             } finally {
                 _likeLoadingStates.value -= postId
@@ -155,18 +168,23 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    private fun unlikePost(postId: Long) {
+    private fun unlikePost(postId: Long, revertOnFailure: Boolean) {
         viewModelScope.launch {
             try {
                 val response = postService.unlikePost(postId)
-                if (response.isSuccessful && response.body() != null) {
+                if (!(response.isSuccessful && response.body() != null) && revertOnFailure) {
+                    // Revert optimistic update
                     updatePostLikes(postId) { currentLikes ->
-                        currentLikes.filter { it.userId != response.body()!!.userId }
+                        currentLikes + Like(SharedPreferencesManager.getUserId())
                     }
-                } else {
                     postsManager.setError("Failed to unlike post")
                 }
             } catch (e: Exception) {
+                if (revertOnFailure) {
+                    updatePostLikes(postId) { currentLikes ->
+                        currentLikes + Like(SharedPreferencesManager.getUserId())
+                    }
+                }
                 postsManager.setError("Network error while unliking post")
             } finally {
                 _likeLoadingStates.value -= postId
