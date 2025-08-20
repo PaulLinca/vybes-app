@@ -42,6 +42,7 @@ class AddAlbumViewModel @Inject constructor(
     }
 
     private val _album = MutableStateFlow<Album?>(null)
+    private val _doesReviewExist = MutableStateFlow(false)
     private val _isLoading = MutableStateFlow(true)
     private val _errorMessage = MutableStateFlow<String?>(null)
     private var _descriptionText: String by mutableStateOf("")
@@ -50,6 +51,7 @@ class AddAlbumViewModel @Inject constructor(
     private val _favoriteTrackIds = mutableStateListOf<String>()
     private var _remainingCharacters: Int by mutableStateOf(maxReviewLength)
 
+    val doesReviewExist = _doesReviewExist.asStateFlow()
     val descriptionText: String get() = _descriptionText
     val albumRating: Int get() = _albumRating
     val trackRatings: Map<String, TrackRating> get() = _trackRatings.toMap()
@@ -73,6 +75,7 @@ class AddAlbumViewModel @Inject constructor(
 
     init {
         loadAlbum()
+        checkIfReviewExists()
     }
 
     fun updateText(updatedText: String) {
@@ -128,6 +131,16 @@ class AddAlbumViewModel @Inject constructor(
             }
 
             _isLoading.value = false
+        }
+    }
+
+    private fun checkIfReviewExists() {
+        viewModelScope.launch {
+            safeApiCall { postService.getAlbumReviewsBySpotifyId(args.spotifyId) }.onSuccess { a ->
+                if (a.isNotEmpty()) {
+                    _doesReviewExist.value = true
+                }
+            }.onFailure {}
         }
     }
 

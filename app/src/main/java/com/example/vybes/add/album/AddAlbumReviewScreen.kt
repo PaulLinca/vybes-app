@@ -63,7 +63,9 @@ import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.IconColor
 import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.SecondaryTextColor
+import com.example.vybes.common.theme.SubtleBorderColor
 import com.example.vybes.common.theme.TryoutBlue
+import com.example.vybes.common.theme.TryoutOrange
 import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.TryoutYellow
 import com.example.vybes.common.theme.VybesVeryDarkGray
@@ -94,6 +96,7 @@ fun AddAlbumReviewScreen(
     val trackRatings = viewModel.trackRatings
     val favoriteTrackIds = viewModel.favoriteTrackIds
     val remainingCharacters = viewModel.remainingCharacters
+    val doesReviewExist by viewModel.doesReviewExist.collectAsState()
 
     when (val state = uiState) {
         is AddAlbumViewModel.ReviewUiState.LoadingCall -> {
@@ -112,6 +115,7 @@ fun AddAlbumReviewScreen(
             AddAlbumReviewScreenContent(
                 onGoBack,
                 state,
+                doesReviewExist,
                 albumRating,
                 viewModel,
                 descriptionText,
@@ -162,6 +166,7 @@ fun AddAlbumReviewScreen(
 private fun AddAlbumReviewScreenContent(
     onGoBack: () -> Unit,
     state: AddAlbumViewModel.ReviewUiState.Success,
+    doesReviewExist: Boolean,
     albumRating: Int,
     viewModel: AddAlbumViewModel,
     descriptionText: String,
@@ -195,6 +200,26 @@ private fun AddAlbumReviewScreenContent(
                         .padding(horizontal = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
+                    if (doesReviewExist) {
+                        Box(
+                            modifier = Modifier
+                                .background(BackgroundColor, shape = RoundedCornerShape(5.dp))
+                                .border(1.dp, SubtleBorderColor, RoundedCornerShape(5.dp))
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Text(
+                                text = "You've already reviewed this album",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TryoutOrange,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
                     val painter = rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(state.album.imageUrl)
