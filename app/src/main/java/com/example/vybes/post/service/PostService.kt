@@ -27,6 +27,8 @@ interface PostService {
 
     suspend fun getAlbumReview(id: Long): Response<AlbumReview>
 
+    suspend fun getAlbumReviewsBySpotifyId(albumSpotifyId: String): Response<List<AlbumReview>>
+
     suspend fun postVybe(id: String, description: String): Response<Vybe>
 
     suspend fun postAlbumReview(request: CreateAlbumReviewRequest): Response<Void>
@@ -53,7 +55,7 @@ interface PostService {
 
     suspend fun searchAlbum(query: String): Response<List<AlbumSearchResult>>
 
-    suspend fun getAlbum(id: String, findReview: Boolean): Response<Album>
+    suspend fun getAlbum(id: String): Response<Album>
 
     suspend fun deletePost(postId: Long): Response<Void>
 }

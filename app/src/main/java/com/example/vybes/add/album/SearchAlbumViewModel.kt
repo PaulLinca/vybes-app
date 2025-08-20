@@ -22,10 +22,10 @@ class SearchAlbumViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     updateResults(response.body().orEmpty())
                 } else {
-                    updateErrorState("Error searching tracks")
+                    updateErrorState("Error searching albums")
                 }
             } catch (e: Exception) {
-                updateErrorState("Error searching tracks: ${e.message}")
+                updateErrorState("Error searching albums: ${e.message}")
             } finally {
                 updateLoadingState(false)
             }

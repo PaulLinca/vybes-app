@@ -38,7 +38,6 @@ class AddAlbumViewModel @Inject constructor(
         data object Loading : ReviewUiState()
         data class LoadingCall(val album: Album) : ReviewUiState()
         data class Success(val album: Album) : ReviewUiState()
-        data class AlbumReviewExists(val album: Album) : ReviewUiState()
         data class Error(val message: String) : ReviewUiState()
     }
 
@@ -66,7 +65,6 @@ class AddAlbumViewModel @Inject constructor(
         when {
             album != null && isLoading -> ReviewUiState.LoadingCall(album)
             isLoading -> ReviewUiState.Loading
-            album?.reviewId != null -> ReviewUiState.AlbumReviewExists(album)
             error != null -> ReviewUiState.Error(error)
             album != null -> ReviewUiState.Success(album)
             else -> ReviewUiState.Loading
@@ -123,7 +121,7 @@ class AddAlbumViewModel @Inject constructor(
             _isLoading.value = true
             _errorMessage.value = null
 
-            safeApiCall { postService.getAlbum(args.spotifyId, true) }.onSuccess { a ->
+            safeApiCall { postService.getAlbum(args.spotifyId) }.onSuccess { a ->
                 _album.value = a
             }.onFailure { error ->
                 _errorMessage.value = "Failed to load album: ${error.localizedMessage}"

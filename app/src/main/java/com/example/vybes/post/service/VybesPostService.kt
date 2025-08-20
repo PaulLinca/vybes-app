@@ -42,6 +42,10 @@ class VybesPostService @Inject constructor(
         return vybesApiClient.getAlbumReviewById(id)
     }
 
+    override suspend fun getAlbumReviewsBySpotifyId(albumSpotifyId: String): Response<List<AlbumReview>> {
+        return vybesApiClient.getAlbumReviewBySpotifyId(albumSpotifyId)
+    }
+
     override suspend fun postVybe(id: String, description: String): Response<Vybe> {
         return vybesApiClient.post(PostRequest(id, ZonedDateTime.now(), description))
     }
@@ -103,7 +107,7 @@ class VybesPostService @Inject constructor(
         return vybesApiClient.getAlbumSearchResults(query)
     }
 
-    override suspend fun getAlbum(id: String, findReview: Boolean): Response<Album> {
-        return vybesApiClient.getAlbum(id, findReview)
+    override suspend fun getAlbum(id: String): Response<Album> {
+        return vybesApiClient.getAlbum(id)
     }
 }

@@ -23,8 +23,7 @@ data class Album(
     val tracks: List<Track>,
     override val name: String,
     override val imageUrl: String,
-    val releaseDate: LocalDate?,
-    val reviewId: Long? = null
+    val releaseDate: LocalDate?
 ) : MediaItem
 
 data class Track(

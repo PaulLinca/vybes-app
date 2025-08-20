@@ -90,6 +90,11 @@ interface VybesApiClient {
     @GET("api/album-reviews/{albumReviewId}")
     suspend fun getAlbumReviewById(@Path("albumReviewId") albumReviewId: Long): Response<AlbumReview>
 
+    @GET("api/album-reviews")
+    suspend fun getAlbumReviewBySpotifyId(
+        @Query("albumSpotifyId") albumSpotifyId: String
+    ): Response<List<AlbumReview>>
+
     @DELETE("api/posts/{postId}")
     suspend fun deletePost(
         @Path("postId") postId: Long
@@ -152,8 +157,7 @@ interface VybesApiClient {
 
     @GET("api/music/album")
     suspend fun getAlbum(
-        @Query("id") id: String,
-        @Query("findReview") findReview: Boolean
+        @Query("id") id: String
     ): Response<Album>
 
     @POST("api/feedback/submit")

@@ -9,7 +9,4 @@ data class AlbumSearchResult(
     override val imageUrl: String,
     override val spotifyId: String,
     override val artists: List<ArtistSearchResult>
-) : MediaItem, SearchResultItem {
-    override val id: String
-        get() = spotifyId
-}
+) : MediaItem, SearchResultItem

@@ -133,7 +133,7 @@ fun AddPostScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             Button(
-                onClick = { viewModel.submit(searchResult.id) },
+                onClick = { viewModel.submit(searchResult.spotifyId) },
                 enabled = !isLoading,
                 modifier = Modifier
                     .fillMaxWidth()

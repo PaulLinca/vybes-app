@@ -4,14 +4,14 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TrackSearchResult(
-    override val id: String,
+    override val spotifyId: String,
     override val name: String,
     override val artists: List<ArtistSearchResult>,
     override val imageUrl: String
 ) : SearchResultItem
 
 interface SearchResultItem {
-    val id: String
+    val spotifyId: String
     val name: String
     val artists: List<ArtistSearchResult>
     val imageUrl: String
