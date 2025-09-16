@@ -1,4 +1,4 @@
-package com.example.vybes.auth.model
+package com.example.vybes.network.response
 
 data class LoginResponse(
     val userId: Long,

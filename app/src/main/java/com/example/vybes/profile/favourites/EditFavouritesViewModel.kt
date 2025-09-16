@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.vybes.auth.model.MediaItem
+import com.example.vybes.network.response.MediaItem
 import com.example.vybes.auth.setup.UserService
 import com.example.vybes.post.service.VybesPostService
 import com.example.vybes.sharedpreferences.SharedPreferencesManager

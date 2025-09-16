@@ -1,4 +1,4 @@
-package com.example.vybes.post.model.network
+package com.example.vybes.network.response
 
 data class PageResponse<T>(
     val content: List<T>,

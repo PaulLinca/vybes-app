@@ -1,4 +1,4 @@
-package com.example.vybes.add.model
+package com.example.vybes.model
 
 import kotlinx.serialization.Serializable
 

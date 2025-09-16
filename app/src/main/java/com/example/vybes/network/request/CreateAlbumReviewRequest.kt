@@ -1,4 +1,4 @@
-package com.example.vybes.post.model.network
+package com.example.vybes.network.request
 
 import androidx.compose.ui.graphics.Color
 import com.example.vybes.common.theme.TryoutBlue

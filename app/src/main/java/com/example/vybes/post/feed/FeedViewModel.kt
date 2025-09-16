@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vybes.common.posts.PostFilter
 import com.example.vybes.common.posts.PostsManager
-import com.example.vybes.post.model.Like
+import com.example.vybes.model.Like
 import com.example.vybes.post.service.PostService
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel

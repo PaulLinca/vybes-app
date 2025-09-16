@@ -5,11 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.vybes.post.model.AlbumReview
-import com.example.vybes.post.model.Comment
-import com.example.vybes.post.model.Like
-import com.example.vybes.post.model.Post
-import com.example.vybes.post.model.Vybe
+import com.example.vybes.model.AlbumReview
+import com.example.vybes.model.Comment
+import com.example.vybes.model.Like
+import com.example.vybes.model.Post
+import com.example.vybes.model.Vybe
 import com.example.vybes.post.service.PostService
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import kotlinx.coroutines.flow.MutableSharedFlow

@@ -78,10 +78,10 @@ import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.common.util.DateUtils
-import com.example.vybes.post.model.AlbumReview
-import com.example.vybes.post.model.Post
-import com.example.vybes.post.model.User
-import com.example.vybes.post.model.Vybe
+import com.example.vybes.model.AlbumReview
+import com.example.vybes.model.Post
+import com.example.vybes.model.User
+import com.example.vybes.model.Vybe
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import java.time.ZonedDateTime
 

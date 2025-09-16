@@ -11,9 +11,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.vybes.add.album.AddAlbumReviewScreen
 import com.example.vybes.add.album.SearchAlbumScreen
-import com.example.vybes.add.model.ArtistSearchResult
-import com.example.vybes.add.model.ArtistSearchResultNavType
-import com.example.vybes.add.model.TrackSearchResult
+import com.example.vybes.model.ArtistSearchResult
+import com.example.vybes.model.ArtistSearchResultNavType
+import com.example.vybes.model.TrackSearchResult
 import com.example.vybes.add.vybe.AddPostScreen
 import com.example.vybes.add.vybe.SearchTrackScreen
 import com.example.vybes.auth.AuthEvent
@@ -23,9 +23,9 @@ import com.example.vybes.feedback.FeedbackScreen
 import com.example.vybes.post.AlbumReviewScreen
 import com.example.vybes.post.VybePostScreen
 import com.example.vybes.post.feed.FeedScreen
-import com.example.vybes.post.model.AlbumReviewScreen
-import com.example.vybes.post.model.User
-import com.example.vybes.post.model.VybeScreen
+import com.example.vybes.model.AlbumReviewScreen
+import com.example.vybes.model.User
+import com.example.vybes.model.VybeScreen
 import com.example.vybes.profile.ProfileScreen
 import com.example.vybes.profile.favourites.EditFavouritesScreen
 import dagger.hilt.android.AndroidEntryPoint

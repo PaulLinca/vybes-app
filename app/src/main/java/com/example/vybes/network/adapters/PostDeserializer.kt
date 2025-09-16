@@ -1,8 +1,8 @@
 package com.example.vybes.network.adapters
 
-import com.example.vybes.post.model.AlbumReview
-import com.example.vybes.post.model.Post
-import com.example.vybes.post.model.Vybe
+import com.example.vybes.model.AlbumReview
+import com.example.vybes.model.Post
+import com.example.vybes.model.Vybe
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement

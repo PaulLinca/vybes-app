@@ -1,6 +1,6 @@
 package com.example.vybes.profile
 
-import com.example.vybes.auth.model.UserResponse
+import com.example.vybes.network.response.UserResponse
 
 data class ProfileUiState(
     val isLoadingUser: Boolean = false,

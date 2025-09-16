@@ -1,8 +1,8 @@
-package com.example.vybes.post.model
+package com.example.vybes.model
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
-import com.example.vybes.post.model.network.TrackRating
+import com.example.vybes.network.request.TrackRating
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.ZonedDateTime

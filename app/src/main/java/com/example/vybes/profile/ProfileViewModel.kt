@@ -10,7 +10,7 @@ import com.example.vybes.auth.AuthEventBus
 import com.example.vybes.auth.setup.UserService
 import com.example.vybes.common.posts.PostFilter
 import com.example.vybes.common.posts.PostsManager
-import com.example.vybes.post.model.User
+import com.example.vybes.model.User
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

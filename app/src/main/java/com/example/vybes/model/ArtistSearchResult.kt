@@ -1,9 +1,9 @@
-package com.example.vybes.add.model
+package com.example.vybes.model
 
 import android.net.Uri
 import android.os.Bundle
 import androidx.navigation.NavType
-import com.example.vybes.auth.model.MediaItem
+import com.example.vybes.network.response.MediaItem
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

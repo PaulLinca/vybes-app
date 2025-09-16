@@ -2,8 +2,8 @@ package com.example.vybes.post
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.example.vybes.post.model.AlbumReview
-import com.example.vybes.post.model.AlbumReviewScreen
+import com.example.vybes.model.AlbumReview
+import com.example.vybes.model.AlbumReviewScreen
 import com.example.vybes.post.service.PostService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

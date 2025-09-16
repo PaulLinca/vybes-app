@@ -1,9 +1,9 @@
 package com.example.vybes.common.posts
 
-import com.example.vybes.post.model.AlbumReview
-import com.example.vybes.post.model.Like
-import com.example.vybes.post.model.Post
-import com.example.vybes.post.model.Vybe
+import com.example.vybes.model.AlbumReview
+import com.example.vybes.model.Like
+import com.example.vybes.model.Post
+import com.example.vybes.model.Vybe
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 

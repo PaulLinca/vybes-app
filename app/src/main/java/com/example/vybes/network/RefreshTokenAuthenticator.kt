@@ -3,7 +3,7 @@ package com.example.vybes.network
 import com.example.vybes.BuildConfig
 import com.example.vybes.auth.AuthEvent
 import com.example.vybes.auth.AuthEventBus
-import com.example.vybes.auth.model.LoginResponse
+import com.example.vybes.network.response.LoginResponse
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.runBlocking

@@ -1,8 +1,8 @@
 package com.example.vybes.common.posts
 
-import com.example.vybes.post.model.AlbumReview
-import com.example.vybes.post.model.Post
-import com.example.vybes.post.model.Vybe
+import com.example.vybes.model.AlbumReview
+import com.example.vybes.model.Post
+import com.example.vybes.model.Vybe
 
 enum class PostFilter {
     ALL, VYBES, ALBUM_REVIEWS;

@@ -68,11 +68,11 @@ import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.logoStyle
-import com.example.vybes.post.model.AlbumReview
-import com.example.vybes.post.model.AlbumReviewScreen
-import com.example.vybes.post.model.User
-import com.example.vybes.post.model.Vybe
-import com.example.vybes.post.model.VybeScreen
+import com.example.vybes.model.AlbumReview
+import com.example.vybes.model.AlbumReviewScreen
+import com.example.vybes.model.User
+import com.example.vybes.model.Vybe
+import com.example.vybes.model.VybeScreen
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged

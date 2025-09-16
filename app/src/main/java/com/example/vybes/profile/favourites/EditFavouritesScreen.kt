@@ -54,7 +54,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.vybes.R
-import com.example.vybes.auth.model.MediaItem
+import com.example.vybes.network.response.MediaItem
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.BackgroundColor
@@ -68,7 +68,7 @@ import com.example.vybes.common.theme.VybesVeryDarkGray
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.post.feed.FeedScreen
-import com.example.vybes.post.model.User
+import com.example.vybes.model.User
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import kotlinx.serialization.Serializable
 

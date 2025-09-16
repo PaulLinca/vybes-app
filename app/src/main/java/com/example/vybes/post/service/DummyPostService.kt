@@ -4,7 +4,7 @@
 //import com.example.vybes.post.model.Like
 //import com.example.vybes.post.model.User
 //import com.example.vybes.post.model.Vybe
-//import com.example.vybes.post.model.network.LikeResponse
+//import com.example.vybes.network.response.LikeResponse
 //import retrofit2.Response
 //import java.time.ZonedDateTime
 //import java.time.format.DateTimeFormatter

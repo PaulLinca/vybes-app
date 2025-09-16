@@ -1,8 +1,8 @@
 package com.example.vybes.auth.service
 
-import com.example.vybes.auth.model.AuthRequest
-import com.example.vybes.auth.model.LoginResponse
-import com.example.vybes.auth.model.RegisterResponse
+import com.example.vybes.network.request.AuthRequest
+import com.example.vybes.network.response.LoginResponse
+import com.example.vybes.network.response.RegisterResponse
 import com.example.vybes.network.VybesApiClient
 import retrofit2.Response
 

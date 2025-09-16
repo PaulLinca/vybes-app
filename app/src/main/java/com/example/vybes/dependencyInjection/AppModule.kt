@@ -13,7 +13,7 @@ import com.example.vybes.network.VybesApiClient
 import com.example.vybes.network.adapters.LocalDateTypeAdapter
 import com.example.vybes.network.adapters.PostDeserializer
 import com.example.vybes.network.adapters.ZonedDateTimeTypeAdapter
-import com.example.vybes.post.model.Post
+import com.example.vybes.model.Post
 import com.example.vybes.post.service.PostService
 import com.example.vybes.post.service.VybesPostService
 import com.google.gson.Gson

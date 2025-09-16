@@ -65,7 +65,7 @@ import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.common.util.DateUtils
 import com.example.vybes.post.feed.FeedScreen
 import com.example.vybes.post.feed.StatsBar
-import com.example.vybes.post.model.Vybe
+import com.example.vybes.model.Vybe
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import java.util.stream.Collectors
 

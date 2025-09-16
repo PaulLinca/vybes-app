@@ -54,7 +54,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
-import com.example.vybes.auth.model.Track
+import com.example.vybes.network.response.Track
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.AccentBorderColor
@@ -72,7 +72,7 @@ import com.example.vybes.common.theme.VybesVeryDarkGray
 import com.example.vybes.common.theme.White
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
-import com.example.vybes.post.model.network.TrackRating
+import com.example.vybes.network.request.TrackRating
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 

@@ -76,8 +76,8 @@ import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.common.util.DateUtils
 import com.example.vybes.post.feed.FeedScreen
 import com.example.vybes.post.feed.StatsBar
-import com.example.vybes.post.model.AlbumReview
-import com.example.vybes.post.model.TrackReviewDTO
+import com.example.vybes.model.AlbumReview
+import com.example.vybes.model.TrackReviewDTO
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 
 @Composable

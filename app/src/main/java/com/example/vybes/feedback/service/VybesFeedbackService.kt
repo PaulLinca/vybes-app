@@ -1,6 +1,6 @@
 package com.example.vybes.feedback.service
 
-import com.example.vybes.feedback.model.FeedbackRequest
+import com.example.vybes.network.request.FeedbackRequest
 import com.example.vybes.network.VybesApiClient
 import retrofit2.Response
 import javax.inject.Inject

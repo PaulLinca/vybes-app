@@ -1,24 +1,24 @@
 package com.example.vybes.network
 
-import com.example.vybes.add.model.AlbumSearchResult
-import com.example.vybes.add.model.ArtistSearchResult
-import com.example.vybes.add.model.TrackSearchResult
-import com.example.vybes.auth.model.Album
-import com.example.vybes.auth.model.AuthRequest
-import com.example.vybes.auth.model.LoginResponse
-import com.example.vybes.auth.model.RegisterResponse
-import com.example.vybes.auth.model.SetFavoritesRequest
-import com.example.vybes.auth.model.UserResponse
-import com.example.vybes.auth.model.UsernameSetupRequest
-import com.example.vybes.feedback.model.FeedbackRequest
-import com.example.vybes.post.model.AlbumReview
-import com.example.vybes.post.model.Comment
-import com.example.vybes.post.model.Post
-import com.example.vybes.post.model.Vybe
-import com.example.vybes.post.model.network.AddCommentRequest
-import com.example.vybes.post.model.network.CreateAlbumReviewRequest
-import com.example.vybes.post.model.network.LikeResponse
-import com.example.vybes.post.model.network.PageResponse
+import com.example.vybes.model.AlbumSearchResult
+import com.example.vybes.model.ArtistSearchResult
+import com.example.vybes.model.TrackSearchResult
+import com.example.vybes.network.response.Album
+import com.example.vybes.network.request.AuthRequest
+import com.example.vybes.network.response.LoginResponse
+import com.example.vybes.network.response.RegisterResponse
+import com.example.vybes.network.request.SetFavoritesRequest
+import com.example.vybes.network.response.UserResponse
+import com.example.vybes.network.request.UsernameSetupRequest
+import com.example.vybes.network.request.FeedbackRequest
+import com.example.vybes.model.AlbumReview
+import com.example.vybes.model.Comment
+import com.example.vybes.model.Post
+import com.example.vybes.model.Vybe
+import com.example.vybes.network.request.AddCommentRequest
+import com.example.vybes.network.request.CreateAlbumReviewRequest
+import com.example.vybes.network.response.LikeResponse
+import com.example.vybes.network.response.PageResponse
 import com.example.vybes.post.service.PostRequest
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -77,6 +77,9 @@ interface VybesApiClient {
         @Query("sort") sort: String? = "createdAt",
         @Query("direction") direction: String? = "DESC"
     ): Response<PageResponse<Post>>
+
+    @GET("api/feature-challenges/featured-challenge")
+    suspend fun getFeaturedChallenge(): Response<FeaturedChallenge>
 
     @POST("api/vybes/post")
     suspend fun post(@Body postRequest: PostRequest): Response<Vybe>

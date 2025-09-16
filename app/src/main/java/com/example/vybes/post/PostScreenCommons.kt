@@ -43,7 +43,7 @@ import com.example.vybes.common.theme.SecondaryTextColor
 import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.util.DateUtils
-import com.example.vybes.post.model.Comment
+import com.example.vybes.model.Comment
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 
 

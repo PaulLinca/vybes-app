@@ -1,4 +1,4 @@
-package com.example.vybes.post.model
+package com.example.vybes.model
 
 import java.time.ZonedDateTime
 

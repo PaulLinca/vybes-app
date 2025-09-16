@@ -1,3 +1,3 @@
-package com.example.vybes.auth.model
+package com.example.vybes.network.response
 
 data class RegisterResponse(val userId: Long, val username: String)
