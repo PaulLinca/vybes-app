@@ -12,6 +12,7 @@ import com.example.vybes.network.response.UserResponse
 import com.example.vybes.network.request.UsernameSetupRequest
 import com.example.vybes.network.request.FeedbackRequest
 import com.example.vybes.model.AlbumReview
+import com.example.vybes.model.Challenge
 import com.example.vybes.model.Comment
 import com.example.vybes.model.Post
 import com.example.vybes.model.Vybe
@@ -78,8 +79,8 @@ interface VybesApiClient {
         @Query("direction") direction: String? = "DESC"
     ): Response<PageResponse<Post>>
 
-    @GET("api/feature-challenges/featured-challenge")
-    suspend fun getFeaturedChallenge(): Response<FeaturedChallenge>
+    @GET("api/featured-challenges/current")
+    suspend fun getFeaturedChallenge(): Response<Challenge?>
 
     @POST("api/vybes/post")
     suspend fun post(@Body postRequest: PostRequest): Response<Vybe>

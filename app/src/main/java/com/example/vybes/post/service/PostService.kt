@@ -5,6 +5,7 @@ import com.example.vybes.model.ArtistSearchResult
 import com.example.vybes.model.TrackSearchResult
 import com.example.vybes.network.response.Album
 import com.example.vybes.model.AlbumReview
+import com.example.vybes.model.Challenge
 import com.example.vybes.model.Comment
 import com.example.vybes.model.Post
 import com.example.vybes.model.Vybe
@@ -22,6 +23,8 @@ interface PostService {
         sort: String? = "postedDate",
         direction: String? = "DESC"
     ): Response<PageResponse<Post>>
+
+    suspend fun getFeaturedChallenge(): Response<Challenge?>
 
     suspend fun getVybe(id: Long): Response<Vybe>
 

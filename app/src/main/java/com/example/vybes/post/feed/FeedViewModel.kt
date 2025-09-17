@@ -35,6 +35,7 @@ class FeedViewModel @Inject constructor(
 
     init {
         loadInitialPosts()
+        loadFeaturedChallenge()
     }
 
     private fun loadInitialPosts() {
@@ -62,6 +63,12 @@ class FeedViewModel @Inject constructor(
             } finally {
                 postsManager.setLoadingState(false)
             }
+        }
+    }
+
+    private fun loadFeaturedChallenge() {
+        viewModelScope.launch {
+            postService.getFeaturedChallenge()
         }
     }
 
