@@ -1,7 +1,9 @@
 package com.example.vybes.post
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,23 +14,26 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,9 +49,14 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -65,7 +75,6 @@ import com.example.vybes.common.theme.BackgroundColor
 import com.example.vybes.common.theme.ElevatedBackgroundColor
 import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.SecondaryTextColor
-import com.example.vybes.common.theme.SubtleBorderColor
 import com.example.vybes.common.theme.TryoutBlue
 import com.example.vybes.common.theme.TryoutGreen
 import com.example.vybes.common.theme.TryoutOrange
@@ -74,10 +83,10 @@ import com.example.vybes.common.theme.TryoutYellow
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
 import com.example.vybes.common.util.DateUtils
-import com.example.vybes.post.feed.FeedScreen
-import com.example.vybes.post.feed.StatsBar
 import com.example.vybes.model.AlbumReview
 import com.example.vybes.model.TrackReviewDTO
+import com.example.vybes.post.feed.FeedScreen
+import com.example.vybes.post.feed.StatsBar
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 
 @Composable
@@ -406,37 +415,47 @@ fun AlbumBanner(albumReview: AlbumReview) {
         }
     }
 }
-
 @Composable
 fun AlbumRatingSection(score: Int?) {
-    Card(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        backgroundColor = ElevatedBackgroundColor,
-        elevation = 2.dp,
-        shape = RoundedCornerShape(12.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Overall Rating",
-                style = MaterialTheme.typography.subtitle2,
-                color = PrimaryTextColor,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            if (score != null) {
+        if (score != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                when {
+                                    score >= 8 -> TryoutGreen.copy(alpha = 0.15f)
+                                    score >= 6 -> TryoutBlue.copy(alpha = 0.15f)
+                                    score >= 4 -> TryoutYellow.copy(alpha = 0.15f)
+                                    score >= 2 -> TryoutOrange.copy(alpha = 0.15f)
+                                    else -> TryoutRed.copy(alpha = 0.15f)
+                                },
+                                ElevatedBackgroundColor.copy(alpha = 0.8f)
+                            ),
+                            start = Offset(500f, 0f),
+                            end = Offset(500f, 200f)
+                        ),
+                        shape = RoundedCornerShape(20.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
                 Row(
-                    verticalAlignment = Alignment.Bottom,
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = score.toString(),
-                        style = MaterialTheme.typography.body1.copy(
-                            fontWeight = FontWeight.Bold
+                        style = TextStyle(
+                            fontSize = 48.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-1).sp
                         ),
                         color = when {
                             score >= 8 -> TryoutGreen
@@ -448,14 +467,39 @@ fun AlbumRatingSection(score: Int?) {
                     )
                     Text(
                         text = "/10",
-                        style = MaterialTheme.typography.body1,
-                        color = SecondaryTextColor
+                        style = TextStyle(
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Medium
+                        ),
+                        color = SecondaryTextColor,
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                 }
-            } else {
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                ElevatedBackgroundColor.copy(alpha = 0.6f),
+                                ElevatedBackgroundColor.copy(alpha = 0.3f)
+                            ),
+                            start = Offset(0f, 0f),
+                            end = Offset(1000f, 1000f)
+                        ),
+                        shape = RoundedCornerShape(20.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
-                    text = "No rating provided",
-                    style = MaterialTheme.typography.body2,
+                    text = "No Rating",
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    ),
                     color = SecondaryTextColor
                 )
             }
@@ -467,48 +511,104 @@ fun AlbumRatingSection(score: Int?) {
 fun AlbumDescriptionSection(description: String?) {
     if (!description.isNullOrBlank()) {
         var isExpanded by remember { mutableStateOf(false) }
-        val maxLines = if (isExpanded) Int.MAX_VALUE else 3
 
-        Card(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-                .clickable {
-                    if (description.length > 150) {
-                        isExpanded = !isExpanded
-                    }
-                },
-            backgroundColor = ElevatedBackgroundColor,
-            elevation = 2.dp,
-            shape = RoundedCornerShape(12.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Review",
-                    style = MaterialTheme.typography.subtitle2,
-                    color = PrimaryTextColor,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                Box(
+                    modifier = Modifier
+                        .width(4.dp)
+                        .height(20.dp)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(TryoutBlue, TryoutGreen)
+                            ),
+                            shape = RoundedCornerShape(2.dp)
+                        )
                 )
-
+                Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = description,
-                    style = MaterialTheme.typography.body2,
-                    color = SecondaryTextColor,
-                    maxLines = maxLines,
-                    overflow = if (isExpanded) TextOverflow.Visible else TextOverflow.Ellipsis,
+                    text = "THOUGHTS",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 2.sp
+                    ),
+                    color = PrimaryTextColor
                 )
+            }
 
-                if (description.length > 150) {
-                    Text(
-                        text = if (isExpanded) "Show less" else "Show more",
-                        style = MaterialTheme.typography.caption,
-                        color = PrimaryTextColor,
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .clickable { isExpanded = !isExpanded }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = Color.Transparent
                     )
+            ) {
+                Column {
+                    Text(
+                        text = description,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            lineHeight = 28.sp,
+                            letterSpacing = 0.2.sp
+                        ),
+                        color = PrimaryTextColor.copy(alpha = 0.9f),
+                        maxLines = if (isExpanded) Int.MAX_VALUE else 4,
+                        overflow = if (isExpanded) TextOverflow.Visible else TextOverflow.Ellipsis
+                    )
+
+                    if (description.length > 200) {
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .clickable { isExpanded = !isExpanded }
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(
+                                            PrimaryTextColor.copy(alpha = 0.05f),
+                                            PrimaryTextColor.copy(alpha = 0.1f),
+                                            PrimaryTextColor.copy(alpha = 0.05f)
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(20.dp)
+                                )
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = if (isExpanded) "SHOW LESS" else "READ MORE",
+                                    style = TextStyle(
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        letterSpacing = 1.sp
+                                    ),
+                                    color = PrimaryTextColor.copy(alpha = 0.8f)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(
+                                    imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                    contentDescription = null,
+                                    tint = PrimaryTextColor.copy(alpha = 0.6f),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -518,60 +618,117 @@ fun AlbumDescriptionSection(description: String?) {
 @Composable
 fun TrackRatingsSection(trackReviews: List<TrackReviewDTO>) {
     if (trackReviews.isNotEmpty()) {
-        var isExpanded by remember { mutableStateOf(false) }
-        val favorites = trackReviews.filter { it.isFavorite }.take(3)
-        val displayTracks = if (isExpanded) trackReviews else favorites
+        val favorites = trackReviews.filter { it.isFavorite }
 
-        Card(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-                .clickable(onClick = { isExpanded = !isExpanded }),
-            backgroundColor = ElevatedBackgroundColor,
-            elevation = 2.dp,
-            shape = RoundedCornerShape(12.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Tracks",
-                        style = MaterialTheme.typography.subtitle2,
-                        color = PrimaryTextColor,
-                    )
-
-                    if (trackReviews.size > 3) {
-                        Text(
-                            text = if (isExpanded) "Show favorites" else "Show all",
-                            color = PrimaryTextColor,
-                            style = MaterialTheme.typography.caption,
+                Box(
+                    modifier = Modifier
+                        .width(4.dp)
+                        .height(20.dp)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(TryoutYellow, TryoutOrange)
+                            ),
+                            shape = RoundedCornerShape(2.dp)
                         )
-
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = "TRACKS",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 2.sp
+                        ),
+                        color = PrimaryTextColor
+                    )
+                    if (favorites.isNotEmpty()) {
+                        Text(
+                            text = "${favorites.size} favorites • ${trackReviews.size} total",
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium,
+                                letterSpacing = 0.5.sp
+                            ),
+                            color = SecondaryTextColor.copy(alpha = 0.7f)
+                        )
                     }
                 }
+            }
 
-                Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-                displayTracks.forEach { track ->
-                    TrackRatingItem(
-                        track = track,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                    Divider(color = SubtleBorderColor)
+            if (trackReviews.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    PrimaryTextColor.copy(alpha = 0.03f),
+                                    Color.Transparent
+                                )
+                            ),
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .border(
+                            1.dp,
+                            PrimaryTextColor.copy(alpha = 0.05f),
+                            RoundedCornerShape(20.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    color = PrimaryTextColor.copy(alpha = 0.05f),
+                                    shape = CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = null,
+                                tint = SecondaryTextColor.copy(alpha = 0.5f),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "NO TRACKS REVIEWED",
+                            style = TextStyle(
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp
+                            ),
+                            color = SecondaryTextColor.copy(alpha = 0.7f)
+                        )
+                    }
                 }
-
-                if (displayTracks.isEmpty() && !isExpanded) {
-                    Text(
-                        text = "No favorite tracks selected",
-                        style = MaterialTheme.typography.body2,
-                        color = SecondaryTextColor,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
+            } else {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    trackReviews.forEachIndexed { index, track ->
+                        TrackRatingItem(
+                            track = track,
+                            index = index + 1,
+                            isHighlighted = track.isFavorite
+                        )
+                    }
                 }
             }
         }
@@ -581,43 +738,132 @@ fun TrackRatingsSection(trackReviews: List<TrackReviewDTO>) {
 @Composable
 fun TrackRatingItem(
     track: TrackReviewDTO,
+    index: Int,
+    isHighlighted: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)
-        ) {
-            if (track.isFavorite) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "Favorite",
-                    tint = TryoutYellow,
-                    modifier = Modifier
-                        .size(16.dp)
-                        .padding(end = 8.dp)
-                )
-            }
-
-            Text(
-                text = track.name,
-                style = MaterialTheme.typography.body2,
-                color = PrimaryTextColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+        if (isHighlighted) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .offset(y = 2.dp)
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                TryoutYellow.copy(alpha = 0.1f),
+                                Color.Transparent
+                            )
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    )
             )
         }
-        track.rating?.let {
-            Text(
-                text = it.displayName,
-                style = MaterialTheme.typography.caption,
-                color = it.color,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-            )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = if (isHighlighted)
+                        ElevatedBackgroundColor.copy(alpha = 0.8f)
+                    else
+                        ElevatedBackgroundColor.copy(alpha = 0.4f),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .border(
+                    width = if (isHighlighted) 1.dp else 0.dp,
+                    color = if (isHighlighted)
+                        TryoutYellow.copy(alpha = 0.3f)
+                    else Color.Transparent,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Track indicator
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(
+                            color = if (isHighlighted)
+                                TryoutYellow.copy(alpha = 0.2f)
+                            else
+                                PrimaryTextColor.copy(alpha = 0.08f),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isHighlighted) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Favorite",
+                            tint = TryoutYellow,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    } else {
+                        Text(
+                            text = index.toString().padStart(2, '0'),
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 0.5.sp
+                            ),
+                            color = PrimaryTextColor.copy(alpha = 0.6f)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(
+                    text = track.name,
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = if (isHighlighted) FontWeight.SemiBold else FontWeight.Normal,
+                        letterSpacing = 0.1.sp
+                    ),
+                    color = PrimaryTextColor.copy(
+                        alpha = if (isHighlighted) 1f else 0.8f
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+
+                track.rating?.let { rating ->
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = rating.color.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .border(
+                                1.dp,
+                                rating.color.copy(alpha = 0.3f),
+                                RoundedCornerShape(12.dp)
+                            )
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = rating.displayName,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp
+                            ),
+                            color = rating.color
+                        )
+                    }
+                }
+            }
         }
     }
 }
