@@ -61,4 +61,6 @@ interface PostService {
     suspend fun getAlbum(id: String): Response<Album>
 
     suspend fun deletePost(postId: Long): Response<Void>
+
+    suspend fun voteChallengeOption(id: Long, optionId: Long): Response<Challenge>
 }

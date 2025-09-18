@@ -28,7 +28,9 @@ data class Album(
 
 data class Track(
     val spotifyId: String,
-    val name: String
+    val name: String,
+    val imageUrl: String,
+    val artists: List<Artist>,
 )
 
 interface MediaItem {

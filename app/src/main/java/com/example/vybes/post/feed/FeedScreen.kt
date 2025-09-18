@@ -106,6 +106,8 @@ fun FeedScreen(
 
     var showOptionsDialog by remember { mutableStateOf(false) }
 
+    val featuredChallenge by viewModel.featuredChallenge.collectAsState()
+
     LaunchedEffect(listState) {
         snapshotFlow {
             listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
@@ -198,6 +200,8 @@ fun FeedScreen(
                 onFilterSelected = viewModel::setPostFilter
             )
 
+
+
             when {
                 isLoading && posts.isEmpty() -> {
                     LoadingState()
@@ -215,6 +219,14 @@ fun FeedScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
+                        item {
+                            featuredChallenge?.let { c ->
+                                FeaturedChallengeCard(
+                                    challenge = c,
+                                    onVoteOption = { optionId -> viewModel.voteOnChallengeOption(optionId) }
+                                )
+                            }
+                        }
                         items(
                             items = posts,
                             key = { post -> post.id }
