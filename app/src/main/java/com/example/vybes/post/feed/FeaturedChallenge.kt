@@ -69,6 +69,7 @@ fun FeaturedChallengeCard(
     challenge: Challenge,
     onVoteOption: (Long) -> Unit = {},
     onNavigateToSubmission: () -> Unit = {},
+    isVoting: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -129,6 +130,14 @@ fun FeaturedChallengeCard(
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.2.sp
                         )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        if (isVoting) {
+                            androidx.compose.material3.CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                strokeWidth = 2.dp,
+                                color = TryoutYellow
+                            )
+                        }
                     }
 
                     challenge.createdBy?.let {
@@ -238,7 +247,8 @@ fun FeaturedChallengeCard(
                     ) {
                         ChallengeOptions(
                             options = challenge.options.orEmpty(),
-                            onVoteOption = onVoteOption
+                            onVoteOption = onVoteOption,
+                            isVoting = isVoting
                         )
                     }
                 }
@@ -250,9 +260,11 @@ fun FeaturedChallengeCard(
 @Composable
 private fun ChallengeOptions(
     options: List<ChallengeOption>,
-    onVoteOption: (Long) -> Unit
+    onVoteOption: (Long) -> Unit,
+    isVoting: Boolean = false
 ) {
     val totalVotes = options.sumOf { it.votesCount }
+    val hasUserVoted = options.any { it.votedByUser }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -261,7 +273,9 @@ private fun ChallengeOptions(
             ChallengeOptionItem(
                 option = option,
                 totalVotes = totalVotes,
-                onClick = { onVoteOption(option.id) }
+                onClick = { onVoteOption(option.id) },
+                isVoting = isVoting,
+                hasUserVoted = hasUserVoted
             )
         }
     }
@@ -271,14 +285,16 @@ private fun ChallengeOptions(
 private fun ChallengeOptionItem(
     option: ChallengeOption,
     totalVotes: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isVoting: Boolean = false,
+    hasUserVoted: Boolean = false
 ) {
     val percentage = if (totalVotes > 0) (option.votesCount.toFloat() / totalVotes) * 100 else 0f
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .debouncedClickable { onClick() },
+            .debouncedClickable(enabled = !isVoting && !hasUserVoted) { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (option.votedByUser) {
@@ -292,7 +308,7 @@ private fun ChallengeOptionItem(
         } else null
     ) {
         Box {
-            if (totalVotes > 0) {
+            if (hasUserVoted && totalVotes > 0) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(percentage / 100f)
@@ -347,37 +363,39 @@ private fun ChallengeOptionItem(
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                Column(
-                    horizontalAlignment = Alignment.End,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+                if (hasUserVoted) {
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        modifier = Modifier.weight(1f)
                     ) {
-                        if (option.votedByUser) {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = "Voted",
-                                tint = TryoutBlue,
-                                modifier = Modifier.size(16.dp)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (option.votedByUser) {
+                                Icon(
+                                    imageVector = Icons.Filled.Check,
+                                    contentDescription = "Voted",
+                                    tint = TryoutBlue,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                            }
+
+                            Text(
+                                text = "${option.votesCount} votes",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (option.votedByUser) TryoutBlue else SecondaryTextColor,
+                                fontWeight = if (option.votedByUser) FontWeight.SemiBold else FontWeight.Normal
                             )
-                            Spacer(modifier = Modifier.width(4.dp))
                         }
 
-                        Text(
-                            text = "${option.votesCount} votes",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (option.votedByUser) TryoutBlue else SecondaryTextColor,
-                            fontWeight = if (option.votedByUser) FontWeight.SemiBold else FontWeight.Normal
-                        )
-                    }
-
-                    if (totalVotes > 0) {
-                        Text(
-                            text = "${percentage.toInt()}%",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = SecondaryTextColor
-                        )
+                        if (totalVotes > 0) {
+                            Text(
+                                text = "${percentage.toInt()}%",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = SecondaryTextColor
+                            )
+                        }
                     }
                 }
             }

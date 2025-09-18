@@ -39,6 +39,9 @@ class FeedViewModel @Inject constructor(
     private val _featuredChallenge = MutableStateFlow<Challenge?>(null)
     val featuredChallenge = _featuredChallenge.asStateFlow()
 
+    private val _isChallengeVoting = MutableStateFlow(false)
+    val isChallengeVoting = _isChallengeVoting.asStateFlow()
+
     init {
         loadInitialPosts()
         loadFeaturedChallenge()
@@ -216,6 +219,8 @@ class FeedViewModel @Inject constructor(
     fun voteOnChallengeOption(optionId: Long) {
         val challenge = _featuredChallenge.value ?: return
 
+        _isChallengeVoting.value = true
+
         viewModelScope.launch {
             try {
                 val response = postService.voteChallengeOption(challenge.id, optionId)
@@ -227,7 +232,8 @@ class FeedViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 postsManager.setError("Network error while voting on challenge")
-                e.printStackTrace()
+            } finally {
+                _isChallengeVoting.value = false
             }
         }
     }
