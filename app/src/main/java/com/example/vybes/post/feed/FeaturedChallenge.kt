@@ -296,7 +296,7 @@ private fun ChallengeOptionItem(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(percentage / 100f)
-                        .matchParentSize()
+                        .height(72.dp)
                         .background(
                             TryoutBlue.copy(alpha = 0.15f),
                             RoundedCornerShape(12.dp)
