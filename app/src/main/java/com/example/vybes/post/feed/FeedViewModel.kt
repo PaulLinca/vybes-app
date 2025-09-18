@@ -39,9 +39,6 @@ class FeedViewModel @Inject constructor(
     private val _featuredChallenge = MutableStateFlow<Challenge?>(null)
     val featuredChallenge = _featuredChallenge.asStateFlow()
 
-    private val _challengeVotingStates = MutableStateFlow<Map<Long, Boolean>>(emptyMap())
-    val challengeVotingStates = _challengeVotingStates.asStateFlow()
-
     init {
         loadInitialPosts()
         loadFeaturedChallenge()
