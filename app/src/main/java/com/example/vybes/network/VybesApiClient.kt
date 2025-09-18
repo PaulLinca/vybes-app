@@ -1,25 +1,25 @@
 package com.example.vybes.network
 
+import com.example.vybes.model.AlbumReview
 import com.example.vybes.model.AlbumSearchResult
 import com.example.vybes.model.ArtistSearchResult
-import com.example.vybes.model.TrackSearchResult
-import com.example.vybes.network.response.Album
-import com.example.vybes.network.request.AuthRequest
-import com.example.vybes.network.response.LoginResponse
-import com.example.vybes.network.response.RegisterResponse
-import com.example.vybes.network.request.SetFavoritesRequest
-import com.example.vybes.network.response.UserResponse
-import com.example.vybes.network.request.UsernameSetupRequest
-import com.example.vybes.network.request.FeedbackRequest
-import com.example.vybes.model.AlbumReview
 import com.example.vybes.model.Challenge
 import com.example.vybes.model.Comment
 import com.example.vybes.model.Post
+import com.example.vybes.model.TrackSearchResult
 import com.example.vybes.model.Vybe
 import com.example.vybes.network.request.AddCommentRequest
+import com.example.vybes.network.request.AuthRequest
 import com.example.vybes.network.request.CreateAlbumReviewRequest
+import com.example.vybes.network.request.FeedbackRequest
+import com.example.vybes.network.request.SetFavoritesRequest
+import com.example.vybes.network.request.UsernameSetupRequest
+import com.example.vybes.network.response.Album
 import com.example.vybes.network.response.LikeResponse
+import com.example.vybes.network.response.LoginResponse
 import com.example.vybes.network.response.PageResponse
+import com.example.vybes.network.response.RegisterResponse
+import com.example.vybes.network.response.UserResponse
 import com.example.vybes.post.service.PostRequest
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -168,4 +168,10 @@ interface VybesApiClient {
     suspend fun submitFeedback(
         @Body feedbackRequest: FeedbackRequest
     ): Response<Void>
+
+    @POST("api/challenges/{id}/options/{optionId}/vote")
+    suspend fun voteChallengeOption(
+        @Path("id") id: Long,
+        @Path("optionId") optionId: Long
+    ): Response<Challenge>
 }

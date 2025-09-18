@@ -67,6 +67,10 @@ class VybesPostService @Inject constructor(
         return vybesApiClient.deletePost(postId)
     }
 
+    override suspend fun voteChallengeOption(id: Long, optionId: Long): Response<Challenge> {
+        return vybesApiClient.voteChallengeOption(id, optionId)
+    }
+
     override suspend fun likePost(postId: Long): Response<LikeResponse> {
         return vybesApiClient.likePost(postId)
     }

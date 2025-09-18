@@ -1,10 +1,13 @@
 package com.example.vybes.post.feed
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vybes.common.posts.PostFilter
 import com.example.vybes.common.posts.PostsManager
+import com.example.vybes.model.Challenge
 import com.example.vybes.model.Like
+import com.example.vybes.model.Post
 import com.example.vybes.post.service.PostService
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,6 +35,12 @@ class FeedViewModel @Inject constructor(
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
+
+    private val _featuredChallenge = MutableStateFlow<Challenge?>(null)
+    val featuredChallenge = _featuredChallenge.asStateFlow()
+
+    private val _challengeVotingStates = MutableStateFlow<Map<Long, Boolean>>(emptyMap())
+    val challengeVotingStates = _challengeVotingStates.asStateFlow()
 
     init {
         loadInitialPosts()
@@ -68,7 +77,7 @@ class FeedViewModel @Inject constructor(
 
     private fun loadFeaturedChallenge() {
         viewModelScope.launch {
-            postService.getFeaturedChallenge()
+            _featuredChallenge.value = postService.getFeaturedChallenge().body()
         }
     }
 
@@ -92,6 +101,7 @@ class FeedViewModel @Inject constructor(
                 } else {
                     postsManager.setError("Failed to refresh: ${response.message()}")
                 }
+                loadFeaturedChallenge()
             } catch (e: Exception) {
                 postsManager.setError("Network error: ${e.localizedMessage ?: "Unknown error"}")
             } finally {
@@ -180,7 +190,6 @@ class FeedViewModel @Inject constructor(
             try {
                 val response = postService.unlikePost(postId)
                 if (!(response.isSuccessful && response.body() != null) && revertOnFailure) {
-                    // Revert optimistic update
                     updatePostLikes(postId) { currentLikes ->
                         currentLikes + Like(SharedPreferencesManager.getUserId())
                     }
@@ -205,5 +214,24 @@ class FeedViewModel @Inject constructor(
 
     fun clearError() {
         postsManager.setError(null)
+    }
+
+    fun voteOnChallengeOption(optionId: Long) {
+        val challenge = _featuredChallenge.value ?: return
+
+        viewModelScope.launch {
+            try {
+                val response = postService.voteChallengeOption(challenge.id, optionId)
+                if (response.isSuccessful && response.body() != null) {
+                    val updatedChallenge = response.body()!!
+                    _featuredChallenge.value = updatedChallenge
+                } else {
+                    postsManager.setError("Failed to vote on challenge")
+                }
+            } catch (e: Exception) {
+                postsManager.setError("Network error while voting on challenge")
+                e.printStackTrace()
+            }
+        }
     }
 }
