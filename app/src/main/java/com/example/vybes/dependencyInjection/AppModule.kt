@@ -28,6 +28,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -55,6 +56,9 @@ object AppModule {
             .addInterceptor(AuthInterceptor())
             .authenticator(TokenAuthenticator)
             .addInterceptor(loggingInterceptor)
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(20, TimeUnit.SECONDS)
             .build()
 
         return Retrofit.Builder()
