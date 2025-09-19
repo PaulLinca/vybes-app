@@ -59,6 +59,9 @@ abstract class PostViewModel<T : Post>(
     val post = _post.asStateFlow()
     val remainingCharacters: Int get() = _remainingCharacters
 
+    private val _isLiking = MutableStateFlow(false)
+    val isLiking = _isLiking.asStateFlow()
+
     val uiState = combine(
         _post,
         _isLikedByCurrentUser,
@@ -87,91 +90,157 @@ abstract class PostViewModel<T : Post>(
     }
 
     fun likePost(postId: Long) {
+        if (_isLiking.value) return
+        _isLiking.value = true
+
+        val wasLikedByUser = _isLikedByCurrentUser.value
+        val originalPost = _post.value
+
+        _post.value?.let { p ->
+            @Suppress("UNCHECKED_CAST")
+            _post.value = updatePostLikes(p, p.likes.orEmpty() + Like(currentUserId)) as T
+            _isLikedByCurrentUser.value = true
+        }
+
         viewModelScope.launch {
             safeApiCall {
-                _isLoading.value = true
                 postService.likePost(postId)
             }.onSuccess { like ->
                 _post.value?.let { p ->
                     @Suppress("UNCHECKED_CAST")
-                    _post.value = updatePostLikes(p, p.likes.orEmpty() + Like(like.userId)) as T
-                    _isLikedByCurrentUser.value = true
+                    _post.value = updatePostLikes(p, p.likes.orEmpty().map {
+                        if (it.userId == currentUserId) Like(like.userId) else it
+                    }) as T
                 }
+                _isLiking.value = false
             }.onFailure { error ->
+                originalPost?.let {
+                    @Suppress("UNCHECKED_CAST")
+                    _post.value = it
+                }
+                _isLikedByCurrentUser.value = wasLikedByUser
                 _errorMessage.value = "Failed to like: ${error.localizedMessage}"
+                _isLiking.value = false
             }
-            _isLoading.value = false
         }
+        _isLiking.value = false
     }
 
     fun unlikePost(postId: Long) {
+        if (_isLiking.value) return
+        _isLiking.value = true
+
+        val wasLikedByUser = _isLikedByCurrentUser.value
+        val originalPost = _post.value
+
+        _post.value?.let { p ->
+            @Suppress("UNCHECKED_CAST")
+            _post.value = updatePostLikes(
+                p,
+                p.likes.orEmpty().filterNot { it.userId == currentUserId }
+            ) as T
+            _isLikedByCurrentUser.value = false
+        }
+
         viewModelScope.launch {
             safeApiCall {
-                _isLoading.value = true
                 postService.unlikePost(postId)
             }.onSuccess { removedLike ->
-                _post.value?.let { p ->
-                    @Suppress("UNCHECKED_CAST")
-                    _post.value = updatePostLikes(
-                        p,
-                        p.likes.orEmpty().filterNot { it.userId == removedLike.userId }) as T
-                    _isLikedByCurrentUser.value = false
-                }
+                _isLiking.value = false
             }.onFailure { error ->
+                originalPost?.let {
+                    @Suppress("UNCHECKED_CAST")
+                    _post.value = it
+                }
+                _isLikedByCurrentUser.value = wasLikedByUser
                 _errorMessage.value = "Failed to unlike: ${error.localizedMessage}"
+                _isLiking.value = false
             }
-            _isLoading.value = false
         }
+        _isLiking.value = false
     }
 
     fun likeComment(postId: Long, commentId: Long) {
+        if (_isLiking.value) return
+        _isLiking.value = true
+
+        val originalPost = _post.value
+
+        _post.value?.let { p ->
+            val updatedComments = p.comments.orEmpty().map { comment ->
+                if (comment.id == commentId) {
+                    comment.copy(likes = comment.likes.orEmpty() + Like(currentUserId))
+                } else {
+                    comment
+                }
+            }
+            @Suppress("UNCHECKED_CAST")
+            _post.value = updatePostComments(p, updatedComments) as T
+        }
+
         viewModelScope.launch {
             safeApiCall {
-                _isLoading.value = true
                 postService.likeComment(postId, commentId)
             }.onSuccess { newLike ->
                 _post.value?.let { p ->
                     val updatedComments = p.comments.orEmpty().map { comment ->
                         if (comment.id == commentId) {
-                            comment.copy(likes = comment.likes.orEmpty() + Like(newLike.userId))
+                            comment.copy(likes = comment.likes.orEmpty().map {
+                                if (it.userId == currentUserId) Like(newLike.userId) else it
+                            })
                         } else {
                             comment
                         }
                     }
                     @Suppress("UNCHECKED_CAST")
                     _post.value = updatePostComments(p, updatedComments) as T
+                    _isLiking.value = false
                 }
             }.onFailure { error ->
+                originalPost?.let {
+                    @Suppress("UNCHECKED_CAST")
+                    _post.value = it
+                }
                 _errorMessage.value = "Failed to like comment: ${error.localizedMessage}"
+                _isLiking.value = false
             }
-            _isLoading.value = false
         }
     }
 
     fun unlikeComment(postId: Long, commentId: Long) {
+        if (_isLiking.value) return
+        _isLiking.value = true
+
+        val originalPost = _post.value
+
+        _post.value?.let { p ->
+            val updatedComments = p.comments.orEmpty().map { comment ->
+                if (comment.id == commentId) {
+                    comment.copy(
+                        likes = comment.likes.orEmpty()
+                            .filterNot { it.userId == currentUserId }
+                    )
+                } else {
+                    comment
+                }
+            }
+            @Suppress("UNCHECKED_CAST")
+            _post.value = updatePostComments(p, updatedComments) as T
+        }
+
         viewModelScope.launch {
             safeApiCall {
-                _isLoading.value = true
                 postService.unlikeComment(postId, commentId)
             }.onSuccess { response ->
-                _post.value?.let { p ->
-                    val updatedComments = p.comments.orEmpty().map { comment ->
-                        if (comment.id == commentId) {
-                            comment.copy(
-                                likes = comment.likes.orEmpty()
-                                    .filterNot { it.userId == currentUserId }
-                            )
-                        } else {
-                            comment
-                        }
-                    }
-                    @Suppress("UNCHECKED_CAST")
-                    _post.value = updatePostComments(p, updatedComments) as T
-                }
+                _isLiking.value = false
             }.onFailure { error ->
+                originalPost?.let {
+                    @Suppress("UNCHECKED_CAST")
+                    _post.value = it
+                }
                 _errorMessage.value = "Failed to unlike comment: ${error.localizedMessage}"
+                _isLiking.value = false
             }
-            _isLoading.value = false
         }
     }
 

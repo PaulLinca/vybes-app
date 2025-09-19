@@ -46,7 +46,6 @@ import com.example.vybes.common.util.DateUtils
 import com.example.vybes.model.Comment
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 
-
 @Composable
 fun CommentInputBar(
     commentText: String,
