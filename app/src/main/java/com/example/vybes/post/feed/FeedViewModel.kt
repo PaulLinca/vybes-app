@@ -1,29 +1,40 @@
 package com.example.vybes.post.feed
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vybes.common.posts.PostFilter
 import com.example.vybes.common.posts.PostsManager
 import com.example.vybes.model.Challenge
 import com.example.vybes.model.Like
-import com.example.vybes.model.Post
+import com.example.vybes.post.PostsRepository
 import com.example.vybes.post.service.PostService
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
-    private val postService: PostService
+    private val postService: PostService,
+    private val postsRepository: PostsRepository
 ) : ViewModel() {
 
     private val postsManager = PostsManager()
 
-    val posts = postsManager.filteredPosts
+    // Combine posts from PostsManager with cached updates from PostsRepository
+    val posts = combine(
+        postsManager.filteredPosts,
+        postsRepository.cachedPosts
+    ) { managedPosts, cachedPosts ->
+        managedPosts.map { post ->
+            // Use cached version if available, otherwise use the original post
+            cachedPosts[post.id] ?: post
+        }
+    }
+
     val selectedPostFilter = postsManager.selectedPostFilter
     val isLoading = postsManager.isLoadingPosts
     val isLoadingMore = postsManager.isLoadingMorePosts
@@ -64,6 +75,9 @@ class FeedViewModel @Inject constructor(
                         totalPages = pageResponse.totalPages,
                         isLastPage = pageResponse.last
                     )
+
+                    // Cache the posts in the shared repository
+                    postsRepository.cachePosts(pageResponse.content)
                 } else {
                     postsManager.setError("Failed to load posts: ${response.message()}")
                 }
@@ -98,6 +112,9 @@ class FeedViewModel @Inject constructor(
                         totalPages = pageResponse.totalPages,
                         isLastPage = pageResponse.last
                     )
+
+                    // Update cache with fresh data
+                    postsRepository.cachePosts(pageResponse.content)
                 } else {
                     postsManager.setError("Failed to refresh: ${response.message()}")
                 }
@@ -129,6 +146,9 @@ class FeedViewModel @Inject constructor(
                         newPosts = pageResponse.content,
                         isLastPage = pageResponse.last
                     )
+
+                    // Cache the new posts
+                    postsRepository.cachePosts(pageResponse.content)
                 } else {
                     postsManager.setError("Failed to load more posts")
                 }
@@ -147,16 +167,16 @@ class FeedViewModel @Inject constructor(
     fun clickLikeButton(postId: Long, isLikedByCurrentUser: Boolean) {
         _likeLoadingStates.value += (postId to true)
 
-        // Optimistically update UI
+        // Optimistically update the shared repository
         if (isLikedByCurrentUser) {
-            updatePostLikes(postId) { currentLikes ->
-                currentLikes.filter { it.userId != SharedPreferencesManager.getUserId() }
-            }
+            val newLikes = postsRepository.getPost(postId)?.likes.orEmpty()
+                .filter { it.userId != SharedPreferencesManager.getUserId() }
+            postsRepository.updatePostLikes(postId, newLikes)
             unlikePost(postId, revertOnFailure = true)
         } else {
-            updatePostLikes(postId) { currentLikes ->
-                currentLikes + Like(SharedPreferencesManager.getUserId())
-            }
+            val newLikes = postsRepository.getPost(postId)?.likes.orEmpty() +
+                    Like(SharedPreferencesManager.getUserId())
+            postsRepository.updatePostLikes(postId, newLikes)
             likePost(postId, revertOnFailure = true)
         }
     }
@@ -166,17 +186,20 @@ class FeedViewModel @Inject constructor(
             try {
                 val response = postService.likePost(postId)
                 if (!(response.isSuccessful && response.body() != null) && revertOnFailure) {
-                    // Revert optimistic update
-                    updatePostLikes(postId) { currentLikes ->
-                        currentLikes.filter { it.userId != SharedPreferencesManager.getUserId() }
-                    }
+                    // Revert optimistic update in shared repository
+                    val currentPost = postsRepository.getPost(postId)
+                    val revertedLikes = currentPost?.likes.orEmpty()
+                        .filter { it.userId != SharedPreferencesManager.getUserId() }
+                    postsRepository.updatePostLikes(postId, revertedLikes)
                     postsManager.setError("Failed to like post")
                 }
             } catch (e: Exception) {
                 if (revertOnFailure) {
-                    updatePostLikes(postId) { currentLikes ->
-                        currentLikes.filter { it.userId != SharedPreferencesManager.getUserId() }
-                    }
+                    // Revert optimistic update in shared repository
+                    val currentPost = postsRepository.getPost(postId)
+                    val revertedLikes = currentPost?.likes.orEmpty()
+                        .filter { it.userId != SharedPreferencesManager.getUserId() }
+                    postsRepository.updatePostLikes(postId, revertedLikes)
                 }
                 postsManager.setError("Network error while liking post")
             } finally {
@@ -190,26 +213,26 @@ class FeedViewModel @Inject constructor(
             try {
                 val response = postService.unlikePost(postId)
                 if (!(response.isSuccessful && response.body() != null) && revertOnFailure) {
-                    updatePostLikes(postId) { currentLikes ->
-                        currentLikes + Like(SharedPreferencesManager.getUserId())
-                    }
+                    // Revert optimistic update in shared repository
+                    val currentPost = postsRepository.getPost(postId)
+                    val revertedLikes = currentPost?.likes.orEmpty() +
+                            Like(SharedPreferencesManager.getUserId())
+                    postsRepository.updatePostLikes(postId, revertedLikes)
                     postsManager.setError("Failed to unlike post")
                 }
             } catch (e: Exception) {
                 if (revertOnFailure) {
-                    updatePostLikes(postId) { currentLikes ->
-                        currentLikes + Like(SharedPreferencesManager.getUserId())
-                    }
+                    // Revert optimistic update in shared repository
+                    val currentPost = postsRepository.getPost(postId)
+                    val revertedLikes = currentPost?.likes.orEmpty() +
+                            Like(SharedPreferencesManager.getUserId())
+                    postsRepository.updatePostLikes(postId, revertedLikes)
                 }
                 postsManager.setError("Network error while unliking post")
             } finally {
                 _likeLoadingStates.value -= postId
             }
         }
-    }
-
-    private fun updatePostLikes(postId: Long, update: (List<Like>) -> List<Like>) {
-        postsManager.updatePostLikes(postId, update)
     }
 
     fun clearError() {

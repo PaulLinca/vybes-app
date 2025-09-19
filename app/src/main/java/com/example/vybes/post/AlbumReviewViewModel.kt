@@ -12,8 +12,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumReviewViewModel @Inject constructor(
     override val postService: PostService,
+    postsRepository: PostsRepository,
     savedStateHandle: SavedStateHandle
-) : PostViewModel<AlbumReview>(postService) {
+) : PostViewModel<AlbumReview>(postService, postsRepository) {
 
     private val args = AlbumReviewScreen.from(savedStateHandle)
 
@@ -33,16 +34,26 @@ class AlbumReviewViewModel @Inject constructor(
             _isLoading.value = true
             _errorMessage.value = null
 
+            val cachedPost = postsRepository.getPost(args.id) as? AlbumReview
+            if (cachedPost != null) {
+                _isLikedByCurrentUser.value =
+                    cachedPost.likes.orEmpty().any { it.userId == currentUserId }
+                _post.value = cachedPost
+            }
+
             safeApiCall { postService.getAlbumReview(args.id) }.onSuccess { review ->
                 _isLikedByCurrentUser.value =
                     review.likes.orEmpty().any { it.userId == currentUserId }
                 _post.value = review
+
+                postsRepository.updatePostInCache(review)
             }.onFailure { error ->
-                _errorMessage.value = "Failed to load album review: ${error.localizedMessage}"
+                if (cachedPost == null) {
+                    _errorMessage.value = "Failed to load album review: ${error.localizedMessage}"
+                }
             }
 
             _isLoading.value = false
         }
     }
 }
-

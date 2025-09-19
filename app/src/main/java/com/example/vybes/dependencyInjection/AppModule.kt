@@ -14,6 +14,7 @@ import com.example.vybes.network.adapters.LocalDateTypeAdapter
 import com.example.vybes.network.adapters.PostDeserializer
 import com.example.vybes.network.adapters.ZonedDateTimeTypeAdapter
 import com.example.vybes.model.Post
+import com.example.vybes.post.PostsRepository
 import com.example.vybes.post.service.PostService
 import com.example.vybes.post.service.VybesPostService
 import com.google.gson.Gson
@@ -96,5 +97,11 @@ object AppModule {
     @Singleton
     fun provideFeedbackService(vybesApiClient: VybesApiClient): FeedbackService {
         return VybesFeedbackService(vybesApiClient)
+    }
+
+    @Provides
+    @Singleton
+    fun providePostsRepository(): PostsRepository {
+        return PostsRepository()
     }
 }

@@ -23,7 +23,8 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 
 abstract class PostViewModel<T : Post>(
-    protected open val postService: PostService
+    protected open val postService: PostService,
+    protected val postsRepository: PostsRepository
 ) : ViewModel() {
 
     private val _navigationEvents = MutableSharedFlow<NavigationEvent>()
@@ -86,7 +87,7 @@ abstract class PostViewModel<T : Post>(
 
     fun clearText() {
         _commentText = ""
-        _remainingCharacters = 0
+        _remainingCharacters = maxCommentLength
     }
 
     fun likePost(postId: Long) {
@@ -97,9 +98,13 @@ abstract class PostViewModel<T : Post>(
         val originalPost = _post.value
 
         _post.value?.let { p ->
+            val newLikes = p.likes.orEmpty() + Like(currentUserId)
+
             @Suppress("UNCHECKED_CAST")
-            _post.value = updatePostLikes(p, p.likes.orEmpty() + Like(currentUserId)) as T
+            _post.value = updatePostLikes(p, newLikes) as T
             _isLikedByCurrentUser.value = true
+
+            postsRepository.updatePostLikes(postId, newLikes)
         }
 
         viewModelScope.launch {
@@ -107,23 +112,26 @@ abstract class PostViewModel<T : Post>(
                 postService.likePost(postId)
             }.onSuccess { like ->
                 _post.value?.let { p ->
-                    @Suppress("UNCHECKED_CAST")
-                    _post.value = updatePostLikes(p, p.likes.orEmpty().map {
+                    val updatedLikes = p.likes.orEmpty().map {
                         if (it.userId == currentUserId) Like(like.userId) else it
-                    }) as T
+                    }
+                    @Suppress("UNCHECKED_CAST")
+                    _post.value = updatePostLikes(p, updatedLikes) as T
+
+                    postsRepository.updatePostLikes(postId, updatedLikes)
                 }
                 _isLiking.value = false
             }.onFailure { error ->
                 originalPost?.let {
                     @Suppress("UNCHECKED_CAST")
                     _post.value = it
+                    postsRepository.updatePostLikes(postId, it.likes.orEmpty())
                 }
                 _isLikedByCurrentUser.value = wasLikedByUser
                 _errorMessage.value = "Failed to like: ${error.localizedMessage}"
                 _isLiking.value = false
             }
         }
-        _isLiking.value = false
     }
 
     fun unlikePost(postId: Long) {
@@ -134,12 +142,13 @@ abstract class PostViewModel<T : Post>(
         val originalPost = _post.value
 
         _post.value?.let { p ->
+            val newLikes = p.likes.orEmpty().filterNot { it.userId == currentUserId }
+
             @Suppress("UNCHECKED_CAST")
-            _post.value = updatePostLikes(
-                p,
-                p.likes.orEmpty().filterNot { it.userId == currentUserId }
-            ) as T
+            _post.value = updatePostLikes(p, newLikes) as T
             _isLikedByCurrentUser.value = false
+
+            postsRepository.updatePostLikes(postId, newLikes)
         }
 
         viewModelScope.launch {
@@ -151,13 +160,13 @@ abstract class PostViewModel<T : Post>(
                 originalPost?.let {
                     @Suppress("UNCHECKED_CAST")
                     _post.value = it
+                    postsRepository.updatePostLikes(postId, it.likes.orEmpty())
                 }
                 _isLikedByCurrentUser.value = wasLikedByUser
                 _errorMessage.value = "Failed to unlike: ${error.localizedMessage}"
                 _isLiking.value = false
             }
         }
-        _isLiking.value = false
     }
 
     fun likeComment(postId: Long, commentId: Long) {
@@ -176,6 +185,8 @@ abstract class PostViewModel<T : Post>(
             }
             @Suppress("UNCHECKED_CAST")
             _post.value = updatePostComments(p, updatedComments) as T
+
+            postsRepository.updatePostComments(postId, updatedComments)
         }
 
         viewModelScope.launch {
@@ -194,12 +205,15 @@ abstract class PostViewModel<T : Post>(
                     }
                     @Suppress("UNCHECKED_CAST")
                     _post.value = updatePostComments(p, updatedComments) as T
+
+                    postsRepository.updatePostComments(postId, updatedComments)
                     _isLiking.value = false
                 }
             }.onFailure { error ->
                 originalPost?.let {
                     @Suppress("UNCHECKED_CAST")
                     _post.value = it
+                    postsRepository.updatePostComments(postId, it.comments.orEmpty())
                 }
                 _errorMessage.value = "Failed to like comment: ${error.localizedMessage}"
                 _isLiking.value = false
@@ -226,6 +240,8 @@ abstract class PostViewModel<T : Post>(
             }
             @Suppress("UNCHECKED_CAST")
             _post.value = updatePostComments(p, updatedComments) as T
+
+            postsRepository.updatePostComments(postId, updatedComments)
         }
 
         viewModelScope.launch {
@@ -237,6 +253,7 @@ abstract class PostViewModel<T : Post>(
                 originalPost?.let {
                     @Suppress("UNCHECKED_CAST")
                     _post.value = it
+                    postsRepository.updatePostComments(postId, it.comments.orEmpty())
                 }
                 _errorMessage.value = "Failed to unlike comment: ${error.localizedMessage}"
                 _isLiking.value = false
@@ -254,8 +271,11 @@ abstract class PostViewModel<T : Post>(
                 postService.addComment(postId, trimmedComment)
             }.onSuccess { comment ->
                 _post.value?.let { p ->
+                    val updatedComments = p.comments.orEmpty() + comment
                     @Suppress("UNCHECKED_CAST")
-                    _post.value = updatePostComments(p, p.comments.orEmpty() + comment) as T
+                    _post.value = updatePostComments(p, updatedComments) as T
+
+                    postsRepository.updatePostComments(postId, updatedComments)
                 }
                 clearText()
             }.onFailure { error ->
@@ -272,6 +292,7 @@ abstract class PostViewModel<T : Post>(
             safeApiCall {
                 postService.deletePost(postId)
             }.onSuccess {
+                postsRepository.removePost(postId)
                 _navigationEvents.emit(NavigationEvent.NavigateToHomeClearingBackStack)
                 _isLoading.value = false
             }.onFailure {

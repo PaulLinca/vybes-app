@@ -94,7 +94,7 @@ fun FeedScreen(
     )
     val errorState by viewModel.postsError.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    val posts by viewModel.posts.collectAsState()
+    val posts by viewModel.posts.collectAsState(initial = emptyList())
     val selectedPostFilter by viewModel.selectedPostFilter.collectAsState()
 
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
