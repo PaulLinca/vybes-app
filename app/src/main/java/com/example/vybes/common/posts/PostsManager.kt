@@ -85,6 +85,7 @@ class PostsManager {
                 is Vybe -> if (post.id == postId) {
                     post.copy(likes = update(post.likes.orEmpty()))
                 } else post
+
                 is AlbumReview -> if (post.id == postId) {
                     post.copy(likes = update(post.likes.orEmpty()))
                 } else post

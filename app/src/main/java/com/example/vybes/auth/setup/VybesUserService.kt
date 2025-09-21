@@ -1,12 +1,12 @@
 package com.example.vybes.auth.setup
 
-import com.example.vybes.network.response.MediaItem
-import com.example.vybes.network.request.SetFavoritesRequest
-import com.example.vybes.network.response.UserResponse
-import com.example.vybes.network.request.UsernameSetupRequest
-import com.example.vybes.network.VybesApiClient
 import com.example.vybes.model.Post
+import com.example.vybes.network.VybesApiClient
+import com.example.vybes.network.request.SetFavoritesRequest
+import com.example.vybes.network.request.UsernameSetupRequest
+import com.example.vybes.network.response.MediaItem
 import com.example.vybes.network.response.PageResponse
+import com.example.vybes.network.response.UserResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 

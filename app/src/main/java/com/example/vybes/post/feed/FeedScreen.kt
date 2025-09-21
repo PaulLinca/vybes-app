@@ -224,7 +224,11 @@ fun FeedScreen(
                             featuredChallenge?.let { c ->
                                 FeaturedChallengeCard(
                                     challenge = c,
-                                    onVoteOption = { optionId -> viewModel.voteOnChallengeOption(optionId) },
+                                    onVoteOption = { optionId ->
+                                        viewModel.voteOnChallengeOption(
+                                            optionId
+                                        )
+                                    },
                                     isVoting = isChallengeVoting
                                 )
                             }

@@ -7,13 +7,13 @@ import com.example.vybes.auth.setup.UserService
 import com.example.vybes.auth.setup.VybesUserService
 import com.example.vybes.feedback.service.FeedbackService
 import com.example.vybes.feedback.service.VybesFeedbackService
+import com.example.vybes.model.Post
 import com.example.vybes.network.AuthInterceptor
 import com.example.vybes.network.TokenAuthenticator
 import com.example.vybes.network.VybesApiClient
 import com.example.vybes.network.adapters.LocalDateTypeAdapter
 import com.example.vybes.network.adapters.PostDeserializer
 import com.example.vybes.network.adapters.ZonedDateTimeTypeAdapter
-import com.example.vybes.model.Post
 import com.example.vybes.post.PostsRepository
 import com.example.vybes.post.service.PostService
 import com.example.vybes.post.service.VybesPostService

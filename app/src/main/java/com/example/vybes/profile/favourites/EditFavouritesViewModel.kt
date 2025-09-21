@@ -1,11 +1,10 @@
 package com.example.vybes.profile.favourites
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.vybes.network.response.MediaItem
 import com.example.vybes.auth.setup.UserService
+import com.example.vybes.network.response.MediaItem
 import com.example.vybes.post.service.VybesPostService
 import com.example.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -169,7 +168,7 @@ class EditFavouritesViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
-                Log.e("WTF", _currentFavorites.value.toString())
+
                 val favoritesToSave = _currentFavorites.value.filter { it.spotifyId != "" }
                 val response = when (favoriteType) {
                     FavoriteType.ARTISTS -> userService.setFavoriteArtists(favoritesToSave)

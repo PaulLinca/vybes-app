@@ -44,7 +44,6 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.example.vybes.R
-import com.example.vybes.model.TrackSearchResult
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.BackgroundColor
@@ -56,6 +55,7 @@ import com.example.vybes.common.theme.TryoutRed
 import com.example.vybes.common.theme.VybesVeryLightGray
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
+import com.example.vybes.model.TrackSearchResult
 
 @Composable
 fun AddPostScreen(

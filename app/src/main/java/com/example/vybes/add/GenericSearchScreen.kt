@@ -19,7 +19,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.vybes.R
-import com.example.vybes.model.SearchResultItem
 import com.example.vybes.common.composables.MultilineTextField
 import com.example.vybes.common.composables.TopBarWithBackButton
 import com.example.vybes.common.theme.BackgroundColor
@@ -27,6 +26,7 @@ import com.example.vybes.common.theme.ErrorRed
 import com.example.vybes.common.theme.PrimaryTextColor
 import com.example.vybes.common.theme.artistsStyle
 import com.example.vybes.common.theme.songTitleStyle
+import com.example.vybes.model.SearchResultItem
 
 @Composable
 fun <T : SearchResultItem> GenericSearchScreen(
