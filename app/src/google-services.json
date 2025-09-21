@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "54902794891",
+    "project_id": "vybes-7ae0d",
+    "storage_bucket": "vybes-7ae0d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54902794891:android:96ed4d38da2bc3cfce828e",
+        "android_client_info": {
+          "package_name": "com.linca.vybes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "54902794891-t3u4uqpt138qi2dkf9gg841emjr1p3pv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCciGOZRJ67DwVMpK7MEuCVw-hehTGtbhA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "54902794891-t3u4uqpt138qi2dkf9gg841emjr1p3pv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

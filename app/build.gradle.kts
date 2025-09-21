@@ -2,16 +2,18 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.example.vybes"
+    namespace = "com.linca.vybes"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.vybes"
+        applicationId = "com.linca.vybes"
         minSdk = 30
         targetSdk = 34
         versionCode = 1
@@ -68,6 +70,9 @@ dependencies {
     // compose navigation
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    // firebase
+    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
+    implementation(libs.firebase.analytics)
 
     implementation("com.google.dagger:hilt-android:2.52")
     implementation(libs.androidx.palette.ktx)

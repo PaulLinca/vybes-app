@@ -1,0 +1,28 @@
+package com.linca.vybes.common.composables
+
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+
+@Composable
+fun Modifier.debouncedClickable(
+    enabled: Boolean = true,
+    debounceTime: Long = 300L,
+    onClick: () -> Unit
+): Modifier {
+    var lastClickTime by remember { mutableStateOf(0L) }
+
+    return this.clickable(enabled = enabled) {
+        if (enabled) {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastClickTime > debounceTime) {
+                lastClickTime = currentTime
+                onClick()
+            }
+        }
+    }
+}
