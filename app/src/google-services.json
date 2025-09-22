@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "54902794891-6rkolqotnpbup2698eoqarjmj5plpr0c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.linca.vybes",
+            "certificate_hash": "32642ca3308eca6cb65ed998560cc58331748e17"
+          }
+        },
+        {
           "client_id": "54902794891-t3u4uqpt138qi2dkf9gg841emjr1p3pv.apps.googleusercontent.com",
           "client_type": 3
         }

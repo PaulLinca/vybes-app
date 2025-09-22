@@ -6,10 +6,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,16 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.linca.vybes.R
 import com.linca.vybes.common.theme.ElevatedBackgroundColor
-import com.linca.vybes.common.theme.HintTextColor
-import com.linca.vybes.common.theme.LinkBlue
 import com.linca.vybes.common.theme.PrimaryTextColor
 import com.linca.vybes.common.theme.TryoutRed
 import com.linca.vybes.common.theme.VybesLightGray
@@ -151,41 +145,6 @@ fun AuthButton(
                 color = PrimaryTextColor
             )
         }
-    }
-}
-
-@Composable
-fun RegistrationSection(
-    isLoading: Boolean,
-    onRegisterClick: () -> Unit,
-    isLogin: Boolean = false
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(top = 24.dp)
-    ) {
-        Text(
-            text = if (isLogin)
-                stringResource(R.string.already_have_an_account)
-            else
-                stringResource(R.string.need_an_account),
-            color = HintTextColor,
-            style = artistsStyle
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = if (isLogin)
-                stringResource(R.string.login)
-            else
-                stringResource(R.string.register),
-            color = LinkBlue,
-            style = artistsStyle.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier
-                .clickable(enabled = !isLoading, onClick = onRegisterClick)
-                .padding(8.dp)
-        )
     }
 }
 

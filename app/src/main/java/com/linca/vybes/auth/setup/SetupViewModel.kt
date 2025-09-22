@@ -60,7 +60,7 @@ class SetupViewModel @Inject constructor(
                     _usernameError.value = null
 
                     val loginResponse = response.body()!!
-                    SharedPreferencesManager.saveUsername(loginResponse.username)
+//                    SharedPreferencesManager.saveUsername(loginResponse.username)
 
                     _isSetupSuccess.value = true
                 } else {

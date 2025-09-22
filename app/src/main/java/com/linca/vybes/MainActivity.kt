@@ -1,20 +1,19 @@
 package com.linca.vybes
 
+
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.google.firebase.auth.FirebaseAuth
 import com.linca.vybes.add.album.AddAlbumReviewScreen
 import com.linca.vybes.add.album.SearchAlbumScreen
 import com.linca.vybes.add.vybe.AddPostScreen
 import com.linca.vybes.add.vybe.SearchTrackScreen
-import com.linca.vybes.auth.AuthEvent
-import com.linca.vybes.auth.AuthEventBus
 import com.linca.vybes.common.theme.VybesTheme
 import com.linca.vybes.feedback.FeedbackScreen
 import com.linca.vybes.model.AlbumReviewScreen
@@ -29,7 +28,6 @@ import com.linca.vybes.post.feed.FeedScreen
 import com.linca.vybes.profile.ProfileScreen
 import com.linca.vybes.profile.favourites.EditFavouritesScreen
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import kotlin.reflect.typeOf
 
 @AndroidEntryPoint
@@ -38,21 +36,19 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lifecycleScope.launch {
-            AuthEventBus.authEvents.collect { event ->
-                when (event) {
-                    is AuthEvent.TokenExpired, AuthEvent.TokenCleared -> {
-                        startActivity(
-                            Intent(this@MainActivity, AuthActivity::class.java)
-                                .apply {
-                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                                            Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                })
-                        finish()
-                    }
-                }
+        val authStateListener = FirebaseAuth.AuthStateListener { auth ->
+            if (auth.currentUser == null) {
+                startActivity(
+                    Intent(this@MainActivity, AuthActivity::class.java)
+                        .apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        })
+                finish()
             }
         }
+
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener)
 
         setContent {
             VybesTheme {

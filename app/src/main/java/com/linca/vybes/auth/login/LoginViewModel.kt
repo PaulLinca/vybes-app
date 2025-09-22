@@ -1,11 +1,10 @@
 package com.linca.vybes.auth.login
 
-import android.util.Patterns
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.linca.vybes.auth.firebase.FirebaseAuthManager
 import com.linca.vybes.auth.service.AuthService
 import com.linca.vybes.network.response.LoginResponse
 import com.linca.vybes.sharedpreferences.SharedPreferencesManager
@@ -23,85 +22,97 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val firebaseAuthManager: FirebaseAuthManager
 ) : ViewModel() {
-    private val maxEmailLength = 320
-    private val maxPasswordLength = 128
 
     data class LoginUiState(
         val isLoading: Boolean = false,
         val isLoginSuccess: Boolean = false,
         val requiresUsernameSetup: Boolean = false,
-        val email: String = "",
-        val password: String = "",
-        val emailError: String? = null,
-        val passwordError: String? = null,
         val networkError: String? = null
     )
 
     private val _uiState = MutableStateFlow(LoginUiState())
 
-    val isLoading = _uiState.map { it.isLoading }.distinctUntilChanged().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), false
-    )
+    val isLoading = _uiState.map { it.isLoading }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    val isLoginSuccess = _uiState.map { it.isLoginSuccess }.distinctUntilChanged().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), false
-    )
+    val isLoginSuccess = _uiState.map { it.isLoginSuccess }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    val requiresUsernameSetup =
-        _uiState.map { it.requiresUsernameSetup }.distinctUntilChanged().stateIn(
-            viewModelScope, SharingStarted.WhileSubscribed(5000), false
-        )
+    val requiresUsernameSetup = _uiState.map { it.requiresUsernameSetup }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    val emailError = _uiState.map { it.emailError }.distinctUntilChanged().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
+    val loginError = _uiState.map { it.networkError }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val passwordError = _uiState.map { it.passwordError }.distinctUntilChanged().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
+    fun signIn(activity: Activity) {
+        _uiState.update { it.copy(isLoading = true, networkError = null) }
 
-    val loginError = _uiState.map { it.networkError }.distinctUntilChanged().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
+        viewModelScope.launch {
+            firebaseAuthManager.signInWithGoogle(activity)
+                .onSuccess {
+                    val user = FirebaseAuth.getInstance().currentUser
+                    user?.uid?.let { uid ->
+                        SharedPreferencesManager.setFirebaseId(uid)
+                    }
+                    user?.getIdToken(true)
+                        ?.addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val idToken = task.result?.token
+                                authenticate(idToken)
+                            } else {
+                                _uiState.update {
+                                    it.copy(
+                                        isLoading = false,
+                                        networkError = "Google sign in failed"
+                                    )
+                                }
+                            }
+                        }
 
-    var emailText by mutableStateOf(_uiState.value.email)
-        private set
 
-    var passwordText by mutableStateOf(_uiState.value.password)
-        private set
+                    val needsUsername = SharedPreferencesManager.getUsername() == null
 
-    fun updateEmailText(updatedText: String) {
-        emailText = updatedText
-        _uiState.update {
-            it.copy(
-                email = updatedText,
-                emailError = null,
-                networkError = null
-            )
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            isLoginSuccess = true,
+                            requiresUsernameSetup = needsUsername
+                        )
+                    }
+                }
+                .onFailure { e ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            networkError = e.message ?: "Google sign in failed"
+                        )
+                    }
+                }
         }
     }
 
-    fun updatePasswordText(updatedText: String) {
-        passwordText = updatedText
-        _uiState.update {
-            it.copy(
-                password = updatedText,
-                passwordError = null,
-                networkError = null
-            )
+    fun authenticate(idToken: String?) {
+        if (idToken == null) {
+            _uiState.update {
+                it.copy(
+                    networkError = "Failed to retrieve ID token"
+                )
+            }
+            return
         }
-    }
-
-    fun login() {
-        if (!validateInputs()) return
 
         viewModelScope.launch {
             try {
                 _uiState.update { it.copy(isLoading = true, networkError = null) }
 
-                val result = safeApiCall { authService.login(emailText, passwordText) }
+                val result = safeApiCall { authService.authenticate(idToken) }
 
                 when (result) {
                     is Resource.Success -> handleSuccessfulLogin(result.data)
@@ -119,42 +130,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun validateInputs(): Boolean {
-        val emailError = when {
-            emailText.isBlank() -> "Email cannot be empty"
-            emailText.length > maxEmailLength -> "Email can't be longer than ${maxEmailLength} characters"
-            !Patterns.EMAIL_ADDRESS.matcher(emailText)
-                .matches() -> "Please enter a valid email address"
-
-            else -> null
-        }
-
-        val passwordError = when {
-            passwordText.isBlank() -> "Password cannot be empty"
-            passwordText.length > maxPasswordLength -> "Password can't be longer than ${maxPasswordLength} characters"
-            passwordText.length < 6 -> "Password must be at least 6 characters"
-            else -> null
-        }
-
-        _uiState.update {
-            it.copy(
-                emailError = emailError,
-                passwordError = passwordError
-            )
-        }
-
-        return emailError == null && passwordError == null
-    }
-
     private fun handleSuccessfulLogin(loginResponse: LoginResponse) {
-        SharedPreferencesManager.saveDataOnLogin(
-            loginResponse.userId,
-            loginResponse.email,
-            loginResponse.username,
-            loginResponse.jwt,
-            loginResponse.refreshToken
-        )
-
         _uiState.update {
             it.copy(
                 isLoginSuccess = true,
@@ -195,3 +171,5 @@ class LoginViewModel @Inject constructor(
         }
     }
 }
+
+

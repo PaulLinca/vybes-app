@@ -154,7 +154,7 @@ class ProfileViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-            SharedPreferencesManager.clearUserData()
+//            SharedPreferencesManager.clearUserData()
             AuthEventBus.emit(AuthEvent.TokenCleared)
         }
     }

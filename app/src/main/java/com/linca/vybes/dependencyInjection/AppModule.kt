@@ -8,8 +8,6 @@ import com.linca.vybes.auth.setup.VybesUserService
 import com.linca.vybes.feedback.service.FeedbackService
 import com.linca.vybes.feedback.service.VybesFeedbackService
 import com.linca.vybes.model.Post
-import com.linca.vybes.network.AuthInterceptor
-import com.linca.vybes.network.TokenAuthenticator
 import com.linca.vybes.network.VybesApiClient
 import com.linca.vybes.network.adapters.LocalDateTypeAdapter
 import com.linca.vybes.network.adapters.PostDeserializer
@@ -19,6 +17,7 @@ import com.linca.vybes.post.service.PostService
 import com.linca.vybes.post.service.VybesPostService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.linca.vybes.auth.firebase.FirebaseAuthManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -54,8 +53,6 @@ object AppModule {
         }
 
         val client = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor())
-            .authenticator(TokenAuthenticator)
             .addInterceptor(loggingInterceptor)
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)

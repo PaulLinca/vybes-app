@@ -73,9 +73,16 @@ dependencies {
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation(libs.firebase.analytics)
+    implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("androidx.credentials:credentials:1.2.2")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.2")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
 
     implementation("com.google.dagger:hilt-android:2.52")
     implementation(libs.androidx.palette.ktx)
+    implementation(libs.googleid)
+    implementation(libs.androidx.room.compiler.processing.testing)
     kapt("com.google.dagger:hilt-android-compiler:2.52")
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")

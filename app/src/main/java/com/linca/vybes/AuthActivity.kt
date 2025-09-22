@@ -8,8 +8,8 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.linca.vybes.auth.login.LoginScreen
-import com.linca.vybes.auth.register.RegisterScreen
 import com.linca.vybes.auth.setup.SetupScreen
 import com.linca.vybes.common.theme.VybesTheme
 import com.linca.vybes.sharedpreferences.SharedPreferencesManager
@@ -22,8 +22,14 @@ class AuthActivity : ComponentActivity() {
 
         installSplashScreen()
 
-        if (SharedPreferencesManager.isLoggedIn()) {
-            startMainActivity()
+        // Check if user is already authenticated with Firebase
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            // Check if user has completed username setup
+            if (SharedPreferencesManager.getUsername() != null) {
+                startMainActivity()
+                return
+            }
         }
 
         setContent {
@@ -31,21 +37,15 @@ class AuthActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 NavHost(navController = navController, startDestination = LoginScreen) {
-                    composable<RegisterScreen> {
-                        RegisterScreen(
-                            onRegisterSuccess = { navController.navigate(LoginScreen) },
-                            onLoginClick = { navController.navigate(LoginScreen) }
-                        )
-                    }
                     composable<LoginScreen> {
                         LoginScreen(
                             onLoginSuccess = { startMainActivity() },
-                            onRegisterClick = { navController.navigate(RegisterScreen) },
                             onUsernameSetupRequired = { navController.navigate(SetupScreen) })
                     }
                     composable<SetupScreen> {
                         SetupScreen(
-                            onSetupSuccess = { startMainActivity() })
+                            onSetupSuccess = { startMainActivity() }
+                        )
                     }
                 }
             }
