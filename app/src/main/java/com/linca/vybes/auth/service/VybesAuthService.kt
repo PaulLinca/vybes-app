@@ -10,4 +10,8 @@ class VybesAuthService(private val vybesApiClient: VybesApiClient) : AuthService
     override suspend fun authenticate(): Response<LoginResponse> {
         return vybesApiClient.authenticate()
     }
+
+    override suspend fun logout(): Response<Void> {
+        return vybesApiClient.logout()
+    }
 }

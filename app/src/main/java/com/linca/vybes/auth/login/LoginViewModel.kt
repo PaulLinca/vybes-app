@@ -53,7 +53,12 @@ class LoginViewModel @Inject constructor(
                 .onSuccess {
                     val user = FirebaseAuth.getInstance().currentUser
                     if (user == null) {
-                        _uiState.update { it.copy(isLoading = false, networkError = "No Firebase user") }
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                networkError = "No Firebase user"
+                            )
+                        }
                         return@launch
                     }
 
@@ -89,7 +94,6 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                // keep loading state (already true) or reassert
                 _uiState.update { it.copy(isLoading = true) }
 
                 val result = safeApiCall { authService.authenticate() }
@@ -109,6 +113,9 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun handleSuccessfulLogin(loginResponse: LoginResponse) {
+        SharedPreferencesManager.setUsername(loginResponse.username)
+        SharedPreferencesManager.setUserId(loginResponse.userId)
+
         _uiState.update {
             it.copy(
                 isLoginSuccess = true,

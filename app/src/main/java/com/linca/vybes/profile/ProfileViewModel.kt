@@ -39,7 +39,6 @@ class ProfileViewModel @Inject constructor(
     val isLoadingPosts = postsManager.isLoadingPosts
     val isLoadingMorePosts = postsManager.isLoadingMorePosts
     val hasMorePosts = postsManager.hasMorePosts
-    val postsError = postsManager.postsError
 
     fun loadUser(username: String) {
         viewModelScope.launch {
@@ -154,7 +153,7 @@ class ProfileViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-//            SharedPreferencesManager.clearUserData()
+            SharedPreferencesManager.clearAll()
             AuthEventBus.emit(AuthEvent.TokenCleared)
         }
     }

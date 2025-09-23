@@ -6,8 +6,11 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,11 +22,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -110,16 +115,17 @@ fun ErrorText(text: String) {
         modifier = Modifier.padding(vertical = 4.dp)
     )
 }
-
 @Composable
 fun AuthButton(
     isLoading: Boolean,
     onClick: () -> Unit,
-    text: String
+    text: String,
+    icon: Painter? = null,
+    iconContentDescription: String? = null
 ) {
     Button(
         enabled = !isLoading,
-        onClick = onClick,
+        onClick = { if (!isLoading) onClick() },
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
@@ -139,15 +145,29 @@ fun AuthButton(
                 strokeWidth = 2.dp
             )
         } else {
-            Text(
-                text = text,
-                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp),
-                color = PrimaryTextColor
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                if (icon != null) {
+                    Icon(
+                        painter = icon,
+                        contentDescription = iconContentDescription,
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .size(24.dp)
+                    )
+                    Spacer(Modifier.size(12.dp))
+                }
+                Text(
+                    text = text,
+                    style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp),
+                    color = PrimaryTextColor
+                )
+            }
         }
     }
 }
-
 @Composable
 fun LoadingOverlay() {
     if (LocalInspectionMode.current) return

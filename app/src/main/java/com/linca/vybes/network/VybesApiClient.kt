@@ -36,6 +36,9 @@ interface VybesApiClient {
     @POST("api/auth/authenticate")
     suspend fun authenticate(): Response<LoginResponse>
 
+    @POST("api/auth/logout")
+    suspend fun logout(): Response<Void>
+
     @POST("api/user/setUsername")
     suspend fun setupUsername(@Body loginRequest: UsernameSetupRequest): Response<UserResponse>
 

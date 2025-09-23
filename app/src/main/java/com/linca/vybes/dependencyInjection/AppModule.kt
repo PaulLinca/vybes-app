@@ -18,7 +18,6 @@ import com.linca.vybes.post.service.PostService
 import com.linca.vybes.post.service.VybesPostService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.linca.vybes.auth.firebase.FirebaseAuthManager
 import com.linca.vybes.network.interceptor.FirebaseAuthInterceptor
 import dagger.Module
 import dagger.Provides

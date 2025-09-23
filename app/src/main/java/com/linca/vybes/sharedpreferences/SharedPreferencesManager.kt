@@ -10,6 +10,7 @@ object SharedPreferencesManager {
     private const val KEY_USERNAME = "username"
     private const val KEY_FIREBASE_USER_ID = "firebase_user_id"
     private const val KEY_VYBES_USER_ID = "vybes_user_id"
+
     private lateinit var sharedPreferences: SharedPreferences
 
     fun init(context: Context) {

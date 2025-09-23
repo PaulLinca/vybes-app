@@ -76,7 +76,6 @@ class FeedViewModel @Inject constructor(
                         isLastPage = pageResponse.last
                     )
 
-                    // Cache the posts in the shared repository
                     postsRepository.cachePosts(pageResponse.content)
                 } else {
                     postsManager.setError("Failed to load posts: ${response.message()}")
@@ -113,7 +112,6 @@ class FeedViewModel @Inject constructor(
                         isLastPage = pageResponse.last
                     )
 
-                    // Update cache with fresh data
                     postsRepository.cachePosts(pageResponse.content)
                 } else {
                     postsManager.setError("Failed to refresh: ${response.message()}")
@@ -147,7 +145,6 @@ class FeedViewModel @Inject constructor(
                         isLastPage = pageResponse.last
                     )
 
-                    // Cache the new posts
                     postsRepository.cachePosts(pageResponse.content)
                 } else {
                     postsManager.setError("Failed to load more posts")

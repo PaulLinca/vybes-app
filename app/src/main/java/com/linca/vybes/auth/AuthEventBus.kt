@@ -13,6 +13,5 @@ object AuthEventBus {
 }
 
 sealed class AuthEvent {
-    data object TokenExpired : AuthEvent()
     data object TokenCleared : AuthEvent()
 }

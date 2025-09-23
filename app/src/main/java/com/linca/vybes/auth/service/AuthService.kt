@@ -6,4 +6,6 @@ import retrofit2.Response
 
 interface AuthService {
     suspend fun authenticate(): Response<LoginResponse>
+
+    suspend fun logout(): Response<Void>
 }
