@@ -7,7 +7,7 @@ import com.linca.vybes.network.response.RegisterResponse
 import retrofit2.Response
 
 class VybesAuthService(private val vybesApiClient: VybesApiClient) : AuthService {
-    override suspend fun authenticate(firebaseToken: String): Response<LoginResponse> {
-        TODO("Not yet implemented")
+    override suspend fun authenticate(): Response<LoginResponse> {
+        return vybesApiClient.authenticate()
     }
 }

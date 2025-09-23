@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import retrofit2.Response
 import java.io.IOException
 import javax.inject.Inject
@@ -35,57 +36,39 @@ class LoginViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(LoginUiState())
 
-    val isLoading = _uiState.map { it.isLoading }
-        .distinctUntilChanged()
+    val isLoading = _uiState.map { it.isLoading }.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
-
-    val isLoginSuccess = _uiState.map { it.isLoginSuccess }
-        .distinctUntilChanged()
+    val isLoginSuccess = _uiState.map { it.isLoginSuccess }.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
-
-    val requiresUsernameSetup = _uiState.map { it.requiresUsernameSetup }
-        .distinctUntilChanged()
+    val requiresUsernameSetup = _uiState.map { it.requiresUsernameSetup }.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
-
-    val loginError = _uiState.map { it.networkError }
-        .distinctUntilChanged()
+    val loginError = _uiState.map { it.networkError }.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     fun signIn(activity: Activity) {
-        _uiState.update { it.copy(isLoading = true, networkError = null) }
+        _uiState.update { it.copy(isLoading = true, networkError = null, isLoginSuccess = false) }
 
         viewModelScope.launch {
             firebaseAuthManager.signInWithGoogle(activity)
                 .onSuccess {
                     val user = FirebaseAuth.getInstance().currentUser
-                    user?.uid?.let { uid ->
-                        SharedPreferencesManager.setFirebaseId(uid)
+                    if (user == null) {
+                        _uiState.update { it.copy(isLoading = false, networkError = "No Firebase user") }
+                        return@launch
                     }
-                    user?.getIdToken(true)
-                        ?.addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                val idToken = task.result?.token
-                                authenticate(idToken)
-                            } else {
-                                _uiState.update {
-                                    it.copy(
-                                        isLoading = false,
-                                        networkError = "Google sign in failed"
-                                    )
-                                }
-                            }
+
+                    SharedPreferencesManager.setFirebaseId(user.uid)
+
+                    val idToken = try {
+                        user.getIdToken(true).await().token
+                    } catch (e: Exception) {
+                        _uiState.update {
+                            it.copy(isLoading = false, networkError = "Failed to get ID token")
                         }
-
-
-                    val needsUsername = SharedPreferencesManager.getUsername() == null
-
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            isLoginSuccess = true,
-                            requiresUsernameSetup = needsUsername
-                        )
+                        return@launch
                     }
+
+                    authenticate(idToken)
                 }
                 .onFailure { e ->
                     _uiState.update {
@@ -98,21 +81,18 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun authenticate(idToken: String?) {
+    private fun authenticate(idToken: String?) {
         if (idToken == null) {
-            _uiState.update {
-                it.copy(
-                    networkError = "Failed to retrieve ID token"
-                )
-            }
+            _uiState.update { it.copy(isLoading = false, networkError = "Missing ID token") }
             return
         }
 
         viewModelScope.launch {
             try {
-                _uiState.update { it.copy(isLoading = true, networkError = null) }
+                // keep loading state (already true) or reassert
+                _uiState.update { it.copy(isLoading = true) }
 
-                val result = safeApiCall { authService.authenticate(idToken) }
+                val result = safeApiCall { authService.authenticate() }
 
                 when (result) {
                     is Resource.Success -> handleSuccessfulLogin(result.data)
@@ -120,9 +100,7 @@ class LoginViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _uiState.update {
-                    it.copy(
-                        networkError = e.localizedMessage ?: "Unexpected error occurred"
-                    )
+                    it.copy(networkError = e.localizedMessage ?: "Unexpected error")
                 }
             } finally {
                 _uiState.update { it.copy(isLoading = false) }
@@ -141,13 +119,12 @@ class LoginViewModel @Inject constructor(
 
     private fun handleLoginError(errorCode: Int?, message: String?) {
         val errorMessage = when (errorCode) {
-            401 -> "Invalid email or password"
-            500 -> "Server error. Please try again later"
+            401 -> "Invalid credentials"
+            500 -> "Server error. Try again later"
             null -> message ?: "Network error"
-            else -> message ?: "Login failed unexpectedly"
+            else -> message ?: "Login failed"
         }
-
-        _uiState.update { it.copy(networkError = errorMessage) }
+        _uiState.update { it.copy(isLoginSuccess = false, networkError = errorMessage) }
     }
 
     sealed class Resource<out T> {
@@ -165,11 +142,9 @@ class LoginViewModel @Inject constructor(
                 Resource.Error(response.code(), response.message())
             }
         } catch (e: IOException) {
-            Resource.Error(message = "Network error. Please check your connection")
+            Resource.Error(message = "Network error. Please try again later.")
         } catch (e: Exception) {
             Resource.Error(message = e.localizedMessage)
         }
     }
 }
-
-

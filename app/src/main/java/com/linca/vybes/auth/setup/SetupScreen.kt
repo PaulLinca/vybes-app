@@ -79,7 +79,7 @@ fun SetupScreen(
     val usernameKeyboardActions = KeyboardActions(
         onDone = {
             focusManager.clearFocus()
-            if (!isLoading) viewModel.login()
+            if (!isLoading) viewModel.setUsername()
         }
     )
 
@@ -147,12 +147,11 @@ fun SetupScreen(
 
                 AuthButton(
                     isLoading = isLoading,
-                    onClick = { viewModel.login() },
+                    onClick = { viewModel.setUsername() },
                     text = stringResource(R.string.continue_text)
                 )
             }
 
-            // Set initial focus with a slight delay to ensure composition is complete
             LaunchedEffect(Unit) {
                 delay(300)
                 usernameFocusRequester.requestFocus()

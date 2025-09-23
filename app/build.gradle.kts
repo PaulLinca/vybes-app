@@ -8,6 +8,12 @@ plugins {
     id("com.google.gms.google-services")
 }
 
+configurations.all {
+    resolutionStrategy {
+        force("com.google.auto.value:auto-value-annotations:1.10.4")
+    }
+}
+
 android {
     namespace = "com.linca.vybes"
     compileSdk = 34
@@ -65,6 +71,14 @@ android {
 }
 
 dependencies {
+    // Room compiler
+    kapt("androidx.room:room-compiler:2.8.0") {
+        exclude(group = "com.google.auto.value", module = "auto-value")
+    }
+
+    // Keep only annotations
+    compileOnly("com.google.auto.value:auto-value-annotations:1.10.4")
+
     // images
     implementation("io.coil-kt:coil-compose:2.6.0")
     // compose navigation
@@ -82,7 +96,6 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.52")
     implementation(libs.androidx.palette.ktx)
     implementation(libs.googleid)
-    implementation(libs.androidx.room.compiler.processing.testing)
     kapt("com.google.dagger:hilt-android-compiler:2.52")
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")

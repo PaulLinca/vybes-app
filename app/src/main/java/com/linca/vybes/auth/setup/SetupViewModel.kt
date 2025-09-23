@@ -49,7 +49,7 @@ class SetupViewModel @Inject constructor(
         return true
     }
 
-    fun login() {
+    fun setUsername() {
         viewModelScope.launch {
             _isLoading.value = true
             _usernameError.value = null
@@ -59,8 +59,8 @@ class SetupViewModel @Inject constructor(
                 if (response.isSuccessful && response.body() != null) {
                     _usernameError.value = null
 
-                    val loginResponse = response.body()!!
-//                    SharedPreferencesManager.saveUsername(loginResponse.username)
+                    val userResponse = response.body()!!
+                    SharedPreferencesManager.setUsername(userResponse.username)
 
                     _isSetupSuccess.value = true
                 } else {

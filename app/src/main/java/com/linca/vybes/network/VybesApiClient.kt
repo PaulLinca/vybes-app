@@ -9,7 +9,6 @@ import com.linca.vybes.model.Post
 import com.linca.vybes.model.TrackSearchResult
 import com.linca.vybes.model.Vybe
 import com.linca.vybes.network.request.AddCommentRequest
-import com.linca.vybes.network.request.AuthRequest
 import com.linca.vybes.network.request.CreateAlbumReviewRequest
 import com.linca.vybes.network.request.FeedbackRequest
 import com.linca.vybes.network.request.SetFavoritesRequest
@@ -18,7 +17,6 @@ import com.linca.vybes.network.response.Album
 import com.linca.vybes.network.response.LikeResponse
 import com.linca.vybes.network.response.LoginResponse
 import com.linca.vybes.network.response.PageResponse
-import com.linca.vybes.network.response.RegisterResponse
 import com.linca.vybes.network.response.UserResponse
 import com.linca.vybes.post.service.PostRequest
 import okhttp3.MultipartBody
@@ -35,11 +33,8 @@ import retrofit2.http.Query
 
 interface VybesApiClient {
 
-    @POST("api/auth/register")
-    suspend fun register(@Body registerRequest: AuthRequest): Response<RegisterResponse>
-
-    @POST("api/auth/login")
-    suspend fun login(@Body loginRequest: AuthRequest): Response<LoginResponse>
+    @POST("api/auth/authenticate")
+    suspend fun authenticate(): Response<LoginResponse>
 
     @POST("api/user/setUsername")
     suspend fun setupUsername(@Body loginRequest: UsernameSetupRequest): Response<UserResponse>

@@ -1,5 +1,6 @@
 package com.linca.vybes.dependencyInjection
 
+import com.google.firebase.auth.FirebaseAuth
 import com.linca.vybes.BuildConfig
 import com.linca.vybes.auth.service.AuthService
 import com.linca.vybes.auth.service.VybesAuthService
@@ -18,6 +19,7 @@ import com.linca.vybes.post.service.VybesPostService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.linca.vybes.auth.firebase.FirebaseAuthManager
+import com.linca.vybes.network.interceptor.FirebaseAuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,11 +50,15 @@ object AppModule {
     @Provides
     @Singleton
     fun provideRetrofit(gson: Gson): Retrofit {
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val authInterceptor = FirebaseAuthInterceptor(firebaseAuth)
+
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = HttpLoggingInterceptor.Level.HEADERS
         }
 
         val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)

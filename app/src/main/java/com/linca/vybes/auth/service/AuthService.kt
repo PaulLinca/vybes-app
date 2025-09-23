@@ -5,5 +5,5 @@ import com.linca.vybes.network.response.RegisterResponse
 import retrofit2.Response
 
 interface AuthService {
-    suspend fun authenticate(firebaseToken: String): Response<LoginResponse>
+    suspend fun authenticate(): Response<LoginResponse>
 }
