@@ -1,6 +1,5 @@
 package com.linca.vybes.dependencyInjection
 
-import com.google.firebase.auth.FirebaseAuth
 import com.linca.vybes.BuildConfig
 import com.linca.vybes.auth.service.AuthService
 import com.linca.vybes.auth.service.VybesAuthService
@@ -13,12 +12,14 @@ import com.linca.vybes.network.VybesApiClient
 import com.linca.vybes.network.adapters.LocalDateTypeAdapter
 import com.linca.vybes.network.adapters.PostDeserializer
 import com.linca.vybes.network.adapters.ZonedDateTimeTypeAdapter
+import com.linca.vybes.network.interceptor.FirebaseAuthInterceptor
 import com.linca.vybes.post.PostsRepository
 import com.linca.vybes.post.service.PostService
 import com.linca.vybes.post.service.VybesPostService
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.linca.vybes.network.interceptor.FirebaseAuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -106,4 +107,8 @@ object AppModule {
     fun providePostsRepository(): PostsRepository {
         return PostsRepository()
     }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
 }

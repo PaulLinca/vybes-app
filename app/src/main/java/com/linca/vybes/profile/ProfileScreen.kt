@@ -124,9 +124,7 @@ fun ProfileScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            val imagePart = profileViewModel.createMultipartFromUri(context, it)
-            profileViewModel.imagePart = imagePart
-            profileViewModel.uploadProfilePicture()
+            profileViewModel.uploadProfilePictureToFirebase(it)
         }
     }
 

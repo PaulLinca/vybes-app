@@ -1,30 +1,29 @@
 package com.linca.vybes.profile
 
-import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.storage.FirebaseStorage
 import com.linca.vybes.auth.AuthEvent
 import com.linca.vybes.auth.AuthEventBus
 import com.linca.vybes.auth.setup.UserService
 import com.linca.vybes.common.posts.PostFilter
 import com.linca.vybes.common.posts.PostsManager
 import com.linca.vybes.model.User
+import com.linca.vybes.network.request.ProfilePictureRequest
 import com.linca.vybes.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userService: UserService
+    private val userService: UserService,
+    private val firebaseStorage: FirebaseStorage
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -32,7 +31,6 @@ class ProfileViewModel @Inject constructor(
 
     private val postsManager = PostsManager()
     private var currentUserId: Long? = null
-    var imagePart: MultipartBody.Part? = null
 
     val filteredPosts = postsManager.filteredPosts
     val selectedPostFilter = postsManager.selectedPostFilter
@@ -158,43 +156,43 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun createMultipartFromUri(context: Context, uri: Uri): MultipartBody.Part {
-        val contentResolver = context.contentResolver
-        val inputStream = contentResolver.openInputStream(uri)
-        val fileName = "profile_picture_${System.currentTimeMillis()}.jpg"
-
-        val file = File(context.cacheDir, fileName)
-        file.outputStream().use { output ->
-            inputStream?.copyTo(output)
-        }
-
-        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-        return MultipartBody.Part.createFormData("image", file.name, requestFile)
-    }
-
-    fun uploadProfilePicture() {
-        val part = imagePart ?: return
-
-        _uiState.value = _uiState.value.copy(isLoadingUser = true)
+    fun uploadProfilePictureToFirebase(localUri: Uri) {
+        val userId = currentUserId ?: return
+        _uiState.value = _uiState.value.copy(isLoadingUser = true, userError = null)
 
         viewModelScope.launch {
             try {
-                val response = userService.setupProfilePicture(part)
+                val objectPath = "profile_pictures/$userId.jpg"
+                val ref = firebaseStorage.reference.child(objectPath)
 
-                if (response.isSuccessful) {
+                val downloadUrl = ref.downloadUrl.await().toString()
+                val updateResp = userService.setProfilePicture(
+                    ProfilePictureRequest(
+                        profilePictureUrl = downloadUrl
+                    )
+                )
+
+                if (!updateResp.isSuccessful) {
                     _uiState.value = _uiState.value.copy(
                         isLoadingUser = false,
-                        user = response.body(),
+                        userError = "Failed to save URL"
+                    )
+                    return@launch
+                }
+
+                _uiState.value.user?.let { current ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoadingUser = false,
+                        user = current.copy(profilePictureUrl = downloadUrl),
                         uploadSuccessMessage = "Upload successful!\nChanges may take a moment to appear"
                     )
-                } else {
+                } ?: run {
                     _uiState.value = _uiState.value.copy(
                         isLoadingUser = false,
-                        userError = "Upload failed"
+                        uploadSuccessMessage = "Upload successful!"
                     )
                 }
             } catch (e: Exception) {
-                Log.e("Upload", "Failed: ${e.message}")
                 _uiState.value = _uiState.value.copy(
                     isLoadingUser = false,
                     userError = "Upload failed: ${e.message}"

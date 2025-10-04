@@ -71,27 +71,25 @@ android {
 }
 
 dependencies {
-    // Room compiler
-    kapt("androidx.room:room-compiler:2.8.0") {
-        exclude(group = "com.google.auto.value", module = "auto-value")
-    }
-
-    // Keep only annotations
-    compileOnly("com.google.auto.value:auto-value-annotations:1.10.4")
-
     // images
     implementation("io.coil-kt:coil-compose:2.6.0")
     // compose navigation
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
-    // firebase
-    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
-    implementation(libs.firebase.analytics)
-    implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
+
+    // firebase (use BOM - stable version)
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-common-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+
     implementation("androidx.credentials:credentials:1.2.2")
     implementation("androidx.credentials:credentials-play-services-auth:1.2.2")
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     implementation("com.google.dagger:hilt-android:2.52")
     implementation(libs.androidx.palette.ktx)

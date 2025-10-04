@@ -11,6 +11,7 @@ import com.linca.vybes.model.Vybe
 import com.linca.vybes.network.request.AddCommentRequest
 import com.linca.vybes.network.request.CreateAlbumReviewRequest
 import com.linca.vybes.network.request.FeedbackRequest
+import com.linca.vybes.network.request.ProfilePictureRequest
 import com.linca.vybes.network.request.SetFavoritesRequest
 import com.linca.vybes.network.request.UsernameSetupRequest
 import com.linca.vybes.network.response.Album
@@ -19,15 +20,12 @@ import com.linca.vybes.network.response.LoginResponse
 import com.linca.vybes.network.response.PageResponse
 import com.linca.vybes.network.response.UserResponse
 import com.linca.vybes.post.service.PostRequest
-import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
-import retrofit2.http.Multipart
 import retrofit2.http.POST
-import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -42,10 +40,9 @@ interface VybesApiClient {
     @POST("api/user/setUsername")
     suspend fun setupUsername(@Body loginRequest: UsernameSetupRequest): Response<UserResponse>
 
-    @Multipart
     @POST("api/user/setProfilePicture")
     suspend fun uploadProfilePicture(
-        @Part image: MultipartBody.Part
+        @Body request: ProfilePictureRequest
     ): Response<UserResponse>
 
     @POST("api/user/updateFavorites")

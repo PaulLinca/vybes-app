@@ -2,12 +2,12 @@ package com.linca.vybes.auth.setup
 
 import com.linca.vybes.model.Post
 import com.linca.vybes.network.VybesApiClient
+import com.linca.vybes.network.request.ProfilePictureRequest
 import com.linca.vybes.network.request.SetFavoritesRequest
 import com.linca.vybes.network.request.UsernameSetupRequest
 import com.linca.vybes.network.response.MediaItem
 import com.linca.vybes.network.response.PageResponse
 import com.linca.vybes.network.response.UserResponse
-import okhttp3.MultipartBody
 import retrofit2.Response
 
 class VybesUserService(private val vybesApiClient: VybesApiClient) : UserService {
@@ -17,8 +17,8 @@ class VybesUserService(private val vybesApiClient: VybesApiClient) : UserService
         )
     }
 
-    override suspend fun setupProfilePicture(image: MultipartBody.Part): Response<UserResponse> {
-        return vybesApiClient.uploadProfilePicture(image)
+    override suspend fun setProfilePicture(request: ProfilePictureRequest): Response<UserResponse> {
+        return vybesApiClient.uploadProfilePicture(request)
     }
 
     override suspend fun getUser(username: String): Response<UserResponse> {
