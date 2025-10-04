@@ -1,6 +1,5 @@
 package com.linca.vybes.profile
 
-import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -156,7 +155,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun uploadProfilePictureToFirebase(localUri: Uri) {
+    fun uploadProfilePictureToFirebase() {
         val userId = currentUserId ?: return
         _uiState.value = _uiState.value.copy(isLoadingUser = true, userError = null)
 
@@ -173,10 +172,13 @@ class ProfileViewModel @Inject constructor(
                 )
 
                 if (!updateResp.isSuccessful) {
+
                     _uiState.value = _uiState.value.copy(
                         isLoadingUser = false,
                         userError = "Failed to save URL"
                     )
+
+                    SharedPreferencesManager.setProfilePictureUrl(updateResp.body()?.profilePictureUrl.orEmpty())
                     return@launch
                 }
 

@@ -10,6 +10,7 @@ object SharedPreferencesManager {
     private const val KEY_USERNAME = "username"
     private const val KEY_FIREBASE_USER_ID = "firebase_user_id"
     private const val KEY_VYBES_USER_ID = "vybes_user_id"
+    private const val KEY_PROFILE_PICTURE_URL = "profile_picture_url"
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -36,6 +37,12 @@ object SharedPreferencesManager {
     }
 
     fun getFirebaseId(): String? = sharedPreferences.getString(KEY_FIREBASE_USER_ID, null)
+
+    fun setProfilePictureUrl(profilePictureUrl: String) {
+        sharedPreferences.edit { putString(KEY_PROFILE_PICTURE_URL, profilePictureUrl) }
+    }
+
+    fun getProfilePictureUrl(): String? = sharedPreferences.getString(KEY_PROFILE_PICTURE_URL, null)
 
     fun clearAll() {
         sharedPreferences.edit { clear() }

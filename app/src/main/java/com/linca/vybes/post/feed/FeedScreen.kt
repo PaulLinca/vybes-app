@@ -429,7 +429,7 @@ fun TopBar(
                     .size(30.dp)
                     .clip(CircleShape),
                 contentDescription = "Profile Button",
-                pictureUrl = BuildConfig.BASE_URL + "api/user/profilePicture/${SharedPreferencesManager.getUserId()}"
+                pictureUrl = SharedPreferencesManager.getProfilePictureUrl()
             )
         }
     )

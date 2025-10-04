@@ -124,7 +124,7 @@ fun ProfileScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            profileViewModel.uploadProfilePictureToFirebase(it)
+            profileViewModel.uploadProfilePictureToFirebase()
         }
     }
 
